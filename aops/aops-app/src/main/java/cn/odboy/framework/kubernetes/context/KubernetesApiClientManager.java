@@ -17,6 +17,7 @@ package cn.odboy.framework.kubernetes.context;
 
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.exception.BadRequestException;
+import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import io.kubernetes.client.openapi.ApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class KubernetesApiClientManager {
             throw new BadRequestException("参数clusterCode必填");
         }
         try {
-            kubernetesHealthChecker.checkConfigContent(apiClient);
+            kubernetesHealthChecker.checkConfigContent(new ArgsClusterCodeVo(clusterCode));
             CLIENT_MAP.put(clusterCode, apiClient);
             CLIENT_ENV.put(clusterCode, envCode);
             log.info("{}集群config配置检测成功，并放入应用缓存中", clusterCode);

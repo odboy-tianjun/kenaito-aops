@@ -20,11 +20,11 @@ import lombok.Value;
 
 
 @Value
-public class ArgsClusterCodeVo {
+public class ArgsResourceNameVo {
     String value;
 
-    public ArgsClusterCodeVo(String value) {
-        Assert.notBlank(value, "集群编码不能为空");
+    public ArgsResourceNameVo(String value) {
+        Assert.notBlank(value, "名称不能为空");
         this.value = value;
     }
 }

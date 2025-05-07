@@ -19,6 +19,7 @@ import cn.odboy.dal.dataobject.AopsKubernetesClusterConfig;
 import cn.odboy.framework.kubernetes.constant.KubernetesResourceHealthStatusEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesConfigHelper;
 import cn.odboy.framework.kubernetes.context.KubernetesHealthChecker;
+import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.service.AopsKubernetesClusterConfigService;
 import cn.odboy.util.CollUtil;
 import io.kubernetes.client.openapi.ApiClient;
@@ -47,15 +48,15 @@ public class SyncKubernetesConfigHealthStatusJob {
             log.info("没有找到配置信息");
             return;
         }
-        for (AopsKubernetesClusterConfig containerdClusterConfig : list) {
+        for (AopsKubernetesClusterConfig aopsKubernetesClusterConfig : list) {
             try {
-                ApiClient apiClient = kubernetesConfigHelper.loadFormContent(containerdClusterConfig.getConfigContent());
+                ApiClient apiClient = kubernetesConfigHelper.loadFormContent(aopsKubernetesClusterConfig.getConfigContent());
                 kubernetesHealthChecker.checkConfigContent(apiClient);
-                aopsKubernetesClusterConfigService.modifyStatusById(containerdClusterConfig.getId(), KubernetesResourceHealthStatusEnum.HEALTH);
-                log.info("{} K8s服务端健康", containerdClusterConfig.getEnvCode());
+                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfig.getId(), KubernetesResourceHealthStatusEnum.HEALTH);
+                log.info("{} K8s服务端健康", aopsKubernetesClusterConfig.getClusterName());
             } catch (Exception e) {
-                aopsKubernetesClusterConfigService.modifyStatusById(containerdClusterConfig.getId(), KubernetesResourceHealthStatusEnum.UN_HEALTH);
-                log.error("{} K8s服务端不健康", containerdClusterConfig.getEnvCode(), e);
+                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfig.getId(), KubernetesResourceHealthStatusEnum.UN_HEALTH);
+                log.error("{} K8s服务端不健康", aopsKubernetesClusterConfig.getClusterName(), e);
             }
         }
     }

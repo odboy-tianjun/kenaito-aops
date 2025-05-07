@@ -17,6 +17,7 @@ package cn.odboy.framework.kubernetes.context;
 
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.model.response.KubernetesResourceResponse;
+import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.repository.KubernetesNamespaceRepository;
 import io.kubernetes.client.openapi.ApiClient;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +36,25 @@ import org.springframework.stereotype.Component;
 public class KubernetesHealthChecker {
     private final KubernetesNamespaceRepository kubernetesNamespaceRepository;
 
+    public void checkConfigContent(ArgsClusterCodeVo clusterCodeVo) {
+        try {
+            KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.getNamespace(clusterCodeVo);
+            if (namespace == null) {
+                throw new BadRequestException("无效配置");
+            }
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
     public void checkConfigContent(ApiClient apiClient) {
-        KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.getNamespace(apiClient);
-        if (namespace == null) {
-            throw new BadRequestException("无效配置");
+        try {
+            KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.getNamespaceByApiClient(apiClient);
+            if (namespace == null) {
+                throw new BadRequestException("无效配置");
+            }
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 }
