@@ -15,9 +15,7 @@
  */
 package cn.odboy.framework.kubernetes.repository;
 
-import cn.hutool.core.lang.Assert;
 import cn.odboy.exception.BadRequestException;
-import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
 import cn.odboy.framework.kubernetes.exception.KubernetesApiExceptionCatch;
 import cn.odboy.framework.kubernetes.model.request.KubernetesApiIngressRequest;
@@ -25,7 +23,9 @@ import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionRespon
 import cn.odboy.framework.kubernetes.model.vo.ArgsAppNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceNameUtil;
 import cn.odboy.util.ValidationUtil;
 import com.alibaba.fastjson2.JSON;
@@ -121,8 +121,10 @@ public class KubernetesIngressRepository {
     public V1Ingress describeIngressByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String ingressName = KubernetesResourceNameUtil.getIngressName(appNameVo.getValue(), envCode);
         return networkingV1Api.readNamespacedIngress(
-                KubernetesResourceNameUtil.getIngressName(appNameVo.getValue(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue())),
+                ingressName,
                 appNameVo.getValue(),
                 new ArgsPrettyVo(false).getValue(),
                 null,
@@ -130,73 +132,51 @@ public class KubernetesIngressRepository {
         );
     }
 
-    /**
-     *
-     *
-     * @param name      ingress名称
-     * @param namespace 命名空间
-     * @return /
-     */
+
     @KubernetesApiExceptionCatch(description = "根据ingress名称获取Ingress", throwException = false)
-    public V1Ingress describeIngressByName(ArgsClusterCodeVo clusterCodeVo, String name, String namespace)throws Exception {
-        Assert.notNull(clusterCodeVo, "集群编码不能为空");
-        Assert.notEmpty(name, "名称不能为空");
-        Assert.notEmpty(namespace, "命名空间不能为空");
-        try {
-            ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-            NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
-            return networkingV1Api.readNamespacedIngress(name, namespace, "false", null, null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                if (actionExceptionBody.getReason().contains(KubernetesActionReasonCodeEnum.NotFound.getCode())) {
-                    return null;
-                }
-                log.error("根据ingress名称获取Ingress失败: {}", responseBody, e);
-                throw new BadRequestException("根据ingress名称获取Ingress失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("根据ingress名称获取Ingress失败");
-        } catch (Exception e) {
-            log.error("根据ingress名称获取Ingress失败:", e);
-            throw new BadRequestException("根据ingress名称获取Ingress失败");
-        }
+    public V1Ingress describeIngressByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
+        return networkingV1Api.readNamespacedIngress(
+                resourceNameVo.getValue(),
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
     }
 
-    /**
-     *
-     *
-     * @param args /
-     */
     @KubernetesApiExceptionCatch(description = "从yaml文件内容加载Ingress", throwException = false)
-    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.LoadFromYaml args)throws Exception {
+    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.LoadFromYaml args) throws Exception {
         ValidationUtil.validate(args);
-        try {
-            V1Ingress ingress = Yaml.loadAs(args.getYamlContent(), V1Ingress.class);
-            ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-            NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
-            String ingressName = Objects.requireNonNull(ingress.getMetadata()).getName();
-            String namespace = Objects.requireNonNull(ingress.getMetadata()).getNamespace();
-            V1Ingress v1Ingress = describeIngressByName(clusterCodeVo, ingressName, namespace);
-            if (v1Ingress == null) {
-                networkingV1Api.createNamespacedIngress(namespace, ingress, new ArgsPrettyVo(false).getValue(),
-                        dryRunVo.getValue(), null);
-            } else {
-                networkingV1Api.replaceNamespacedIngress(ingressName, namespace, ingress, new ArgsPrettyVo(false).getValue(),
-                        dryRunVo.getValue(), null);
-            }
-            return ingress;
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("从yml加载Ingress失败: {}", responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException("从yml加载Ingress失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("从yml加载Ingress失败");
-        } catch (Exception e) {
-            log.error("从yml加载Ingress失败:", e);
-            throw new BadRequestException("从yml加载Ingress失败");
+        V1Ingress ingress = Yaml.loadAs(args.getYamlContent(), V1Ingress.class);
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
+        String ingressName = Objects.requireNonNull(ingress.getMetadata()).getName();
+        String namespace = Objects.requireNonNull(ingress.getMetadata()).getNamespace();
+        V1Ingress v1Ingress = describeIngressByName(
+                clusterCodeVo,
+                new ArgsResourceNameVo(ingressName),
+                new ArgsNamespaceNameVo(namespace)
+        );
+        if (v1Ingress == null) {
+            networkingV1Api.createNamespacedIngress(
+                    namespace,
+                    ingress,
+                    new ArgsPrettyVo(false).getValue(),
+                    dryRunVo.getValue(),
+                    null
+            );
+        } else {
+            networkingV1Api.replaceNamespacedIngress(
+                    ingressName,
+                    namespace,
+                    ingress,
+                    new ArgsPrettyVo(false).getValue(),
+                    dryRunVo.getValue(),
+                    null
+            );
         }
+        return ingress;
     }
 }
