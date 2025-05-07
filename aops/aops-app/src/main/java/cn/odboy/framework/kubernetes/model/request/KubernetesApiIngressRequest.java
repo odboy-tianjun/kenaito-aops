@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.kubernetes.model.args;
+package cn.odboy.framework.kubernetes.model.request;
 
 import cn.odboy.base.MyObject;
 import lombok.Builder;
@@ -21,19 +21,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * K8s Service
+ * K8s Ingress
  *
  * @author odboy
  * @date 2024-10-01
  */
-public class KubernetesServiceApiArgs {
+public class KubernetesApiIngressRequest {
     @Data
-    @EqualsAndHashCode(callSuper = false)
     @Builder
+    @EqualsAndHashCode(callSuper = false)
     public static class Create extends MyObject {
         /**
          * 应用名称
@@ -41,26 +40,33 @@ public class KubernetesServiceApiArgs {
         @NotBlank(message = "应用名称不能为空")
         private String appName;
         /**
-         * service注解
+         * ingress注解
          */
         private Map<String, String> annotations;
         /**
-         * 外部访问的端口号
+         * 匹配的路径
          */
-        @NotNull(message = "外部访问的端口号不能为空")
-        private Integer port;
+        @NotBlank(message = "匹配的路径不能为空")
+        private String path;
         /**
-         * 应用服务端口号
+         * 绑定的域名
          */
-        @NotNull(message = "应用服务端口号不能为空")
-        private Integer targetPort;
+        @NotBlank(message = "绑定的域名不能为空")
+        private String hostname;
         /**
-         * pod标签选择器
+         * 路由到的服务名称
          */
-        private Map<String, String> labelSelector = new HashMap<>();
+        @NotBlank(message = "路由到的服务名称不能为空")
+        private String serviceName;
+        /**
+         * 路由到的服务端口
+         */
+        @NotNull(message = "路由到的服务端口不能为空")
+        private Integer servicePort;
     }
 
     @Data
+    @Builder
     @EqualsAndHashCode(callSuper = false)
     public static class Delete extends MyObject {
         /**

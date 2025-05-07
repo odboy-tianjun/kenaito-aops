@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.kubernetes.model.args;
+package cn.odboy.framework.kubernetes.model.request;
 
 import cn.odboy.base.MyObject;
 import lombok.Builder;
@@ -21,18 +21,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * K8s Ingress
+ * K8s Service
  *
  * @author odboy
  * @date 2024-10-01
  */
-public class KubernetesIngressApiArgs {
+public class KubernetesApiServiceRequest {
     @Data
-    @Builder
     @EqualsAndHashCode(callSuper = false)
+    @Builder
     public static class Create extends MyObject {
         /**
          * 应用名称
@@ -40,33 +41,26 @@ public class KubernetesIngressApiArgs {
         @NotBlank(message = "应用名称不能为空")
         private String appName;
         /**
-         * ingress注解
+         * service注解
          */
         private Map<String, String> annotations;
         /**
-         * 匹配的路径
+         * 外部访问的端口号
          */
-        @NotBlank(message = "匹配的路径不能为空")
-        private String path;
+        @NotNull(message = "外部访问的端口号不能为空")
+        private Integer port;
         /**
-         * 绑定的域名
+         * 应用服务端口号
          */
-        @NotBlank(message = "绑定的域名不能为空")
-        private String hostname;
+        @NotNull(message = "应用服务端口号不能为空")
+        private Integer targetPort;
         /**
-         * 路由到的服务名称
+         * pod标签选择器
          */
-        @NotBlank(message = "路由到的服务名称不能为空")
-        private String serviceName;
-        /**
-         * 路由到的服务端口
-         */
-        @NotNull(message = "路由到的服务端口不能为空")
-        private Integer servicePort;
+        private Map<String, String> labelSelector = new HashMap<>();
     }
 
     @Data
-    @Builder
     @EqualsAndHashCode(callSuper = false)
     public static class Delete extends MyObject {
         /**

@@ -19,7 +19,7 @@ import cn.hutool.core.lang.Assert;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesIngressApiArgs;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiIngressRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
@@ -60,7 +60,7 @@ public class KubernetesIngressRepository {
      *
      * @param args /
      */
-    public V1Ingress createIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesIngressApiArgs.Create args) {
+    public V1Ingress createIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.Create args) {
         ValidationUtil.validate(args);
         try {
             // 构建ingress的yaml对象
@@ -107,7 +107,7 @@ public class KubernetesIngressRepository {
      *
      * @param args /
      */
-    public void deleteIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesIngressApiArgs.Delete args) {
+    public void deleteIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.Delete args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
@@ -196,7 +196,7 @@ public class KubernetesIngressRepository {
      *
      * @param args /
      */
-    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesIngressApiArgs.LoadFromYaml args) {
+    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.LoadFromYaml args) {
         ValidationUtil.validate(args);
         try {
             V1Ingress ingress = Yaml.loadAs(args.getYamlContent(), V1Ingress.class);

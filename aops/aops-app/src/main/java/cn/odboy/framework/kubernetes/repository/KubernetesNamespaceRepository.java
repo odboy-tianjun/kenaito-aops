@@ -19,7 +19,8 @@ import cn.hutool.core.lang.Assert;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesNamespaceApiArgs;
+import cn.odboy.framework.kubernetes.exception.KubernetesApiExceptionCatch;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiNamespaceRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.response.KubernetesResourceResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
@@ -59,6 +60,7 @@ public class KubernetesNamespaceRepository {
      *
      * @return /
      */
+    @KubernetesApiExceptionCatch(description = "获取Namespace列表")
     public List<KubernetesResourceResponse.Namespace> listNamespaces(ApiClient apiClient) {
         try {
             var coreV1Api = new CoreV1Api(apiClient);
@@ -213,7 +215,7 @@ public class KubernetesNamespaceRepository {
      *
      * @param args /
      */
-    public KubernetesResourceResponse.Namespace createNamespace(String clusterCode, ArgsDryRunVo dryRunVo, KubernetesNamespaceApiArgs.Create args) {
+    public KubernetesResourceResponse.Namespace createNamespace(String clusterCode, ArgsDryRunVo dryRunVo, KubernetesApiNamespaceRequest.Create args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
@@ -250,7 +252,7 @@ public class KubernetesNamespaceRepository {
         }
     }
 
-    public KubernetesResourceResponse.Namespace loadNamespaceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesNamespaceApiArgs.LoadFromYaml args) {
+    public KubernetesResourceResponse.Namespace loadNamespaceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiNamespaceRequest.LoadFromYaml args) {
         ValidationUtil.validate(args);
         try {
             V1Namespace v1Namespace = Yaml.loadAs(args.getYamlContent(), V1Namespace.class);

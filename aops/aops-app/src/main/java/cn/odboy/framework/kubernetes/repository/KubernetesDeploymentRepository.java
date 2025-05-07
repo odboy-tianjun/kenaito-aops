@@ -21,8 +21,8 @@ import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.constant.KubernetesPodStatusEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesDeploymentApiArgs;
-import cn.odboy.framework.kubernetes.model.args.KubernetesPodApiArgs;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiDeploymentRequest;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiPodRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.response.KubernetesResourceResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
@@ -70,7 +70,7 @@ public class KubernetesDeploymentRepository {
      *
      * @param args /
      */
-    public V1Deployment createDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesDeploymentApiArgs.Create args) {
+    public V1Deployment createDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.Create args) {
         ValidationUtil.validate(args);
         try {
             Map<String, String> labels = KubernetesResourceLabelSelectorUtil.getLabelsByAppName(args.getAppName());
@@ -124,7 +124,7 @@ public class KubernetesDeploymentRepository {
      *
      * @param args /
      */
-    public V1Deployment changeDeploymentReplicas(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesDeploymentApiArgs.ChangeReplicas args) {
+    public V1Deployment changeDeploymentReplicas(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.ChangeReplicas args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
@@ -156,7 +156,7 @@ public class KubernetesDeploymentRepository {
      *
      * @param args /
      */
-    public V1Deployment changeDeploymentImage(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesDeploymentApiArgs.ChangeImage args) {
+    public V1Deployment changeDeploymentImage(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.ChangeImage args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
@@ -183,7 +183,7 @@ public class KubernetesDeploymentRepository {
             List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPods(clusterCodeVo, args.getAppName(), deploymentName);
             for (KubernetesResourceResponse.Pod pod : podList) {
                 if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
-                    KubernetesPodApiArgs.Rebuild rebuildArgs = new KubernetesPodApiArgs.Rebuild();
+                    KubernetesApiPodRequest.Rebuild rebuildArgs = new KubernetesApiPodRequest.Rebuild();
                     rebuildArgs.setPodName(pod.getName());
                     rebuildArgs.setNamespace(pod.getNamespace());
                     kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
@@ -209,7 +209,7 @@ public class KubernetesDeploymentRepository {
      *
      * @param args /
      */
-    public V1Deployment changeDeploymentSpecs(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesDeploymentApiArgs.ChangePodSpecs args) {
+    public V1Deployment changeDeploymentSpecs(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.ChangePodSpecs args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
@@ -245,7 +245,7 @@ public class KubernetesDeploymentRepository {
             List<KubernetesResourceResponse.Pod> pods = kubernetesPodRepository.listPods(clusterCodeVo, args.getAppName(), args.getAppName());
             for (KubernetesResourceResponse.Pod pod : pods) {
                 if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
-                    KubernetesPodApiArgs.Rebuild rebuildArgs = new KubernetesPodApiArgs.Rebuild();
+                    KubernetesApiPodRequest.Rebuild rebuildArgs = new KubernetesApiPodRequest.Rebuild();
                     rebuildArgs.setNamespace(pod.getNamespace());
                     rebuildArgs.setPodName(pod.getName());
                     kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
@@ -271,7 +271,7 @@ public class KubernetesDeploymentRepository {
      *
      * @param args /
      */
-    public V1Status deleteDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesDeploymentApiArgs.Delete args) {
+    public V1Status deleteDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.Delete args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
@@ -356,7 +356,7 @@ public class KubernetesDeploymentRepository {
         }
     }
 
-    public V1Deployment loadDeploymentFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesDeploymentApiArgs.LoadFromYaml args) {
+    public V1Deployment loadDeploymentFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.LoadFromYaml args) {
         ValidationUtil.validate(args);
         try {
             V1Deployment deployment = Yaml.loadAs(args.getYamlContent(), V1Deployment.class);

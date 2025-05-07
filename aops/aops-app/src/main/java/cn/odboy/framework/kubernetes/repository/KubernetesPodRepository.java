@@ -17,7 +17,7 @@ package cn.odboy.framework.kubernetes.repository;
 
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesPodApiArgs;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiPodRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.response.KubernetesResourceResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
@@ -219,7 +219,7 @@ public class KubernetesPodRepository {
      * @param dryRunVo
      * @param args     /
      */
-    public void rebuildPod(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesPodApiArgs.Rebuild args) {
+    public void rebuildPod(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiPodRequest.Rebuild args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());

@@ -20,7 +20,7 @@ import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.constant.KubernetesResourceLabelEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesServiceApiArgs;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiServiceRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
@@ -58,7 +58,7 @@ public class KubernetesServiceRepository {
      *
      * @param args /
      */
-    public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesServiceApiArgs.Create args) {
+    public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Create args) {
         ValidationUtil.validate(args);
         try {
             String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), k8SClientAdmin.getEnvCode(clusterCodeVo.getValue()));
@@ -99,7 +99,7 @@ public class KubernetesServiceRepository {
      *
      * @param args /
      */
-    public void deleteService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesServiceApiArgs.Delete args) {
+    public void deleteService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Delete args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
@@ -181,7 +181,7 @@ public class KubernetesServiceRepository {
         }
     }
 
-    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesServiceApiArgs.LoadFromYaml args) {
+    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.LoadFromYaml args) {
         ValidationUtil.validate(args);
         try {
             V1Service v1Service = Yaml.loadAs(args.getYamlContent(), V1Service.class);

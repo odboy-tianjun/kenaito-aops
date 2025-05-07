@@ -13,39 +13,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.kubernetes.model.args;
+package cn.odboy.framework.kubernetes.model.request;
 
 import cn.odboy.base.MyObject;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
 
 /**
- * K8s Namespace
+ * K8s Pod
  *
  * @author odboy
  * @date 2024-10-01
  */
-public class KubernetesNamespaceApiArgs {
-    @Data
-    @Builder
-    @EqualsAndHashCode(callSuper = false)
-    public static class Create extends MyObject {
-        /**
-         * 应用名称
-         */
-        @NotBlank(message = "应用名称不能为空")
-        private String appName;
-    }
-
+public class KubernetesApiPodRequest {
     @Data
     @EqualsAndHashCode(callSuper = false)
-    public static class LoadFromYaml extends MyObject {
+    public static class Rebuild extends MyObject {
         /**
-         * yaml文件内容
+         * 命名空间
          */
-        @NotBlank(message = "yaml文件内容不能为空")
-        private String yamlContent;
+        @NotBlank(message = "命名空间不能为空")
+        private String namespace;
+        /**
+         * pod名称
+         */
+        @NotBlank(message = "pod名称不能为空")
+        private String podName;
     }
 }

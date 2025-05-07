@@ -19,7 +19,7 @@ import cn.hutool.core.lang.Assert;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesStatefulSetApiArgs;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiStatefulSetRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
@@ -90,7 +90,7 @@ public class KubernetesOpenKruiseStatefulSetRepository {
      *
      * @param args /
      */
-    public KruiseAppsV1alpha1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.LoadFromYaml args) {
+    public KruiseAppsV1alpha1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.LoadFromYaml args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());

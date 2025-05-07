@@ -21,8 +21,8 @@ import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.constant.KubernetesPodStatusEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.args.KubernetesPodApiArgs;
-import cn.odboy.framework.kubernetes.model.args.KubernetesStatefulSetApiArgs;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiPodRequest;
+import cn.odboy.framework.kubernetes.model.request.KubernetesApiStatefulSetRequest;
 import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.response.KubernetesResourceResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
@@ -73,7 +73,7 @@ public class KubernetesStatefulSetRepository {
      *
      * @param args /
      */
-    public V1StatefulSet createStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.Create args) {
+    public V1StatefulSet createStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.Create args) {
         ValidationUtil.validate(args);
         try {
             String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), k8SClientAdmin.getEnvCode(clusterCodeVo.getValue()));
@@ -139,7 +139,7 @@ public class KubernetesStatefulSetRepository {
      *
      * @param args /
      */
-    public V1StatefulSet changeStatefulSetReplicas(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.ChangeReplicas args) {
+    public V1StatefulSet changeStatefulSetReplicas(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.ChangeReplicas args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
@@ -171,7 +171,7 @@ public class KubernetesStatefulSetRepository {
      *
      * @param args /
      */
-    public V1StatefulSet changeStatefulSetImage(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.ChangeImage args) {
+    public V1StatefulSet changeStatefulSetImage(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.ChangeImage args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
@@ -201,7 +201,7 @@ public class KubernetesStatefulSetRepository {
             List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPods(clusterCodeVo, args.getAppName(), statefulSetName);
             for (KubernetesResourceResponse.Pod pod : podList) {
                 if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
-                    KubernetesPodApiArgs.Rebuild rebuildArgs = new KubernetesPodApiArgs.Rebuild();
+                    KubernetesApiPodRequest.Rebuild rebuildArgs = new KubernetesApiPodRequest.Rebuild();
                     rebuildArgs.setPodName(pod.getName());
                     rebuildArgs.setNamespace(pod.getNamespace());
                     kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
@@ -229,7 +229,7 @@ public class KubernetesStatefulSetRepository {
      * @param args /
      * @return /
      */
-    public V1StatefulSet changeStatefulSetSpecs(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.ChangeSpecs args) {
+    public V1StatefulSet changeStatefulSetSpecs(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.ChangeSpecs args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
@@ -267,7 +267,7 @@ public class KubernetesStatefulSetRepository {
             List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPods(clusterCodeVo, args.getAppName(), statefulSetName);
             for (KubernetesResourceResponse.Pod pod : podList) {
                 if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
-                    KubernetesPodApiArgs.Rebuild rebuildArgs = new KubernetesPodApiArgs.Rebuild();
+                    KubernetesApiPodRequest.Rebuild rebuildArgs = new KubernetesApiPodRequest.Rebuild();
                     rebuildArgs.setPodName(pod.getName());
                     rebuildArgs.setNamespace(pod.getNamespace());
                     kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
@@ -294,7 +294,7 @@ public class KubernetesStatefulSetRepository {
      *
      * @param args /
      */
-    public V1StatefulSet changeStatefulSetImageV2(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.ChangeImage args) {
+    public V1StatefulSet changeStatefulSetImageV2(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.ChangeImage args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
@@ -324,7 +324,7 @@ public class KubernetesStatefulSetRepository {
      *
      * @param args /
      */
-    public V1Status deleteStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.Delete args) {
+    public V1Status deleteStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.Delete args) {
         ValidationUtil.validate(args);
         try {
             ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
@@ -411,7 +411,7 @@ public class KubernetesStatefulSetRepository {
      *
      * @param args /
      */
-    public V1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesStatefulSetApiArgs.LoadFromYaml args) {
+    public V1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.LoadFromYaml args) {
         ValidationUtil.validate(args);
         try {
             V1StatefulSet statefulSet = Yaml.loadAs(args.getYamlContent(), V1StatefulSet.class);
