@@ -81,7 +81,6 @@ public class KubernetesNamespaceRepository {
 
     @KubernetesApiExceptionCatch(description = "获取任意一个Namespace", throwException = false)
     public KubernetesResourceResponse.Namespace getNamespace(ArgsClusterCodeVo clusterCodeVo) throws Exception {
-        Assert.notNull(clusterCodeVo, "集群编码不能为空");
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         V1NamespaceList namespaceList = coreV1Api.listNamespace(

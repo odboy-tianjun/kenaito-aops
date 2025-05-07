@@ -184,7 +184,11 @@ public class KubernetesStatefulSetRepository {
         /// 这里手动删除的原因是：改变image路径并没有触发statefulset重建, 那只能出此下策
         /// 事实表明, 处于Pending状态的Pod, 就算添加了新的annotation, 或者label, 也不会生效
         /// 事实表明, 只有处于running中的Pod才会正常的重建
-        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPods(clusterCodeVo, args.getAppName(), statefulSetName);
+        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPodsByResourceName(
+                clusterCodeVo,
+                new ArgsNamespaceNameVo(args.getAppName()),
+                new ArgsResourceNameVo(statefulSetName)
+        );
         for (KubernetesResourceResponse.Pod pod : podList) {
             if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
                 KubernetesApiPodRequest.Rebuild rebuildArgs = new KubernetesApiPodRequest.Rebuild();
@@ -245,7 +249,11 @@ public class KubernetesStatefulSetRepository {
         /// 这里手动删除的原因是：改变image路径并没有触发StatefulSet重建, 那只能出此下策
         /// 事实表明, 处于Pending状态的Pod, 就算添加了新的annotation, 或者label, 也不会生效
         /// 事实表明, 只有处于running中的Pod才会正常的重建
-        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPods(clusterCodeVo, args.getAppName(), statefulSetName);
+        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPodsByResourceName(
+                clusterCodeVo,
+                new ArgsNamespaceNameVo(args.getAppName()),
+                new ArgsResourceNameVo(statefulSetName)
+        );
         for (KubernetesResourceResponse.Pod pod : podList) {
             if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
                 KubernetesApiPodRequest.Rebuild rebuildArgs = new KubernetesApiPodRequest.Rebuild();

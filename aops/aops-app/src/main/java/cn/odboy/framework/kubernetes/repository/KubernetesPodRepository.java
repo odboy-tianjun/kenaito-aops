@@ -15,19 +15,18 @@
  */
 package cn.odboy.framework.kubernetes.repository;
 
-import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
+import cn.odboy.framework.kubernetes.exception.KubernetesApiExceptionCatch;
 import cn.odboy.framework.kubernetes.model.request.KubernetesApiPodRequest;
-import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
 import cn.odboy.framework.kubernetes.model.response.KubernetesResourceResponse;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceLabelSelectorUtil;
 import cn.odboy.util.ValidationUtil;
-import com.alibaba.fastjson2.JSON;
 import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1PodList;
@@ -36,12 +35,9 @@ import io.kubernetes.client.openapi.models.V1PodStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -56,16 +52,28 @@ import java.util.stream.Collectors;
 public class KubernetesPodRepository {
     private final KubernetesApiClientManager k8SClientAdmin;
 
-    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, Map<String, String> fieldSelector, Map<String, String> labelSelector) {
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            String fieldSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(fieldSelector);
-            String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
-            V1PodList podList = coreV1Api.listPodForAllNamespaces(null, null, fieldSelectorStr, labelSelectorStr, null, "false", null, null, null, null);
-            return podList.getItems().stream().map(pod -> {
-                V1ObjectMeta metadata = pod.getMetadata();
-                if (metadata != null && metadata.getName() != null) {
+    @KubernetesApiExceptionCatch(description = "获取pod列表", throwException = false)
+    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, Map<String, String> fieldSelector, Map<String, String> labelSelector) throws Exception {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        String fieldSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(fieldSelector);
+        String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
+        V1PodList podList = coreV1Api.listPodForAllNamespaces(
+                null,
+                null,
+                fieldSelectorStr,
+                labelSelectorStr,
+                null,
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null,
+                null,
+                null
+        );
+        return podList.getItems().stream()
+                .filter(f -> f.getMetadata() != null && f.getMetadata().getName() != null)
+                .map(pod -> {
+                    V1ObjectMeta metadata = pod.getMetadata();
                     KubernetesResourceResponse.Pod server = new KubernetesResourceResponse.Pod();
                     if (metadata.getCreationTimestamp() != null) {
                         server.setCreateTime(Date.from(metadata.getCreationTimestamp().toInstant()));
@@ -93,36 +101,85 @@ public class KubernetesPodRepository {
                         server.setConditions(podStatus.getConditions());
                     }
                     return server;
-                }
-                return null;
-            }).filter(Objects::nonNull).collect(Collectors.toList());
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("获取Pod列表失败: {}", responseBody, e);
-            return new ArrayList<>();
-        } catch (Exception e) {
-            log.error("获取Pod列表失败:", e);
-            return new ArrayList<>();
-        }
+                }).collect(Collectors.toList());
     }
 
-    /**
-     * 查询pod列表
-     *
-     * @param namespace     命名空间
-     * @param labelSelector pod标签键值对
-     * @return /
-     */
-    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, @NotNull String namespace, Map<String, String> labelSelector) {
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
-            V1PodList podList = coreV1Api.listNamespacedPod(namespace, "false", null, null, null, labelSelectorStr, null, null, null, null, null);
-            return podList.getItems().stream().map(pod -> {
-                KubernetesResourceResponse.Pod server = new KubernetesResourceResponse.Pod();
-                V1ObjectMeta metadata = pod.getMetadata();
-                if (metadata != null) {
+    @KubernetesApiExceptionCatch(description = "获取pod列表", throwException = false)
+    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, Map<String, String> labelSelector) throws Exception {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
+        V1PodList podList = coreV1Api.listNamespacedPod(
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null,
+                null,
+                labelSelectorStr,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        return podList.getItems().stream().map(pod -> {
+            KubernetesResourceResponse.Pod server = new KubernetesResourceResponse.Pod();
+            V1ObjectMeta metadata = pod.getMetadata();
+            if (metadata != null) {
+                if (metadata.getCreationTimestamp() != null) {
+                    server.setCreateTime(Date.from(metadata.getCreationTimestamp().toInstant()));
+                }
+                if (metadata.getDeletionTimestamp() != null) {
+                    // 当Pod被删除时, 这个属性有值
+                    server.setDeleteTime(Date.from(metadata.getDeletionTimestamp().toInstant()));
+                }
+                server.setName(metadata.getName());
+                server.setLabels(metadata.getLabels());
+                server.setNamespace(metadata.getNamespace());
+                server.setResourceVersion(metadata.getResourceVersion());
+            }
+            V1PodSpec spec = pod.getSpec();
+            if (spec != null) {
+                server.setRestartPolicy(spec.getRestartPolicy());
+            }
+            V1PodStatus podStatus = pod.getStatus();
+            if (podStatus != null) {
+                server.setIp(podStatus.getPodIP());
+                server.setStatus(server.getDeleteTime() != null ? "Terminated" : podStatus.getPhase());
+                server.setQosClass(podStatus.getQosClass());
+                if (podStatus.getStartTime() != null) {
+                    server.setStartTime(Date.from(podStatus.getStartTime().toInstant()));
+                }
+                server.setConditions(podStatus.getConditions());
+            }
+            return server;
+        }).collect(Collectors.toList());
+    }
+
+    @KubernetesApiExceptionCatch(description = "获取pod列表", throwException = false)
+    public List<KubernetesResourceResponse.Pod> listPodsByResourceName(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, ArgsResourceNameVo resourceNameVo) throws Exception {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        Map<String, String> labelSelector = KubernetesResourceLabelSelectorUtil.getLabelsByAppName(namespaceNameVo.getValue());
+        String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
+        V1PodList podList = coreV1Api.listNamespacedPod(
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null,
+                null,
+                labelSelectorStr,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        return podList.getItems().stream()
+                .filter(f -> f.getMetadata() != null && f.getMetadata().getName() != null && f.getMetadata().getName().contains(resourceNameVo.getValue()))
+                .map(pod -> {
+                    V1ObjectMeta metadata = pod.getMetadata();
+                    KubernetesResourceResponse.Pod server = new KubernetesResourceResponse.Pod();
                     if (metadata.getCreationTimestamp() != null) {
                         server.setCreateTime(Date.from(metadata.getCreationTimestamp().toInstant()));
                     }
@@ -134,108 +191,38 @@ public class KubernetesPodRepository {
                     server.setLabels(metadata.getLabels());
                     server.setNamespace(metadata.getNamespace());
                     server.setResourceVersion(metadata.getResourceVersion());
-                }
-                V1PodSpec spec = pod.getSpec();
-                if (spec != null) {
-                    server.setRestartPolicy(spec.getRestartPolicy());
-                }
-                V1PodStatus podStatus = pod.getStatus();
-                if (podStatus != null) {
-                    server.setIp(podStatus.getPodIP());
-                    server.setStatus(server.getDeleteTime() != null ? "Terminated" : podStatus.getPhase());
-                    server.setQosClass(podStatus.getQosClass());
-                    if (podStatus.getStartTime() != null) {
-                        server.setStartTime(Date.from(podStatus.getStartTime().toInstant()));
+                    V1PodSpec spec = pod.getSpec();
+                    if (spec != null) {
+                        server.setRestartPolicy(spec.getRestartPolicy());
                     }
-                    server.setConditions(podStatus.getConditions());
-                }
-                return server;
-            }).collect(Collectors.toList());
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("获取Pod列表失败: {}", responseBody, e);
-            return new ArrayList<>();
-        } catch (Exception e) {
-            log.error("获取Pod列表失败:", e);
-            return new ArrayList<>();
-        }
+                    V1PodStatus podStatus = pod.getStatus();
+                    if (podStatus != null) {
+                        server.setIp(podStatus.getPodIP());
+                        server.setStatus(server.getDeleteTime() != null ? "Terminated" : podStatus.getPhase());
+                        server.setQosClass(podStatus.getQosClass());
+                        if (podStatus.getStartTime() != null) {
+                            server.setStartTime(Date.from(podStatus.getStartTime().toInstant()));
+                        }
+                        server.setConditions(podStatus.getConditions());
+                    }
+                    return server;
+                }).collect(Collectors.toList());
     }
 
-    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, @NotNull String namespace, @NotNull String podName) {
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            Map<String, String> labelSelector = KubernetesResourceLabelSelectorUtil.getLabelsByAppName(namespace);
-            String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
-            V1PodList podList = coreV1Api.listNamespacedPod(namespace, "false", null, null, null, labelSelectorStr, null, null, null, null, null);
-            return podList.getItems().stream()
-                    .filter(f -> f.getMetadata() != null && f.getMetadata().getName() != null && f.getMetadata().getName().contains(podName))
-                    .map(pod -> {
-                        V1ObjectMeta metadata = pod.getMetadata();
-                        KubernetesResourceResponse.Pod server = new KubernetesResourceResponse.Pod();
-                        if (metadata.getCreationTimestamp() != null) {
-                            server.setCreateTime(Date.from(metadata.getCreationTimestamp().toInstant()));
-                        }
-                        if (metadata.getDeletionTimestamp() != null) {
-                            // 当Pod被删除时, 这个属性有值
-                            server.setDeleteTime(Date.from(metadata.getDeletionTimestamp().toInstant()));
-                        }
-                        server.setName(metadata.getName());
-                        server.setLabels(metadata.getLabels());
-                        server.setNamespace(metadata.getNamespace());
-                        server.setResourceVersion(metadata.getResourceVersion());
-                        V1PodSpec spec = pod.getSpec();
-                        if (spec != null) {
-                            server.setRestartPolicy(spec.getRestartPolicy());
-                        }
-                        V1PodStatus podStatus = pod.getStatus();
-                        if (podStatus != null) {
-                            server.setIp(podStatus.getPodIP());
-                            server.setStatus(server.getDeleteTime() != null ? "Terminated" : podStatus.getPhase());
-                            server.setQosClass(podStatus.getQosClass());
-                            if (podStatus.getStartTime() != null) {
-                                server.setStartTime(Date.from(podStatus.getStartTime().toInstant()));
-                            }
-                            server.setConditions(podStatus.getConditions());
-                        }
-                        return server;
-                    }).collect(Collectors.toList());
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("获取Pod列表失败: {}", responseBody, e);
-            return new ArrayList<>();
-        } catch (Exception e) {
-            log.error("获取Pod列表失败:", e);
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * 重建/重启Pod, 通过删除Pod重建
-     *
-     * @param dryRunVo
-     * @param args     /
-     */
-    public void rebuildPod(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiPodRequest.Rebuild args) {
+    @KubernetesApiExceptionCatch(description = "重建/重启Pod, 通过删除Pod重建")
+    public void rebuildPod(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiPodRequest.Rebuild args) throws Exception {
         ValidationUtil.validate(args);
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            coreV1Api.deleteNamespacedPod(args.getPodName(), args.getNamespace(),
-                    new ArgsPrettyVo(false).getValue(),
-                    dryRunVo.getValue(),
-                    null, null, null, null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("重建Pod失败: {}", responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException("重建Pod失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("重建Pod失败");
-        } catch (Exception e) {
-            log.error("重建Pod失败:", e);
-            throw new BadRequestException("重建Pod失败");
-        }
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        coreV1Api.deleteNamespacedPod(
+                args.getPodName(),
+                args.getNamespace(),
+                new ArgsPrettyVo(false).getValue(),
+                dryRunVo.getValue(),
+                null,
+                null,
+                null,
+                null
+        );
     }
 }

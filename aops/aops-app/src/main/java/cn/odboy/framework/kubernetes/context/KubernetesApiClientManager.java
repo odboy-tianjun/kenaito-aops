@@ -49,7 +49,7 @@ public class KubernetesApiClientManager {
             throw new BadRequestException("参数clusterCode必填");
         }
         try {
-            kubernetesHealthChecker.checkConfigContent(new ArgsClusterCodeVo(clusterCode));
+            kubernetesHealthChecker.checkConfigContent(apiClient);
             CLIENT_MAP.put(clusterCode, apiClient);
             CLIENT_ENV.put(clusterCode, envCode);
             log.info("{}集群config配置检测成功，并放入应用缓存中", clusterCode);

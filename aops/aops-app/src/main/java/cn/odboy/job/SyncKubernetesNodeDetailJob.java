@@ -71,7 +71,11 @@ public class SyncKubernetesNodeDetailJob {
                     V1NodeList v1NodeList = kubernetesNodeRepository.listNodes(new ArgsClusterCodeVo(clusterConfig.getClusterCode()));
                     List<V1Node> items = v1NodeList.getItems();
                     for (V1Node item : items) {
-                        this.injectNodeInfo(new ArgsClusterCodeVo(clusterConfig.getClusterCode()), clusterConfig, item, envEnum, newRecordList, updRecordList);
+                        try {
+                            injectNodeInfo(new ArgsClusterCodeVo(clusterConfig.getClusterCode()), clusterConfig, item, envEnum, newRecordList, updRecordList);
+                        } catch (Exception e) {
+                            // 忽略
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -95,7 +99,7 @@ public class SyncKubernetesNodeDetailJob {
     }
 
     private void injectNodeInfo(ArgsClusterCodeVo clusterCodeVo, AopsKubernetesClusterConfig aopsKubernetesClusterConfig, V1Node item, GlobalEnvEnum envEnum,
-                                List<AopsKubernetesClusterNode> newRecordList, List<AopsKubernetesClusterNode> updRecordList) {
+                                List<AopsKubernetesClusterNode> newRecordList, List<AopsKubernetesClusterNode> updRecordList) throws Exception {
         AopsKubernetesClusterNode clusterNode = new AopsKubernetesClusterNode();
         clusterNode.setClusterConfigId(aopsKubernetesClusterConfig.getId());
         clusterNode.setEnvCode(envEnum.getCode());

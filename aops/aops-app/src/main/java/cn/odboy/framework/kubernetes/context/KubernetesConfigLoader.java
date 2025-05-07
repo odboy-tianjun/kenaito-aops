@@ -43,7 +43,7 @@ public class KubernetesConfigLoader implements InitializingBean {
         for (AopsKubernetesClusterConfig aopsKubernetesClusterConfig : list) {
             try {
                 ApiClient apiClient = kubernetesConfigHelper.loadFormContent(aopsKubernetesClusterConfig.getConfigContent());
-                kubernetesApiClientManager.putClientEnv(aopsKubernetesClusterConfig.getEnvCode(), aopsKubernetesClusterConfig.getEnvCode(), apiClient);
+                kubernetesApiClientManager.putClientEnv(aopsKubernetesClusterConfig.getClusterCode(), aopsKubernetesClusterConfig.getEnvCode(), apiClient);
                 updateStatusById(aopsKubernetesClusterConfig, KubernetesResourceHealthStatusEnum.HEALTH);
                 log.info("K8s集群 {} 服务端健康，已加入k8sClientAdmin", aopsKubernetesClusterConfig.getClusterName());
                 kubernetesResourceListener.addListener(aopsKubernetesClusterConfig.getClusterCode(), aopsKubernetesClusterConfig.getConfigContent());
