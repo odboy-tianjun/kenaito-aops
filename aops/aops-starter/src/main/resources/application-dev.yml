@@ -234,3 +234,6 @@ app:
 #logging:
 #  level:
 #    root: debug
+gitlab:
+  url: http://192.168.235.103:20080
+  access-token: BDKnL85EqSSpxzA6-2yQ
