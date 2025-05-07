@@ -38,26 +38,32 @@ import org.springframework.stereotype.Component;
 public class KubernetesApiExceptionCatchAspect {
     @Around("@annotation(kubernetesApiExceptionCatch)")
     public Object aroundKubernetesApiExceptionCatch(ProceedingJoinPoint joinPoint, KubernetesApiExceptionCatch kubernetesApiExceptionCatch) throws Throwable {
-        return handleKubernetesApiException(joinPoint, kubernetesApiExceptionCatch.description());
+        return handleKubernetesApiException(joinPoint, kubernetesApiExceptionCatch);
     }
 
-    private Object handleKubernetesApiException(ProceedingJoinPoint joinPoint, String description) throws Throwable {
+    private Object handleKubernetesApiException(ProceedingJoinPoint joinPoint, KubernetesApiExceptionCatch annotation) {
         var timeInterval = new TimeInterval();
         try {
             Object result = joinPoint.proceed();
-            log.info("接口 [{}] 执行耗时: {} ms", description, timeInterval.intervalMs());
+            log.info("接口 [{}] 执行耗时: {} ms", annotation.description(), timeInterval.intervalMs());
             return result;
         } catch (ApiException e) {
             String responseBody = e.getResponseBody();
-            log.error("接口 [{}] 执行异常，耗时: {} ms，异常信息: {}", description, timeInterval.intervalMs(), responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException(description + "失败, 原因：" + actionExceptionBody.getReason());
+            log.error("接口 [{}] 执行异常，耗时: {} ms，异常信息: {}", annotation.description(), timeInterval.intervalMs(), responseBody, e);
+            if (annotation.throwException()) {
+                KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
+                if (actionExceptionBody != null) {
+                    throw new BadRequestException(annotation.description() + "失败, 原因：" + actionExceptionBody.getReason());
+                }
+                throw new BadRequestException(annotation.description() + "失败");
             }
-            throw new BadRequestException(description + "失败");
-        } catch (Exception e) {
-            log.error("接口 [{}] 执行异常，耗时: {} ms", description, timeInterval.intervalMs(), e);
-            throw new BadRequestException(description + "失败");
+        } catch (Throwable e) {
+            log.error("接口 [{}] 执行异常，耗时: {} ms", annotation.description(), timeInterval.intervalMs(), e);
+            if (annotation.throwException()) {
+                throw new BadRequestException(annotation.description() + "失败");
+            }
         }
+        // 记得判空，虽然这会留下坑
+        return null;
     }
 }

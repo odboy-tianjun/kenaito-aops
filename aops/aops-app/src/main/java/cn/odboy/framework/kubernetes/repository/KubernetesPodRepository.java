@@ -168,10 +168,10 @@ public class KubernetesPodRepository {
             Map<String, String> labelSelector = KubernetesResourceLabelSelectorUtil.getLabelsByAppName(namespace);
             String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
             V1PodList podList = coreV1Api.listNamespacedPod(namespace, "false", null, null, null, labelSelectorStr, null, null, null, null, null);
-            return podList.getItems().stream().map(pod -> {
-                V1ObjectMeta metadata = pod.getMetadata();
-                if (metadata != null && metadata.getName() != null) {
-                    if (metadata.getName().contains(podName)) {
+            return podList.getItems().stream()
+                    .filter(f -> f.getMetadata() != null && f.getMetadata().getName() != null && f.getMetadata().getName().contains(podName))
+                    .map(pod -> {
+                        V1ObjectMeta metadata = pod.getMetadata();
                         KubernetesResourceResponse.Pod server = new KubernetesResourceResponse.Pod();
                         if (metadata.getCreationTimestamp() != null) {
                             server.setCreateTime(Date.from(metadata.getCreationTimestamp().toInstant()));
@@ -199,10 +199,7 @@ public class KubernetesPodRepository {
                             server.setConditions(podStatus.getConditions());
                         }
                         return server;
-                    }
-                }
-                return null;
-            }).filter(Objects::nonNull).collect(Collectors.toList());
+                    }).collect(Collectors.toList());
         } catch (ApiException e) {
             String responseBody = e.getResponseBody();
             log.error("获取Pod列表失败: {}", responseBody, e);

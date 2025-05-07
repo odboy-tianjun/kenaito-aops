@@ -37,4 +37,9 @@ public @interface KubernetesApiExceptionCatch {
      * 接口描述
      */
     String description() default "操作";
+
+    /**
+     * 是否抛出异常
+     */
+    boolean throwException() default true;
 }
