@@ -17,7 +17,6 @@ package cn.odboy.framework.kubernetes.context;
 
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.exception.BadRequestException;
-import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import io.kubernetes.client.openapi.ApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
