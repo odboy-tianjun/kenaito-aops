@@ -68,7 +68,7 @@ public class SyncKubernetesNodeDetailJob {
             try {
                 GlobalEnvEnum envEnum = GlobalEnvEnum.getByCode(clusterConfig.getEnvCode());
                 if (envEnum != null) {
-                    V1NodeList v1NodeList = kubernetesNodeRepository.listNodes(envEnum.getCode());
+                    V1NodeList v1NodeList = kubernetesNodeRepository.listNodes(new ArgsClusterCodeVo(clusterConfig.getClusterCode()));
                     List<V1Node> items = v1NodeList.getItems();
                     for (V1Node item : items) {
                         this.injectNodeInfo(new ArgsClusterCodeVo(clusterConfig.getClusterCode()), clusterConfig, item, envEnum, newRecordList, updRecordList);

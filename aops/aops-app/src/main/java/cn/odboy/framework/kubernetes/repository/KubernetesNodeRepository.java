@@ -15,13 +15,11 @@
  */
 package cn.odboy.framework.kubernetes.repository;
 
-import cn.hutool.core.lang.Assert;
-import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
-import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
-import com.alibaba.fastjson2.JSON;
+import cn.odboy.framework.kubernetes.exception.KubernetesApiExceptionCatch;
+import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
 import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1NodeList;
 import lombok.RequiredArgsConstructor;
@@ -40,28 +38,21 @@ import org.springframework.stereotype.Component;
 public class KubernetesNodeRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
-    /**
-     * 获取节点列表
-     *
-     * @return /
-     */
-    public V1NodeList listNodes(String clusterCode) {
-        Assert.notEmpty(clusterCode, "集群编码不能为空");
-        try {
-            ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            return coreV1Api.listNode("false", null, null, null, null, null, null, null, null, null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("获取节点列表失败: {}", responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException("获取节点列表失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("获取节点列表失败");
-        } catch (Exception e) {
-            log.error("获取节点列表失败:", e);
-            throw new BadRequestException("获取节点列表失败");
-        }
+    @KubernetesApiExceptionCatch(description = "获取Node节点列表")
+    public V1NodeList listNodes(ArgsClusterCodeVo clusterCodeVo) throws Exception {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        return coreV1Api.listNode(
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 }
