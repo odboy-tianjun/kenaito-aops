@@ -54,9 +54,9 @@ public class KubernetesNamespaceRepository {
 
     @KubernetesApiExceptionCatch(description = "获取Namespace列表")
     public List<KubernetesResourceResponse.Namespace> listNamespaces(ArgsClusterCodeVo clusterCodeVo) throws Exception {
-        var apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-        var coreV1Api = new CoreV1Api(apiClient);
-        var namespaceList = coreV1Api.listNamespace(
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        V1NamespaceList namespaceList = coreV1Api.listNamespace(
                 new ArgsPrettyVo(false).getValue(),
                 true,
                 null,
@@ -82,9 +82,9 @@ public class KubernetesNamespaceRepository {
     @KubernetesApiExceptionCatch(description = "获取任意一个Namespace")
     public KubernetesResourceResponse.Namespace getNamespace(ArgsClusterCodeVo clusterCodeVo) throws Exception {
         Assert.notNull(clusterCodeVo, "集群编码不能为空");
-        var apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-        var coreV1Api = new CoreV1Api(apiClient);
-        var namespaceList = coreV1Api.listNamespace(
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        V1NamespaceList namespaceList = coreV1Api.listNamespace(
                 new ArgsPrettyVo(false).getValue(),
                 true,
                 null,
