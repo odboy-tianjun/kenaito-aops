@@ -289,7 +289,7 @@ public class KubernetesDeploymentRepository {
         );
     }
 
-    @KubernetesApiExceptionCatch(description = "从Yml加载Deployment失败")
+    @KubernetesApiExceptionCatch(description = "从yaml文件内容加载Deployment")
     public V1Deployment loadDeploymentFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.LoadFromYaml args) throws Exception {
         ValidationUtil.validate(args);
         V1Deployment deployment = Yaml.loadAs(args.getYamlContent(), V1Deployment.class);
