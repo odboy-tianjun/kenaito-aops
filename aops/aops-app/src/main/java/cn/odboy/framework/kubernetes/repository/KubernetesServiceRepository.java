@@ -15,22 +15,20 @@
  */
 package cn.odboy.framework.kubernetes.repository;
 
-import cn.hutool.core.lang.Assert;
-import cn.odboy.exception.BadRequestException;
-import cn.odboy.framework.kubernetes.constant.KubernetesActionReasonCodeEnum;
 import cn.odboy.framework.kubernetes.constant.KubernetesResourceLabelEnum;
 import cn.odboy.framework.kubernetes.context.KubernetesApiClientManager;
+import cn.odboy.framework.kubernetes.exception.KubernetesApiExceptionCatch;
 import cn.odboy.framework.kubernetes.model.request.KubernetesApiServiceRequest;
-import cn.odboy.framework.kubernetes.model.response.KubernetesApiExceptionResponse;
+import cn.odboy.framework.kubernetes.model.vo.ArgsAppNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceNameUtil;
 import cn.odboy.util.ValidationUtil;
-import com.alibaba.fastjson2.JSON;
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceBuilder;
@@ -53,162 +51,109 @@ import java.util.Objects;
 public class KubernetesServiceRepository {
     private final KubernetesApiClientManager k8SClientAdmin;
 
-    /**
-     * 创建Service
-     *
-     * @param args /
-     */
-    public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Create args) {
+    @KubernetesApiExceptionCatch(description = "创建Service")
+    public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Create args) throws Exception {
         ValidationUtil.validate(args);
-        try {
-            String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), k8SClientAdmin.getEnvCode(clusterCodeVo.getValue()));
-            args.getLabelSelector().put(KubernetesResourceLabelEnum.AppName.getCode(), args.getAppName());
-            // 构建service的yaml对象
-            V1Service service = new V1ServiceBuilder()
-                    .withNewMetadata()
-                    .withName(serviceName)
-                    .withNamespace(args.getAppName())
-                    .withAnnotations(args.getAnnotations())
-                    .endMetadata()
-                    .withNewSpec()
-                    .withPorts(new V1ServicePort().protocol("TCP").port(args.getPort()).targetPort(new IntOrString(args.getTargetPort())))
-                    .withSelector(args.getLabelSelector())
-                    .endSpec()
-                    .build();
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            // Deployment and StatefulSet is defined in apps/v1, so you should use AppsV1Api instead of CoreV1API
-            CoreV1Api api = new CoreV1Api(apiClient);
-            return api.createNamespacedService(args.getAppName(), service, new ArgsPrettyVo(false).getValue(),
-                    dryRunVo.getValue(), null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("创建Service失败: {}", responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException("创建Service失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("创建Service失败");
-        } catch (Exception e) {
-            log.error("创建Service失败:", e);
-            throw new BadRequestException("创建Service失败");
-        }
+        String envCode = k8SClientAdmin.getEnvCode(clusterCodeVo.getValue());
+        String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), envCode);
+        args.getLabelSelector().put(KubernetesResourceLabelEnum.AppName.getCode(), args.getAppName());
+        // 构建service的yaml对象
+        V1Service service = new V1ServiceBuilder()
+                .withNewMetadata()
+                .withName(serviceName)
+                .withNamespace(args.getAppName())
+                .withAnnotations(args.getAnnotations())
+                .endMetadata()
+                .withNewSpec()
+                .withPorts(new V1ServicePort().protocol("TCP").port(args.getPort()).targetPort(new IntOrString(args.getTargetPort())))
+                .withSelector(args.getLabelSelector())
+                .endSpec()
+                .build();
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        // Deployment and StatefulSet is defined in apps/v1, so you should use AppsV1Api instead of CoreV1API
+        CoreV1Api api = new CoreV1Api(apiClient);
+        return api.createNamespacedService(
+                args.getAppName(),
+                service,
+                new ArgsPrettyVo(false).getValue(),
+                dryRunVo.getValue(),
+                null
+        );
     }
 
-    /**
-     * 删除Service
-     *
-     * @param args /
-     */
-    public void deleteService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Delete args) {
+    @KubernetesApiExceptionCatch(description = "删除Service")
+    public void deleteService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Delete args) throws Exception {
         ValidationUtil.validate(args);
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            CoreV1Api api = new CoreV1Api(apiClient);
-            api.deleteNamespacedService(KubernetesResourceNameUtil.getServiceName(args.getAppName(), k8SClientAdmin.getEnvCode(clusterCodeVo.getValue())),
-                    args.getAppName(), new ArgsPrettyVo(false).getValue(),
-                    dryRunVo.getValue(), null, null, null, null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("删除Service失败: {}", responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException("删除Service失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("删除Service失败");
-        } catch (Exception e) {
-            log.error("删除Service失败:", e);
-            throw new BadRequestException("删除Service失败");
-        }
+        String envCode = k8SClientAdmin.getEnvCode(clusterCodeVo.getValue());
+        String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), envCode);
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api api = new CoreV1Api(apiClient);
+        api.deleteNamespacedService(
+                serviceName,
+                args.getAppName(),
+                new ArgsPrettyVo(false).getValue(),
+                dryRunVo.getValue(),
+                null,
+                null,
+                null,
+                null
+        );
     }
 
-    /**
-     * 根据appName获取Service
-     *
-     * @return /
-     */
-    public V1Service describeServiceByAppName(String clusterCode, String appName) {
-        Assert.notEmpty(clusterCode, "集群编码不能为空");
-        Assert.notEmpty(appName, "应用名称不能为空");
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCode);
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            String serviceName = KubernetesResourceNameUtil.getServiceName(appName, clusterCode);
-            return coreV1Api.readNamespacedService(serviceName, appName, "false", null, null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                if (actionExceptionBody.getReason().contains(KubernetesActionReasonCodeEnum.NotFound.getCode())) {
-                    return null;
-                }
-                log.error("根据appName获取Service失败: {}", responseBody, e);
-                throw new BadRequestException("根据appName获取Service失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("根据appName获取Service失败");
-        } catch (Exception e) {
-            log.error("根据appName获取Service失败:", e);
-            throw new BadRequestException("根据appName获取Service失败");
-        }
+    @KubernetesApiExceptionCatch(description = "根据appName获取Service", throwException = false)
+    public V1Service describeServiceByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        String serviceName = KubernetesResourceNameUtil.getServiceName(appNameVo.getValue(), clusterCodeVo.getValue());
+        return coreV1Api.readNamespacedService(
+                serviceName,
+                appNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
     }
 
-    /**
-     * 根据name获取Service
-     *
-     * @return /
-     */
-    public V1Service describeServiceByName(String clusterCode, String name, String namespace) {
-        Assert.notEmpty(clusterCode, "集群编码不能为空");
-        Assert.notEmpty(name, "名称不能为空");
-        Assert.notEmpty(namespace, "命名空间不能为空");
-        try {
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCode);
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            return coreV1Api.readNamespacedService(name, namespace, "false", null, null);
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                if (actionExceptionBody.getReason().contains(KubernetesActionReasonCodeEnum.NotFound.getCode())) {
-                    return null;
-                }
-                log.error("根据name获取Service失败: {}", responseBody, e);
-                throw new BadRequestException("根据name获取Service失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("根据name获取Service失败");
-        } catch (Exception e) {
-            log.error("根据name获取Service失败:", e);
-            throw new BadRequestException("根据name获取Service失败");
-        }
+    @KubernetesApiExceptionCatch(description = "根据name获取Service", throwException = false)
+    public V1Service describeServiceByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        return coreV1Api.readNamespacedService(
+                resourceNameVo.getValue(),
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
     }
 
-    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.LoadFromYaml args) {
+    @KubernetesApiExceptionCatch(description = "从yml加载Service")
+    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.LoadFromYaml args) throws Exception {
         ValidationUtil.validate(args);
-        try {
-            V1Service v1Service = Yaml.loadAs(args.getYamlContent(), V1Service.class);
-            ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-            CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-            String serviceName = Objects.requireNonNull(v1Service.getMetadata()).getName();
-            String namespace = Objects.requireNonNull(v1Service.getMetadata()).getNamespace();
-            V1Service localService = describeServiceByName(clusterCodeVo.getValue(), serviceName, namespace);
-            if (localService == null) {
-                coreV1Api.createNamespacedService(namespace, v1Service, new ArgsPrettyVo(false).getValue(),
-                        dryRunVo.getValue(), null);
-            } else {
-                coreV1Api.replaceNamespacedService(serviceName, namespace, v1Service, new ArgsPrettyVo(false).getValue(),
-                        dryRunVo.getValue(), null);
-            }
-            return v1Service;
-        } catch (ApiException e) {
-            String responseBody = e.getResponseBody();
-            log.error("从yml加载Service失败: {}", responseBody, e);
-            KubernetesApiExceptionResponse actionExceptionBody = JSON.parseObject(responseBody, KubernetesApiExceptionResponse.class);
-            if (actionExceptionBody != null) {
-                throw new BadRequestException("从yml加载Service失败, 原因：" + actionExceptionBody.getReason());
-            }
-            throw new BadRequestException("从yml加载Service失败");
-        } catch (Exception e) {
-            log.error("从yml加载Service失败:", e);
-            throw new BadRequestException("从yml加载Service失败");
+        V1Service v1Service = Yaml.loadAs(args.getYamlContent(), V1Service.class);
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        String serviceName = Objects.requireNonNull(v1Service.getMetadata()).getName();
+        String namespace = Objects.requireNonNull(v1Service.getMetadata()).getNamespace();
+        V1Service localService = describeServiceByName(clusterCodeVo, new ArgsResourceNameVo(serviceName), new ArgsNamespaceNameVo(namespace));
+        if (localService == null) {
+            coreV1Api.createNamespacedService(
+                    namespace,
+                    v1Service,
+                    new ArgsPrettyVo(false).getValue(),
+                    dryRunVo.getValue(),
+                    null
+            );
+        } else {
+            coreV1Api.replaceNamespacedService(
+                    serviceName,
+                    namespace,
+                    v1Service,
+                    new ArgsPrettyVo(false).getValue(),
+                    dryRunVo.getValue(),
+                    null
+            );
         }
+        return v1Service;
     }
 }

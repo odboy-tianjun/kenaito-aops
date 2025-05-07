@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 public class KubernetesNodeRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
-    @KubernetesApiExceptionCatch(description = "获取Node节点列表")
+    @KubernetesApiExceptionCatch(description = "获取Node节点列表", throwException = false)
     public V1NodeList listNodes(ArgsClusterCodeVo clusterCodeVo) throws Exception {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);

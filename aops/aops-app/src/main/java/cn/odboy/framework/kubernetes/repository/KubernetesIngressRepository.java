@@ -108,7 +108,7 @@ public class KubernetesIngressRepository {
         );
     }
 
-    @KubernetesApiExceptionCatch(description = "根据appName获取Ingress")
+    @KubernetesApiExceptionCatch(description = "根据appName获取Ingress", throwException = false)
     public V1Ingress describeIngressByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
@@ -137,7 +137,7 @@ public class KubernetesIngressRepository {
         );
     }
 
-    @KubernetesApiExceptionCatch(description = "从yaml文件内容加载Ingress", throwException = false)
+    @KubernetesApiExceptionCatch(description = "从yml加载Ingress")
     public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.LoadFromYaml args) throws Exception {
         ValidationUtil.validate(args);
         V1Ingress ingress = Yaml.loadAs(args.getYamlContent(), V1Ingress.class);
