@@ -68,7 +68,9 @@ public class KubernetesDeploymentRepository {
     public V1Deployment createDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.Create args) throws Exception {
         ValidationUtil.validate(args);
         Map<String, String> labels = KubernetesResourceLabelSelectorUtil.getLabelsByAppName(args.getAppName());
-        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue()));
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
+        String podName = KubernetesResourceNameUtil.getPodName(args.getAppName(), envCode);
         // 构建deployment的yaml对象
         V1Deployment deployment = new V1DeploymentBuilder()
                 .withNewMetadata()
@@ -85,7 +87,7 @@ public class KubernetesDeploymentRepository {
                 .endMetadata()
                 .withNewSpec()
                 .withContainers(new V1Container()
-                        .name(KubernetesResourceNameUtil.getPodName(args.getAppName(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue())))
+                        .name(podName)
                         .image(args.getImage())
                         .ports(CollUtil.newArrayList(new V1ContainerPort().containerPort(args.getPort())))
                 )
@@ -109,7 +111,8 @@ public class KubernetesDeploymentRepository {
         ValidationUtil.validate(args);
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue()));
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         V1Deployment deployment = appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
@@ -136,7 +139,8 @@ public class KubernetesDeploymentRepository {
         ValidationUtil.validate(args);
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue()));
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         V1Deployment deployment = appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
@@ -188,7 +192,8 @@ public class KubernetesDeploymentRepository {
         ValidationUtil.validate(args);
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue()));
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         V1Deployment deployment = appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
@@ -249,7 +254,8 @@ public class KubernetesDeploymentRepository {
         ValidationUtil.validate(args);
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue()));
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         return appsV1Api.deleteNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
