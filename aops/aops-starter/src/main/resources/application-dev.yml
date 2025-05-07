@@ -237,3 +237,8 @@ app:
 gitlab:
   url: http://192.168.235.103:20080
   access-token: BDKnL85EqSSpxzA6-2yQ
+dingtalk:
+  agent-id:
+  app-key:
+  app-secret:
+  robot-code:

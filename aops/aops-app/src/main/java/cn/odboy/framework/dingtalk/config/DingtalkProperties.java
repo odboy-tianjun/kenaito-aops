@@ -13,25 +13,36 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.framework.dingtalk.config;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
- * 公共常量
+ * dingtalk 配置
  *
  * @author odboy
- * @date 2024-09-09
+ * @date 2025-01-15
  */
-public interface GitlabDefaultConst {
+@Data
+@Component
+@ConfigurationProperties(prefix = "dingtalk")
+public class DingtalkProperties {
     /**
-     * 正则表达式
+     * 原企业内部应用AgentId
      */
-    String REGEX_APP_NAME = "^[a-z][a-z0-9]*(-[a-z0-9]+)*$";
+    private String agentId;
     /**
-     * ROOT用户命名空间id
+     * Client ID (原 AppKey 和 SuiteKey)
      */
-    Long ROOT_NAMESPACE_ID = 1L;
+    private String appKey;
     /**
-     * 项目默认分支master
+     * Client Secret (原 AppSecret 和 SuiteSecret)
      */
-    String PROJECT_DEFAULT_BRANCH = "master";
+    private String appSecret;
+    /**
+     * 应用内机器人代码
+     */
+    private String robotCode;
 }

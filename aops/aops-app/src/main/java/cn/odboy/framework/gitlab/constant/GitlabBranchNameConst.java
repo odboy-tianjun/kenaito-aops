@@ -16,22 +16,18 @@
 package cn.odboy.framework.gitlab.constant;
 
 /**
- * 公共常量
+ * 分支命名规则
  *
  * @author odboy
- * @date 2024-09-09
+ * @date 2024-11-15
  */
-public interface GitlabDefaultConst {
+public interface GitlabBranchNameConst {
     /**
-     * 正则表达式
+     * release_{迭代名称拼音}_{版本号，格式: yyyyMMddHHmmss}
      */
-    String REGEX_APP_NAME = "^[a-z][a-z0-9]*(-[a-z0-9]+)*$";
+    String RELEASE = "release_%s_%s";
     /**
-     * ROOT用户命名空间id
+     * release_{迭代名称拼音}_{版本号，格式: yyyyMMddHHmmss}
      */
-    Long ROOT_NAMESPACE_ID = 1L;
-    /**
-     * 项目默认分支master
-     */
-    String PROJECT_DEFAULT_BRANCH = "master";
+    String FEATURE = "feature_%s_%s";
 }

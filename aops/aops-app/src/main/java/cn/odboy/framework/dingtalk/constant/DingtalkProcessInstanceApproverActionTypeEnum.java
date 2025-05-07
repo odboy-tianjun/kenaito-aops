@@ -13,40 +13,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.framework.dingtalk.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Git应用来源枚举
+ * 审批类型
  *
  * @author odboy
- * @date 2025-01-16
+ * @date 2025-01-14
  */
 @Getter
 @AllArgsConstructor
-public enum GitlabProjectSourceEnum {
-    Create("create", "新建"),
-    Exist("exist", "已有");
+public enum DingtalkProcessInstanceApproverActionTypeEnum {
+    AND("AND", "会签"),
+    OR("OR", "或签"),
+    NONE("NONE", "单人审批");
     private final String code;
     private final String desc;
 
-    public static GitlabProjectSourceEnum getByCode(String code) {
-        for (GitlabProjectSourceEnum k8sEnvEnum : GitlabProjectSourceEnum.values()) {
-            if (k8sEnvEnum.getCode().equals(code)) {
-                return k8sEnvEnum;
+    public static DingtalkProcessInstanceApproverActionTypeEnum getByCode(String code) {
+        for (DingtalkProcessInstanceApproverActionTypeEnum item : DingtalkProcessInstanceApproverActionTypeEnum.values()) {
+            if (item.code.equals(code)) {
+                return item;
             }
         }
         return null;
-    }
-
-    public static String getByDesc(String code) {
-        for (GitlabProjectSourceEnum k8sEnvEnum : GitlabProjectSourceEnum.values()) {
-            if (k8sEnvEnum.getCode().equals(code)) {
-                return k8sEnvEnum.getDesc();
-            }
-        }
-        return "unknown";
     }
 }

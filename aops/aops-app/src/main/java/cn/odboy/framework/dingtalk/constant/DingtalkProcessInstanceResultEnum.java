@@ -13,42 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.framework.dingtalk.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 应用语言
+ * 审批操作
  *
  * @author odboy
- * @date 2024-09-13
+ * @date 2025-01-14
  */
 @Getter
 @AllArgsConstructor
-public enum AppLevelEnum {
-    A("a", "核心应用"),
-    B("b", "非核心应用"),
-    C("c", "边缘应用");
-
+public enum DingtalkProcessInstanceResultEnum {
+    AGREE("agree", "同意"),
+    REFUSE("refuse", "拒绝");
     private final String code;
     private final String desc;
 
-    public static AppLevelEnum getByCode(String code) {
-        for (AppLevelEnum item : AppLevelEnum.values()) {
+    public static DingtalkProcessInstanceResultEnum getByCode(String code) {
+        for (DingtalkProcessInstanceResultEnum item : DingtalkProcessInstanceResultEnum.values()) {
             if (item.code.equals(code)) {
                 return item;
             }
         }
         return null;
-    }
-
-    public static String getDescByCode(String code) {
-        for (AppLevelEnum item : AppLevelEnum.values()) {
-            if (item.code.equals(code)) {
-                return item.getDesc();
-            }
-        }
-        return "";
     }
 }

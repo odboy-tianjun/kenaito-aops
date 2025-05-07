@@ -13,22 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.framework.gitlab.callback;
+
+
+import cn.odboy.framework.gitlab.model.GitlabPipelineJob;
 
 /**
- * 分支命名规则
+ * 流水线任务执行回调
  *
  * @author odboy
- * @date 2024-11-15
+ * @date 2025-01-17
  */
-public interface GitlabProjectBranchNameConst {
-    /**
-     * release_{迭代名称拼音}_{版本号，格式: yyyyMMddHHmmss}
-     */
-    String RELEASE = "release_%s_%s";
-
-    /**
-     * release_{迭代名称拼音}_{版本号，格式: yyyyMMddHHmmss}
-     */
-    String FEATURE = "feature_%s_%s";
+public interface GitlabPipelineJobExecuteCallback {
+    void execute(GitlabPipelineJob.Info info);
 }

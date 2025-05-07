@@ -13,25 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.framework.dingtalk.constant;
 
 /**
- * 公共常量
+ * dingtalk缓存key
  *
  * @author odboy
- * @date 2024-09-09
+ * @date 2025-01-13
  */
-public interface GitlabDefaultConst {
-    /**
-     * 正则表达式
-     */
-    String REGEX_APP_NAME = "^[a-z][a-z0-9]*(-[a-z0-9]+)*$";
-    /**
-     * ROOT用户命名空间id
-     */
-    Long ROOT_NAMESPACE_ID = 1L;
-    /**
-     * 项目默认分支master
-     */
-    String PROJECT_DEFAULT_BRANCH = "master";
+public interface DingtalkCacheKeyConst {
+    String ACCESS_TOKEN = "dingtalk:accessToken";
 }
