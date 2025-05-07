@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>aops</artifactId>
+        <groupId>cn.odboy</groupId>
+        <version>1.3.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>aops-app</artifactId>
+    <name>应用中心</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.odboy</groupId>
+            <artifactId>aops-system</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <!-- fabric8库 https://mvnrepository.com/artifact/io.fabric8ubernetes-client -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+             <version>7.0.1</version>
+        </dependency>
+        <!-- 官方库 https://mvnrepository.com/artifact/io.kubernetes/client-java -->
+        <dependency>
+            <groupId>io.kubernetes</groupId>
+            <artifactId>client-java</artifactId>
+            <version>12.0.2</version>
+        </dependency>
+        <!-- 这个jar的内容已经融合进项目内了 https://github.com/openkruise/client-java -->
+        <!--        <dependency>-->
+        <!--            <groupId>io.openkruise</groupId>-->
+        <!--            <artifactId>client-java</artifactId>-->
+        <!--            <version>1.0.0</version>-->
+        <!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.gitlab4j/gitlab4j-api -->
+        <dependency>
+            <groupId>org.gitlab4j</groupId>
+            <artifactId>gitlab4j-api</artifactId>
+            <version>5.8.0</version>
+        </dependency>
+
+        <!-- 旧版本 dingtalk sdk -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibaba-dingtalk-service-sdk</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <!-- 新版本 dingtalk sdk -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dingtalk</artifactId>
+            <version>2.0.66</version>
+        </dependency>
+        <!-- stream流 -->
+        <dependency>
+            <groupId>com.dingtalk.open</groupId>
+            <artifactId>app-stream-client</artifactId>
+            <version>1.3.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.17</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.squareup.okio</groupId>
+                    <artifactId>okio</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.12.7</version>
+        </dependency>
+    </dependencies>
+</project>

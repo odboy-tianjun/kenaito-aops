@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.odboy.core.dal.mysql.tools.QiniuContentMapper">
+    <select id="getQiniuContentByName" resultType="cn.odboy.core.dal.dataobject.tools.QiniuContent">
+        SELECT *
+        FROM tool_qiniu_content
+        WHERE name = #{name}
+    </select>
+
+    <select id="queryQiniuContentPageByArgs" resultType="cn.odboy.core.dal.dataobject.tools.QiniuContent">
+        SELECT
+        *
+        FROM tool_qiniu_content
+        <where>
+            <if test="criteria.key != null and criteria.key != ''">
+                AND name LIKE CONCAT('%',#{criteria.key},'%')
+            </if>
+            <if test="criteria.createTime != null and criteria.createTime.size() > 0">
+                AND update_time BETWEEN #{criteria.createTime[0]} AND #{criteria.createTime[1]}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+</mapper>

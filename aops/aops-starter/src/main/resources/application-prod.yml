@@ -1,0 +1,230 @@
+server:
+  port: 8000
+  http2:
+    # 启用 HTTP/2 支持，提升传输效率
+    enabled: true
+  undertow:
+    threads:
+      # 工作线程数，默认设置为io-threads * 8。如果你的应用程序有很多同步阻塞操作，可以适当增加这个值
+      worker: 4
+      # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+      io: 2
+    # 设置为true以使用直接内存（堆外内存）来存储缓冲区。这可以减少垃圾回收的开销。
+    direct-buffers: true
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 1024
+    accesslog:
+      # 关闭日志
+      enabled: false
+  compression:
+    # 启用 GZIP 压缩，减少传输数据量
+    enabled: true
+    # 需要压缩的 MIME 类型
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    # 最小压缩响应大小（字节）
+    min-response-size: 1024
+  # 启用优雅停机，并遵守spring.lifecycle.timeout-per-shutdown-phase属性中给出的超时
+  # GRACEFUL (优雅): 当应用程序以"GRACEFUL"模式关闭时，它不会接受新的请求且会尝试完成所有正在进行的请求和处理，然后才会终止。这种方式适用于那些可能需要一些时间来清理资源或完成正在进行的任务的场景。
+  # IMMEDIATE(立即): 当应用程序以"IMMEDIATE"模式关闭时，它会立即终止，而不管当前是否有任何活动任务或请求。这种方式适用于那些可以立即停止而不会造成严重问题的情况。
+  shutdown: graceful
+
+spring:
+  application:
+    name: cutejava
+  lifecycle:
+    # 采用java.time.Duration格式的值,如果在这个时间内，优雅停机没有停掉应用，超过这个时间就会强制停止应用
+    timeout-per-shutdown-phase: 30s
+  freemarker:
+    # 是否检查模板位置是否存在
+    check-template-location: false
+    # 模板编码
+    charset: utf-8
+  cache:
+    # 解决缓存异常 https://blog.csdn.net/jikeyeka/article/details/125804049
+    type: redis
+  data:
+    redis:
+      repositories:
+        # 是否启用Redis存储(关闭防止出现 Multiple Spring Data modules found, entering strict repository configuration mode)
+        enabled: false
+  # 数据源
+  datasource:
+    druid:
+      db-type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.p6spy.engine.spy.P6SpyDriver
+      url: jdbc:p6spy:mysql://127.0.0.1:3306/kenaito_aops?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
+      username: root
+      password: 123456
+      # 初始连接数，建议设置为与最小空闲连接数相同
+      initial-size: 2
+      # 最小空闲连接数，保持足够的空闲连接以应对请求
+      min-idle: 2
+      # 最大连接数，根据并发需求适当增加
+      max-active: 8
+      # 获取连接超时时间（毫秒），调整以满足响应时间要求
+      max-wait: 3000
+      # 启用KeepAlive机制，保持长连接
+      keep-alive: true
+      # 连接有效性检测间隔时间（毫秒），定期检查连接的健康状态
+      time-between-eviction-runs-millis: 60000
+      # 连接在池中最小生存时间（毫秒），确保连接在池中至少存在一段时间
+      min-evictable-idle-time-millis: 300000
+      # 连接在池中最大生存时间（毫秒），防止连接在池中停留过长
+      max-evictable-idle-time-millis: 900000
+      # 指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除
+      test-while-idle: true
+      # 指明是否在从池中取出连接前进行检验,如果检验失败, 则从池中去除连接并尝试取出另一个
+      test-on-borrow: true
+      # 是否在归还到池中前进行检验
+      test-on-return: false
+      # 停用 com_ping 探活机制
+      use-ping-method: false
+      # 检测连接是否有效
+      validation-query: SELECT 1
+      # 配置监控统计
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        # 开启session统计功能
+        session-stat-enable: true
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        # 缺省sessionStatMaxCount是1000个
+        session-stat-max-count: 1000
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: false
+      filter:
+        stat:
+          enabled: true
+          # 记录慢SQL
+          log-slow-sql: true
+          slow-sql-millis: 2000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+      aop-patterns: "cn.odboy.mapper.*,cn.odboy.service.*,cn.odboy.*.mapper.*,cn.odboy.*.service.*"
+  redis:
+    database: ${REDIS_DB:1}
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PWD:123456}
+    # 连接超时时间
+    timeout: 5000
+    # 连接池配置
+    lettuce:
+      pool:
+        # 连接池最大连接数
+        max-active: 30
+        # 连接池最大阻塞等待时间（毫秒），负值表示没有限制
+        max-wait: -1
+        # 连接池中的最大空闲连接数
+        max-idle: 20
+        # 连接池中的最小空闲连接数
+        min-idle: 1
+# 持久层
+mybatis-plus:
+  configuration:
+    # 开启 Mybatis 二级缓存，默认为 true
+    cache-enabled: false
+    # 设置本地缓存作用域, Mybatis 一级缓存, 默认为 SESSION
+    # 同一个 session 相同查询语句不会再次查询数据库
+    # 微服务中, 建议设置为STATEMENT, 即关闭一级缓存
+    local-cache-scope: STATEMENT
+    # 是否开启自动驼峰命名规则（camel case）映射, 即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射
+    map-underscore-to-camel-case: true
+    # Sql日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # 启动时是否检查 MyBatis XML 文件的存在, 默认不检查
+  check-config-location: true
+  # MyBatis Mapper 所对应的 XML 文件位置
+  # Maven 多模块项目的扫描路径需以 classpath*: 开头 （即加载多个 jar 包下的 XML 文件）
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # MyBatis-Plus 全局策略中的 DB 策略配置
+  global-config:
+    db-config:
+      # 逻辑已删除值(逻辑删除下有效)
+      logic-delete-value: 0
+      # 逻辑未删除值(逻辑删除下有效)
+      logic-not-delete-value: 1
+      # 全局默认主键类型, 这里为自增主键
+      id-type: auto
+      # 表名是否使用驼峰转下划线命名,只对表名生效
+      table-underline: true
+    # 是否控制台 print mybatisplus-plus 的 LOGO
+    banner: true
+
+app:
+  # 文件存储路径
+  file:
+    mac:
+      path: ~/file/
+      avatar: ~/avatar/
+    linux:
+      path: /home/${spring.application.name}/file/
+      avatar: /home/${spring.application.name}/avatar/
+    windows:
+      path: C:\${spring.application.name}\file\
+      avatar: C:\${spring.application.name}\avatar\
+    # 文件大小M
+    fileMaxSize: 100
+    avatarMaxSize: 5
+  # 密码加密传输，前端公钥加密，后端私钥解密
+  rsa:
+    private_key: MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA0vfvyTdGJkdbHkB8mp0f3FE0GYP3AYPaJF7jUd1M0XxFSE2ceK3k2kw20YvQ09NJKk+OMjWQl9WitG9pB6tSCQIDAQABAkA2SimBrWC2/wvauBuYqjCFwLvYiRYqZKThUS3MZlebXJiLB+Ue/gUifAAKIg1avttUZsHBHrop4qfJCwAI0+YRAiEA+W3NK/RaXtnRqmoUUkb59zsZUBLpvZgQPfj1MhyHDz0CIQDYhsAhPJ3mgS64NbUZmGWuuNKp5coY2GIj/zYDMJp6vQIgUueLFXv/eZ1ekgz2Oi67MNCk5jeTF2BurZqNLR3MSmUCIFT3Q6uHMtsB9Eha4u7hS31tj1UWE+D+ADzp59MGnoftAiBeHT7gDMuqeJHPL4b+kC+gzV4FGTfhR9q3tTbklZkD2A==
+  # 鉴权
+  jwt:
+    # 必须使用最少88位的Base64对该令牌进行编码
+    base64-secret: ZmQ0ZGI5NjQ0MDQwY2I4MjMxY2Y3ZmI3MjdhN2ZmMjNhODViOTg1ZGE0NTBjMGM4NDA5NzYxMjdjOWMwYWRmZTBlZjlhNGY3ZTg4Y2U3YTE1ODVkZDU5Y2Y3OGYwZWE1NzUzNWQ2YjFjZDc0NGMxZWU2MmQ3MjY1NzJmNTE0MzI=
+    # 令牌过期时间 此处单位/毫秒 ，默认4小时，可在此网站生成 https://www.convertworld.com/zh-hans/time/milliseconds.html
+    token-validity-in-seconds: 14400000
+    # token 续期检查时间范围（默认30分钟，单位毫秒），在token即将过期的一段时间内用户操作了，则给用户的token续期
+    detect: 1800000
+    # 续期时间范围，默认1小时，单位毫秒
+    renew: 3600000
+  # 登录
+  login:
+    # 是否限制单用户登录
+    single: true
+    # 验证码
+    captchaSetting:
+      # 验证码类型配置 查看 LoginProperties 类
+      code-type: arithmetic
+      # 登录图形验证码有效时间/分钟
+      expiration: 2
+      # 验证码高度
+      width: 111
+      # 验证码宽度
+      height: 36
+      # 内容长度
+      length: 2
+      # 字体名称，为空则使用默认字体
+      font-name:
+      # 字体大小
+      font-size: 25
+  # 是否开启 swagger-ui
+  swagger:
+    enabled: false
+  # 针对@Async
+  async-task-pool:
+    # 核心线程池大小
+    core-pool-size: 10
+    # 最大线程数
+    max-pool-size: 30
+    # 活跃时间
+    keep-alive-seconds: 60
+    # 队列容量
+    queue-capacity: 50
+  # oss
+  oss:
+    # 七牛云
+    qiniu:
+      # 文件大小 /M
+      max-size: 15
+  email:
+    captchaSetting:
+      # 邮箱验证码有效时间/秒
+      expiration: 300

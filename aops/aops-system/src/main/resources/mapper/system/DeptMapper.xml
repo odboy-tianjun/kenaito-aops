@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.odboy.core.dal.mysql.system.DeptMapper">
+    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.Dept">
+        <id column="dept_id" property="id"/>
+        <result column="dept_sort" property="deptSort"/>
+        <result column="name" property="name"/>
+        <result column="enabled" property="enabled"/>
+        <result column="pid" property="pid"/>
+        <result column="sub_count" property="subCount"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <select id="queryDeptListByArgs" resultMap="BaseResultMap">
+        SELECT
+        dept_id,
+        `name`,
+        pid,
+        sub_count,
+        create_time,
+        update_time,
+        create_by,
+        update_by,
+        enabled,
+        dept_sort
+        FROM
+        system_dept
+        <where>
+            <if test="criteria.ids != null and criteria.ids.size() > 0">
+                AND dept_id in
+                <foreach collection="criteria.ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="criteria.name != null and criteria.name != ''">
+                AND `name` LIKE concat('%', #{criteria.name}, '%')
+            </if>
+            <if test="criteria.enabled != null">
+                AND enabled = #{criteria.enabled}
+            </if>
+            <if test="criteria.pid != null">
+                AND pid = #{criteria.pid}
+            </if>
+            <if test="criteria.pidIsNull != null">
+                AND pid IS NULL
+            </if>
+            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
+                AND create_time BETWEEN #{criteria.createTime[0]} AND #{criteria.createTime[1]}
+            </if>
+        </where>
+        ORDER BY dept_sort
+    </select>
+    <select id="queryDeptListByPid" resultMap="BaseResultMap">
+        select dept_id,
+               name,
+               pid,
+               sub_count,
+               create_time,
+               update_time,
+               create_by,
+               update_by,
+               enabled,
+               dept_sort
+        from system_dept
+        where pid = #{pid}
+    </select>
+    <select id="getDeptCountByPid" resultType="java.lang.Integer">
+        select count(*)
+        from system_dept
+        where pid = #{pid}
+    </select>
+    <select id="queryDeptListByPidIsNull" resultMap="BaseResultMap">
+        select dept_id,
+               name,
+               pid,
+               sub_count,
+               create_time,
+               update_time,
+               create_by,
+               update_by,
+               enabled,
+               dept_sort
+        from system_dept
+        where pid is null
+    </select>
+    <select id="queryDeptSetByRoleId" resultType="cn.odboy.core.dal.dataobject.system.Dept">
+        SELECT d.dept_id AS id,
+               d.NAME,
+               d.pid,
+               d.sub_count,
+               d.create_time,
+               d.update_time,
+               d.create_by,
+               d.update_by,
+               d.enabled,
+               d.dept_sort
+        FROM system_dept d,
+             system_roles_depts rd
+        WHERE d.dept_id = rd.dept_id
+          AND rd.role_id = #{roleId}
+    </select>
+    <update id="updateSubCountById">
+        update system_dept
+        set sub_count = #{count}
+        where dept_id = #{id}
+    </update>
+</mapper>

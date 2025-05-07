@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.odboy.core.dal.mysql.system.JobMapper">
+    <select id="getJobByName" resultType="cn.odboy.core.dal.dataobject.system.Job">
+        select id
+        from system_job
+        where name = #{name}
+    </select>
+    <select id="queryJobPageByArgs" resultType="cn.odboy.core.dal.dataobject.system.Job">
+        select
+        *
+        from system_job
+        <where>
+            <if test="criteria.name != null and criteria.name != ''">
+                and name like concat('%', #{criteria.name}, '%')
+            </if>
+            <if test="criteria.enabled != null">
+                and enabled = #{criteria.enabled}
+            </if>
+            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
+                and create_time between #{criteria.createTime[0]} and #{criteria.createTime[1]}
+            </if>
+        </where>
+        order by job_sort, id desc
+    </select>
+</mapper>
