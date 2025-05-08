@@ -31,10 +31,10 @@ import java.util.Map;
  * @author odboy
  * @date 2025-01-14
  */
-public class DingtalkWorkflow {
+public class DingtalkWorkflowArgs {
     @Data
     @EqualsAndHashCode(callSuper = false)
-    public static class ApproverArgs extends MyObject {
+    public static class Approver extends MyObject {
         @NotNull(message = "审批类型不能为空")
         private DingtalkProcessInstanceApproverActionTypeEnum actionType;
         @NotNull(message = "审批人UserId不能为空")
@@ -44,7 +44,7 @@ public class DingtalkWorkflow {
 
     @Data
     @EqualsAndHashCode(callSuper = false)
-    public static class CreateArgs extends MyObject {
+    public static class Create extends MyObject {
         /**
          * 流程Code
          */
@@ -66,7 +66,7 @@ public class DingtalkWorkflow {
          */
         @NotNull(message = "审批人列表不能为空")
         @Size(min = 1, message = "审批人列表至少得有一个节点")
-        private List<ApproverArgs> approvers;
+        private List<Approver> approvers;
         /**
          * 抄送人列表
          */

@@ -17,14 +17,15 @@ package cn.odboy.framework.dingtalk.repository;
 
 import cn.hutool.core.lang.Assert;
 import cn.odboy.framework.dingtalk.context.DingtalkApiClientManager;
+import cn.odboy.framework.dingtalk.exception.DingtalkApiExceptionCatch;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiV2DepartmentListsubRequest;
 import com.dingtalk.api.response.OapiV2DepartmentListsubResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -41,35 +42,30 @@ public class DingtalkDepartmentRepository {
     private final DingtalkApiClientManager dingtalkApiClientManager;
 
     /**
-     * 获取部门列表
-     *
      * @param deptId 部门Id
      * @return /
      */
+    @SneakyThrows
+    @DingtalkApiExceptionCatch(description = "获取部门列表", throwException = false)
     public List<OapiV2DepartmentListsubResponse.DeptBaseResponse> listDepartmentSubs(Long deptId) {
         Assert.notNull(deptId, "部门Id不能为空");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/department/listsub");
-            OapiV2DepartmentListsubRequest req = new OapiV2DepartmentListsubRequest();
-            req.setDeptId(deptId);
-            req.setLanguage("zh_CN");
-            OapiV2DepartmentListsubResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("获取部门列表成功, deptId={}", deptId);
-            return rsp.getResult();
-        } catch (Exception e) {
-            log.info("获取部门列表失败, deptId={}", deptId, e);
-            return new ArrayList<>();
-        }
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/department/listsub");
+        OapiV2DepartmentListsubRequest req = new OapiV2DepartmentListsubRequest();
+        req.setDeptId(deptId);
+        req.setLanguage("zh_CN");
+        OapiV2DepartmentListsubResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.getResult();
     }
 
-    public void listAllSubDepartments(long deptId, Consumer<List<OapiV2DepartmentListsubResponse.DeptBaseResponse>> consumer) {
+
+    private void listAllSubDepartments(long deptId, Consumer<List<OapiV2DepartmentListsubResponse.DeptBaseResponse>> consumer) {
         List<OapiV2DepartmentListsubResponse.DeptBaseResponse> deptBaseResponses = listDepartmentSubs(deptId);
         if (deptBaseResponses.isEmpty()) {
             return;
         }
         consumer.accept(deptBaseResponses);
-        for (OapiV2DepartmentListsubResponse.DeptBaseResponse deptBaseRespons : deptBaseResponses) {
-            listAllSubDepartments(deptBaseRespons.getDeptId(), consumer);
+        for (OapiV2DepartmentListsubResponse.DeptBaseResponse deptBaseResponse : deptBaseResponses) {
+            listAllSubDepartments(deptBaseResponse.getDeptId(), consumer);
         }
     }
 }

@@ -17,7 +17,9 @@ package cn.odboy.framework.gitlab.repository;
 
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.models.Job;
@@ -39,12 +41,12 @@ public class GitlabPipelineJobRepository {
     private final GitlabProjectRepository gitlabProjectRepository;
 
     /**
-     * 获取任务列表
-     *
      * @param projectId  项目id
      * @param pipelineId 流水线id
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取任务列表", throwException = false)
     public List<Job> listJobsByProjectId(Long projectId, Long pipelineId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getJobApi().getJobsForPipeline(projectId, pipelineId);
@@ -55,12 +57,12 @@ public class GitlabPipelineJobRepository {
     }
 
     /**
-     * 获取任务列表
-     *
      * @param projectName 项目名称
      * @param pipelineId  流水线id
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取任务列表", throwException = false)
     public List<Job> listJobsByProjectName(String projectName, Long pipelineId) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
@@ -70,12 +72,12 @@ public class GitlabPipelineJobRepository {
     }
 
     /**
-     * 获取任务详情
-     *
      * @param projectId 项目id
      * @param jobId     任务id
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取任务详情", throwException = false)
     public Job describeJobsByProjectId(Long projectId, Long jobId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getJobApi().getJob(projectId, jobId);
@@ -86,12 +88,12 @@ public class GitlabPipelineJobRepository {
     }
 
     /**
-     * 获取任务详情
-     *
      * @param projectName 项目名称
      * @param jobId       任务id
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取任务详情", throwException = false)
     public Job describeJobsByProjectName(String projectName, Long jobId) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {

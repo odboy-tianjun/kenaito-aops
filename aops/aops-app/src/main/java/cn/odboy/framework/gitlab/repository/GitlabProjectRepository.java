@@ -22,10 +22,12 @@ import cn.odboy.framework.gitlab.constant.GitlabDefaultConst;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
 import cn.odboy.framework.gitlab.context.GitlabCiFileAdmin;
 import cn.odboy.framework.gitlab.context.GitlabIgnoreFileAdmin;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import cn.odboy.framework.gitlab.model.GitlabProject;
 import cn.odboy.util.ValidationUtil;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -58,12 +60,96 @@ public class GitlabProjectRepository {
     private final GitlabCiFileAdmin gitlabCiFileAdmin;
 
     /**
-     * 创建项目 -> ok
-     *
+     * @param projectId /
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "通过projectId查项目 -> ok", throwException = false)
+    public Project describeProjectById(Long projectId) {
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            ProjectApi projectApi = client.getProjectApi();
+            return projectApi.getProjectsStream().filter(f -> f.getId().equals(projectId)).findFirst().orElse(null);
+        }
+    }
+
+    /**
+     * @param appName /
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "通过appName查项目 -> ok", throwException = false)
+    public Project describeProjectByProjectName(String appName) {
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            ProjectApi projectApi = client.getProjectApi();
+            return projectApi.getProjectsStream().filter(f -> f.getPath().equals(appName)).findFirst().orElse(null);
+        }
+    }
+
+    /**
+     * @param page 当前页
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "分页获取项目 -> ok", throwException = false)
+    public List<Project> listProjects(int page) {
+        int newPage = page <= 0 ? 1 : page;
+        List<Project> list = new ArrayList<>();
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            ProjectApi projectApi = client.getProjectApi();
+            return projectApi.getProjects(newPage, 100);
+        }
+    }
+
+    /**
+     * @param appName 应用名称
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "分页获取项目 -> ok", throwException = false)
+    public List<Project> listProjectsByAppName(String appName) {
+        List<Project> list = new ArrayList<>();
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            ProjectApi projectApi = client.getProjectApi();
+            return projectApi.getProjectsStream(appName).collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * @param key 关键字
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "根据关键字分页获取项目 -> ok", throwException = false)
+    public List<Project> searchProjects(String key) {
+        List<Project> list = new ArrayList<>();
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            ProjectApi projectApi = client.getProjectApi();
+            return projectApi.getProjects(key, 1, 20);
+        }
+    }
+
+    private GitlabProject.CreateResp transformCreateResp(GitlabProject.CreateArgs args, Project newProject, String newProjectName) {
+        GitlabProject.CreateResp createResp = new GitlabProject.CreateResp();
+        createResp.setCreatorId(newProject.getCreatorId());
+        createResp.setCreatedAt(newProject.getCreatedAt());
+        createResp.setDefaultBranch(newProject.getDefaultBranch());
+        createResp.setHttpUrlToRepo(newProject.getHttpUrlToRepo());
+        createResp.setProjectId(newProject.getId());
+        createResp.setProjectName(newProject.getName());
+        createResp.setVisibility(newProject.getVisibility().name());
+        createResp.setHomeUrl(newProject.getWebUrl());
+        createResp.setName(args.getName());
+        createResp.setAppName(newProjectName);
+        createResp.setDescription(args.getDescription());
+        return createResp;
+    }
+
+    /**
      * @param args /
      * @return /
      */
-    public GitlabProject.CreateResp createProject(GitlabProject.CreateArgs args) {
+    @GitlabApiExceptionCatch(description = "创建项目 -> ok")
+    public GitlabProject.CreateResp createProject(GitlabProject.CreateArgs args) throws Exception {
         ValidationUtil.validate(args);
         String appName = args.getAppName();
         String newProjectName = appName.trim();
@@ -91,55 +177,31 @@ public class GitlabProjectRepository {
             project.setNamespace(namespace);
             Project newProject = projectApi.createProject(args.getGroupOrUserId(), project);
             return transformCreateResp(args, newProject, newProjectName);
-        } catch (Exception e) {
-            log.error("创建应用失败", e);
-            throw new BadRequestException("创建应用失败, " + e.getMessage());
         }
     }
 
-    private GitlabProject.CreateResp transformCreateResp(GitlabProject.CreateArgs args, Project newProject, String newProjectName) {
-        GitlabProject.CreateResp createResp = new GitlabProject.CreateResp();
-        createResp.setCreatorId(newProject.getCreatorId());
-        createResp.setCreatedAt(newProject.getCreatedAt());
-        createResp.setDefaultBranch(newProject.getDefaultBranch());
-        createResp.setHttpUrlToRepo(newProject.getHttpUrlToRepo());
-        createResp.setProjectId(newProject.getId());
-        createResp.setProjectName(newProject.getName());
-        createResp.setVisibility(newProject.getVisibility().name());
-        createResp.setHomeUrl(newProject.getWebUrl());
-        createResp.setName(args.getName());
-        createResp.setAppName(newProjectName);
-        createResp.setDescription(args.getDescription());
-        return createResp;
-    }
-
     /**
-     * 新增项目成员 -> ok
-     *
      * @param projectId   项目id
      * @param userId      用户id
      * @param accessLevel 访问级别
      */
-    public void addProjectMember(Long projectId, Long userId, AccessLevel accessLevel) {
+    @GitlabApiExceptionCatch(description = "新增项目成员 -> ok")
+    public void addProjectMember(Long projectId, Long userId, AccessLevel accessLevel) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             projectApi.addMember(projectId, userId, accessLevel);
-        } catch (Exception e) {
-            log.error("新增应用成员失败", e);
-            throw new BadRequestException("新增应用成员失败");
         }
     }
 
     /**
-     * 批量新增项目成员 -> ok
-     *
      * @param projectId   项目id
      * @param userIds     用户id列表
      * @param accessLevel 访问级别
      */
-    public void addProjectMembers(Long projectId, List<Long> userIds, AccessLevel accessLevel) {
+    @GitlabApiExceptionCatch(description = "批量新增项目成员 -> ok")
+    public void addProjectMembers(Long projectId, List<Long> userIds, AccessLevel accessLevel) throws Exception {
         if (CollUtil.isNotEmpty(userIds)) {
-            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList())) {
+            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().toList()) {
                 try {
                     this.addProjectMember(projectId, userId, accessLevel);
                 } catch (Exception e) {
@@ -150,30 +212,25 @@ public class GitlabProjectRepository {
     }
 
     /**
-     * 移除项目成员 -> ok
-     *
      * @param projectId 项目id
      * @param userId    用户id
      */
-    public void deleteProjectMember(Long projectId, Long userId) {
+    @GitlabApiExceptionCatch(description = "移除项目成员 -> ok")
+    public void deleteProjectMember(Long projectId, Long userId) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             projectApi.removeMember(projectId, userId);
-        } catch (Exception e) {
-            log.error("移除应用成员失败", e);
-            throw new BadRequestException("移除应用成员失败");
         }
     }
 
     /**
-     * 批量移除项目成员 -> ok
-     *
      * @param projectId 项目id
      * @param userIds   用户id列表
      */
-    public void deleteProjectMembers(Long projectId, List<Long> userIds) {
+    @GitlabApiExceptionCatch(description = "批量移除项目成员 -> ok")
+    public void deleteProjectMembers(Long projectId, List<Long> userIds) throws Exception {
         if (CollUtil.isNotEmpty(userIds)) {
-            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList())) {
+            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().toList()) {
                 try {
                     deleteProjectMember(projectId, userId);
                 } catch (Exception e) {
@@ -183,79 +240,12 @@ public class GitlabProjectRepository {
         }
     }
 
-    /**
-     * 通过projectId查项目 -> ok
-     *
-     * @param projectId /
-     * @return /
-     */
-    public Project describeProjectById(Long projectId) {
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            ProjectApi projectApi = client.getProjectApi();
-            return projectApi.getProjectsStream().filter(f -> f.getId().equals(projectId)).findFirst().orElse(null);
-        } catch (Exception e) {
-            log.error("通过projectId查应用失败", e);
-            return null;
-        }
-    }
 
     /**
-     * 通过appName查项目 -> ok
-     *
-     * @param appName /
-     * @return /
-     */
-    public Project describeProjectByProjectName(String appName) {
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            ProjectApi projectApi = client.getProjectApi();
-            return projectApi.getProjectsStream().filter(f -> f.getPath().equals(appName)).findFirst().orElse(null);
-        } catch (Exception e) {
-            log.error("通过appName查应用失败", e);
-            return null;
-        }
-    }
-
-    /**
-     * 分页获取项目 -> ok
-     *
-     * @param page 当前页
-     * @return /
-     */
-    public List<Project> listProjects(int page) {
-        int newPage = page <= 0 ? 1 : page;
-        List<Project> list = new ArrayList<>();
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            ProjectApi projectApi = client.getProjectApi();
-            return projectApi.getProjects(newPage, 100);
-        } catch (Exception e) {
-            log.error("分页获取应用失败", e);
-            return list;
-        }
-    }
-
-    /**
-     * 分页获取项目 -> ok
-     *
-     * @param appName 应用名称
-     * @return /
-     */
-    public List<Project> listProjectsByAppName(String appName) {
-        List<Project> list = new ArrayList<>();
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            ProjectApi projectApi = client.getProjectApi();
-            return projectApi.getProjectsStream(appName).collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("分页获取应用失败", e);
-            return list;
-        }
-    }
-
-    /**
-     * 根据projectId删除项目
-     *
      * @param projectId /
      */
-    public void deleteProjectById(Long projectId) {
+    @GitlabApiExceptionCatch(description = "根据projectId删除项目 -> ok")
+    public void deleteProjectById(Long projectId) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             projectApi.deleteProject(projectId);
@@ -265,7 +255,8 @@ public class GitlabProjectRepository {
         }
     }
 
-    public void deleteProjectsById(List<Long> projectIds) {
+    @GitlabApiExceptionCatch(description = "根据projectId集合删除项目 -> ok")
+    public void deleteProjectsById(List<Long> projectIds) throws Exception {
         if (CollUtil.isNotEmpty(projectIds)) {
             for (Long projectId : projectIds) {
                 try {
@@ -278,11 +269,10 @@ public class GitlabProjectRepository {
     }
 
     /**
-     * 根据appName删除项目
-     *
      * @param appName /
      */
-    public void deleteProjectByProjectName(String appName) {
+    @GitlabApiExceptionCatch(description = "根据appName删除项目 -> ok")
+    public void deleteProjectByProjectName(String appName) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             Project localProject = describeProjectByProjectName(appName);
             if (localProject == null) {
@@ -290,13 +280,11 @@ public class GitlabProjectRepository {
             }
             ProjectApi projectApi = client.getProjectApi();
             projectApi.deleteProject(localProject.getId());
-        } catch (Exception e) {
-            log.error("根据appName删除应用失败", e);
-            throw new BadRequestException("根据appName删除应用失败");
         }
     }
 
-    public void deleteProjectsByProjectName(List<String> appNames) {
+    @GitlabApiExceptionCatch(description = "根据appName集合删除项目 -> ok")
+    public void deleteProjectsByProjectNameList(List<String> appNames) throws Exception {
         if (CollUtil.isNotEmpty(appNames)) {
             for (String appName : appNames) {
                 try {
@@ -308,24 +296,8 @@ public class GitlabProjectRepository {
         }
     }
 
-    /**
-     * 根据关键字分页获取项目 -> ok
-     *
-     * @param key 关键字
-     * @return /
-     */
-    public List<Project> searchProjects(String key) {
-        List<Project> list = new ArrayList<>();
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            ProjectApi projectApi = client.getProjectApi();
-            return projectApi.getProjects(key, 1, 20);
-        } catch (Exception e) {
-            log.error("根据关键字分页获取项目败", e);
-            return list;
-        }
-    }
-
-    public void initGitIgnoreFile(Long projectId, String defaultBranchName, String language) {
+    @GitlabApiExceptionCatch(description = "初始化GitIgnore文件 -> ok")
+    public void initGitIgnoreFile(Long projectId, String defaultBranchName, String language) throws Exception {
         String fileContent = gitlabIgnoreFileAdmin.getContent(language);
         if (cn.hutool.core.util.StrUtil.isBlank(language)) {
             log.error("不支持的语言, 跳过 .gitignore 文件初始化");
@@ -337,12 +309,11 @@ public class GitlabProjectRepository {
             gitlabApiClientManagerFile.setContent(fileContent);
             client.getRepositoryFileApi().createFile(projectId, gitlabApiClientManagerFile, defaultBranchName, "init .gitignore");
             log.info("初始化 .gitignore 文件成功");
-        } catch (GitLabApiException e) {
-            log.error("初始化 .gitignore 文件失败", e);
         }
     }
 
-    public void initGitCiFile(Long projectId, String defaultBranch, String language, String appName) {
+    @GitlabApiExceptionCatch(description = "初始化GitCI文件 -> ok")
+    public void initGitCiFile(Long projectId, String defaultBranch, String language, String appName) throws Exception {
         if (cn.hutool.core.util.StrUtil.isBlank(language)) {
             log.error("不支持的语言, 跳过 .gitlab-ci.yml 文件初始化");
             return;

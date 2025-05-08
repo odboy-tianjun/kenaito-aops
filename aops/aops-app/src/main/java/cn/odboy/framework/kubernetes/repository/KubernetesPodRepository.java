@@ -33,6 +33,7 @@ import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.openapi.models.V1PodSpec;
 import io.kubernetes.client.openapi.models.V1PodStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.Date;
@@ -52,8 +53,9 @@ import java.util.stream.Collectors;
 public class KubernetesPodRepository {
     private final KubernetesApiClientManager k8SClientAdmin;
 
+    @SneakyThrows
     @KubernetesApiExceptionCatch(description = "获取pod列表", throwException = false)
-    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, Map<String, String> fieldSelector, Map<String, String> labelSelector) throws Exception {
+    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, Map<String, String> fieldSelector, Map<String, String> labelSelector) {
         ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String fieldSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(fieldSelector);
@@ -104,8 +106,9 @@ public class KubernetesPodRepository {
                 }).collect(Collectors.toList());
     }
 
+    @SneakyThrows
     @KubernetesApiExceptionCatch(description = "获取pod列表", throwException = false)
-    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, Map<String, String> labelSelector) throws Exception {
+    public List<KubernetesResourceResponse.Pod> listPods(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, Map<String, String> labelSelector) {
         ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String labelSelectorStr = KubernetesResourceLabelSelectorUtil.genLabelSelectorExpression(labelSelector);
@@ -156,8 +159,9 @@ public class KubernetesPodRepository {
         }).collect(Collectors.toList());
     }
 
+    @SneakyThrows
     @KubernetesApiExceptionCatch(description = "获取pod列表", throwException = false)
-    public List<KubernetesResourceResponse.Pod> listPodsByResourceName(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, ArgsResourceNameVo resourceNameVo) throws Exception {
+    public List<KubernetesResourceResponse.Pod> listPodsByResourceName(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, ArgsResourceNameVo resourceNameVo) {
         ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         Map<String, String> labelSelector = KubernetesResourceLabelSelectorUtil.getLabelsByAppName(namespaceNameVo.getValue());

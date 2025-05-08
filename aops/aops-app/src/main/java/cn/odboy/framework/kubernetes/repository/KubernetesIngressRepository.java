@@ -37,6 +37,7 @@ import io.kubernetes.client.openapi.models.V1IngressServiceBackendBuilder;
 import io.kubernetes.client.openapi.models.V1ServiceBackendPortBuilder;
 import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
@@ -52,6 +53,37 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class KubernetesIngressRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "根据appName获取Ingress", throwException = false)
+    public V1Ingress describeIngressByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String ingressName = KubernetesResourceNameUtil.getIngressName(appNameVo.getValue(), envCode);
+        return networkingV1Api.readNamespacedIngress(
+                ingressName,
+                appNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
+
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "根据ingress名称获取Ingress", throwException = false)
+    public V1Ingress describeIngressByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
+        return networkingV1Api.readNamespacedIngress(
+                resourceNameVo.getValue(),
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
 
     @KubernetesApiExceptionCatch(description = "创建Ingress")
     public V1Ingress createIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.Create args) throws Exception {
@@ -108,34 +140,6 @@ public class KubernetesIngressRepository {
         );
     }
 
-    @KubernetesApiExceptionCatch(description = "根据appName获取Ingress", throwException = false)
-    public V1Ingress describeIngressByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-        NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
-        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
-        String ingressName = KubernetesResourceNameUtil.getIngressName(appNameVo.getValue(), envCode);
-        return networkingV1Api.readNamespacedIngress(
-                ingressName,
-                appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
-
-
-    @KubernetesApiExceptionCatch(description = "根据ingress名称获取Ingress", throwException = false)
-    public V1Ingress describeIngressByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-        NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
-        return networkingV1Api.readNamespacedIngress(
-                resourceNameVo.getValue(),
-                namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
 
     @KubernetesApiExceptionCatch(description = "从yml加载Ingress")
     public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.LoadFromYaml args) throws Exception {

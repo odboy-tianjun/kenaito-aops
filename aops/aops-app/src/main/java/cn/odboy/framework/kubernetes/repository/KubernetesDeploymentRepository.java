@@ -45,6 +45,7 @@ import io.kubernetes.client.openapi.models.V1ResourceRequirements;
 import io.kubernetes.client.openapi.models.V1Status;
 import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -63,6 +64,35 @@ import java.util.Objects;
 public class KubernetesDeploymentRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
     private final KubernetesPodRepository kubernetesPodRepository;
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "通过appName查询deployment", throwException = false)
+    public V1Deployment describeDeploymentByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
+        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(appNameVo.getValue(), clusterCodeVo.getValue());
+        return appsV1Api.readNamespacedDeployment(
+                deploymentName,
+                appNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "通过deployment名称查询deployment", throwException = false)
+    public V1Deployment describeDeploymentByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
+        return appsV1Api.readNamespacedDeployment(
+                resourceNameVo.getValue(),
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
 
     @KubernetesApiExceptionCatch(description = "创建Deployment")
     public V1Deployment createDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.Create args) throws Exception {
@@ -268,32 +298,6 @@ public class KubernetesDeploymentRepository {
         );
     }
 
-    @KubernetesApiExceptionCatch(description = "通过appName查询deployment", throwException = false)
-    public V1Deployment describeDeploymentByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        String deploymentName = KubernetesResourceNameUtil.getDeploymentName(appNameVo.getValue(), clusterCodeVo.getValue());
-        return appsV1Api.readNamespacedDeployment(
-                deploymentName,
-                appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
-
-    @KubernetesApiExceptionCatch(description = "通过deployment名称查询deployment", throwException = false)
-    public V1Deployment describeDeploymentByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
-        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        return appsV1Api.readNamespacedDeployment(
-                resourceNameVo.getValue(),
-                namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
 
     @KubernetesApiExceptionCatch(description = "从yml加载Deployment")
     public V1Deployment loadDeploymentFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentRequest.LoadFromYaml args) throws Exception {

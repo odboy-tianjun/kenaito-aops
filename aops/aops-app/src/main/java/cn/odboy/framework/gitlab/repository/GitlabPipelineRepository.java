@@ -20,8 +20,10 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.gitlab.callback.GitlabPipelineJobExecuteCallback;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import cn.odboy.framework.gitlab.model.GitlabPipelineJob;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.models.Job;
@@ -52,61 +54,20 @@ public class GitlabPipelineRepository {
     private GitlabPipelineJobRepository gitlabPipelineJobRepository;
 
     /**
-     * 创建流水线
-     *
-     * @param projectId 项目id
-     * @param ref       分支名称
-     * @param variables 流水线变量，可在.gitlab-ci.yml文件中通过语法 $变量名称，获取变量值
-     * @return /
-     */
-    public Pipeline createPipelineByProjectId(Long projectId, String ref, Map<String, String> variables) {
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            return client.getPipelineApi().createPipeline(projectId, ref, variables);
-        } catch (Exception e) {
-            log.error("创建流水线失败", e);
-            throw new BadRequestException("创建流水线失败, " + e.getMessage());
-        }
-    }
-
-    /**
-     * 创建流水线
-     *
-     * @param projectName 项目名称
-     * @param ref         分支名称
-     * @param variables   流水线变量，可在.gitlab-ci.yml文件中通过语法 $变量名称，获取变量值
-     * @return /
-     */
-    public Pipeline createPipelineByProjectName(String projectName, String ref, Map<String, String> variables) {
-        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
-        if (project == null) {
-            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
-        }
-        return createPipelineByProjectId(project.getId(), ref, variables);
-    }
-
-    /**
-     * 获取流水线详情
-     *
      * @param projectId  项目id
      * @param pipelineId 流水线id
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取流水线详情", throwException = false)
     public Pipeline describePipelineByProjectId(Long projectId, Long pipelineId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getPipelineApi().getPipeline(projectId, pipelineId);
-        } catch (Exception e) {
-            log.info("获取流水线详情失败", e);
-            throw new BadRequestException("获取流水线详情失败");
         }
     }
 
-    /**
-     * 获取流水线详情
-     *
-     * @param projectName 项目名称
-     * @param pipelineId  流水线id
-     * @return /
-     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取流水线详情", throwException = false)
     public Pipeline describePipelineByProjectName(String projectName, Long pipelineId) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
@@ -116,26 +77,23 @@ public class GitlabPipelineRepository {
     }
 
     /**
-     * 获取流水线列表
-     *
      * @param projectId 项目id
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取流水线列表", throwException = false)
     public List<Pipeline> listPipelines(Long projectId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getPipelineApi().getPipelines(projectId);
-        } catch (Exception e) {
-            log.info("获取流水线列表失败", e);
-            throw new BadRequestException("获取流水线列表失败");
         }
     }
 
     /**
-     * 获取流水线列表
-     *
      * @param projectName 项目名称
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取流水线列表", throwException = false)
     public List<Pipeline> listPipelines(String projectName) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
@@ -145,29 +103,53 @@ public class GitlabPipelineRepository {
     }
 
     /**
-     * 停止流水线任务
-     *
-     * @param projectId  项目id
-     * @param pipelineId 流水线id
+     * @param projectId 项目id
+     * @param ref       分支名称
+     * @param variables 流水线变量，可在.gitlab-ci.yml文件中通过语法 $变量名称，获取变量值
      * @return /
      */
-    public Pipeline stopPipelineByProjectId(Long projectId, Long pipelineId) {
-        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
-            return auth.getPipelineApi().cancelPipelineJobs(projectId, pipelineId);
-        } catch (Exception e) {
-            log.info("停止流水线任务失败", e);
-            throw new BadRequestException("停止流水线任务失败");
+    @GitlabApiExceptionCatch(description = "创建流水线")
+    public Pipeline createPipelineByProjectId(Long projectId, String ref, Map<String, String> variables) throws Exception {
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            return client.getPipelineApi().createPipeline(projectId, ref, variables);
         }
     }
 
     /**
-     * 停止流水线任务
-     *
+     * @param projectName 项目名称
+     * @param ref         分支名称
+     * @param variables   流水线变量，可在.gitlab-ci.yml文件中通过语法 $变量名称，获取变量值
+     * @return /
+     */
+    @GitlabApiExceptionCatch(description = "创建流水线")
+    public Pipeline createPipelineByProjectName(String projectName, String ref, Map<String, String> variables) throws Exception {
+        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
+        if (project == null) {
+            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
+        }
+        return createPipelineByProjectId(project.getId(), ref, variables);
+    }
+
+
+    /**
+     * @param projectId  项目id
+     * @param pipelineId 流水线id
+     * @return /
+     */
+    @GitlabApiExceptionCatch(description = "停止流水线任务")
+    public Pipeline stopPipelineByProjectId(Long projectId, Long pipelineId) throws Exception {
+        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
+            return auth.getPipelineApi().cancelPipelineJobs(projectId, pipelineId);
+        }
+    }
+
+    /**
      * @param projectName 项目名称
      * @param pipelineId  流水线id
      * @return /
      */
-    public Pipeline stopPipelineByProjectName(String projectName, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "停止流水线任务")
+    public Pipeline stopPipelineByProjectName(String projectName, Long pipelineId) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -176,29 +158,24 @@ public class GitlabPipelineRepository {
     }
 
     /**
-     * 重试流水线任务
-     *
      * @param projectId  项目id
      * @param pipelineId 流水线id
      * @return /
      */
-    public Pipeline retryPipelineJobByProjectId(Long projectId, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "重试流水线任务")
+    public Pipeline retryPipelineJobByProjectId(Long projectId, Long pipelineId) throws Exception {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getPipelineApi().retryPipelineJob(projectId, pipelineId);
-        } catch (Exception e) {
-            log.info("重试流水线任务失败", e);
-            throw new BadRequestException("重试流水线任务失败");
         }
     }
 
     /**
-     * 重试流水线任务
-     *
      * @param projectName 项目名称
      * @param pipelineId  流水线id
      * @return /
      */
-    public Pipeline retryPipelineJobByProjectName(String projectName, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "重试流水线任务")
+    public Pipeline retryPipelineJobByProjectName(String projectName, Long pipelineId) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -207,27 +184,22 @@ public class GitlabPipelineRepository {
     }
 
     /**
-     * 删除流水线
-     *
      * @param projectId  项目id
      * @param pipelineId 流水线id
      */
-    public void deletePipelineByProjectId(Long projectId, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "删除流水线")
+    public void deletePipelineByProjectId(Long projectId, Long pipelineId) throws Exception {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             auth.getPipelineApi().deletePipeline(projectId, pipelineId);
-        } catch (Exception e) {
-            log.info("删除流水线失败", e);
-            throw new BadRequestException("删除流水线失败");
         }
     }
 
     /**
-     * 删除流水线
-     *
      * @param projectName 项目名称
      * @param pipelineId  流水线id
      */
-    public void deletePipelineByProjectName(String projectName, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "删除流水线")
+    public void deletePipelineByProjectName(String projectName, Long pipelineId) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -236,15 +208,13 @@ public class GitlabPipelineRepository {
     }
 
     /**
-     * 执行流水线
-     *
      * @param projectId 项目id
      * @param ref       分支名称
      * @param variables 流水线环境变量
      * @param callback  流水线回调
      * @return /
-     * @throws Exception
      */
+    @GitlabApiExceptionCatch(description = "执行流水线")
     public Pipeline executePipelineByProjectId(Long projectId, String ref, Map<String, String> variables, GitlabPipelineJobExecuteCallback callback) throws Exception {
         Project project = gitlabProjectRepository.describeProjectById(projectId);
         if (project == null) {
@@ -320,15 +290,13 @@ public class GitlabPipelineRepository {
     }
 
     /**
-     * 执行流水线
-     *
      * @param projectName 项目名称
      * @param ref         分支名称
      * @param variables   流水线环境变量
      * @param callback    流水线回调
      * @return /
-     * @throws Exception
      */
+    @GitlabApiExceptionCatch(description = "执行流水线")
     public Pipeline executePipelineByProjectName(String projectName, String ref, Map<String, String> variables, GitlabPipelineJobExecuteCallback callback) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {

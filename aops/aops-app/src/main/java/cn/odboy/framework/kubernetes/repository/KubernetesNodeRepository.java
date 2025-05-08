@@ -23,6 +23,7 @@ import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1NodeList;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +39,9 @@ import org.springframework.stereotype.Component;
 public class KubernetesNodeRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
+    @SneakyThrows
     @KubernetesApiExceptionCatch(description = "获取Node节点列表", throwException = false)
-    public V1NodeList listNodes(ArgsClusterCodeVo clusterCodeVo) throws Exception {
+    public V1NodeList listNodes(ArgsClusterCodeVo clusterCodeVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         return coreV1Api.listNode(

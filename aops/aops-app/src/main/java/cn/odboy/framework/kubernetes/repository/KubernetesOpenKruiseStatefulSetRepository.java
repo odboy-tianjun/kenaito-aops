@@ -30,6 +30,7 @@ import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.util.Yaml;
 import io.openkruise.client.models.KruiseAppsV1alpha1StatefulSet;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
@@ -46,9 +47,9 @@ import java.util.Objects;
 public class KubernetesOpenKruiseStatefulSetRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
-
+    @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据name获取KruiseStatefulSet", throwException = false)
-    public KruiseAppsV1alpha1StatefulSet describeStatefulSetByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
+    public KruiseAppsV1alpha1StatefulSet describeStatefulSetByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
         CustomObjectsApi customObjectsApi = new CustomObjectsApi(kubernetesApiClientManager.getClient(clusterCodeVo.getValue()));
         Object obj = customObjectsApi.getNamespacedCustomObject(
                 "apps.kruise.io",

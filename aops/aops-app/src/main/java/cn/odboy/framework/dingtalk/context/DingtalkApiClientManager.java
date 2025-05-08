@@ -18,7 +18,6 @@ package cn.odboy.framework.dingtalk.context;
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.dingtalk.config.DingtalkProperties;
-import cn.odboy.framework.dingtalk.constant.DingtalkCacheKeyConst;
 import cn.odboy.framework.dingtalk.util.DingtalkClientConfigUtil;
 import cn.odboy.framework.dingtalk.util.DingtalkLogFmtUtil;
 import cn.odboy.redis.RedisHelper;
@@ -39,12 +38,13 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class DingtalkApiClientManager {
+    private static final String KEY_ACCESS_TOKEN = "dingtalk:accessToken";
     private final DingtalkProperties dingtalkProperties;
     private final RedisHelper redisHelper;
 
     public String getClient() throws BadRequestException {
         try {
-            String accessToken = redisHelper.get(DingtalkCacheKeyConst.ACCESS_TOKEN, String.class);
+            String accessToken = redisHelper.get(KEY_ACCESS_TOKEN, String.class);
             if (StrUtil.isNotEmpty(accessToken)) {
                 return accessToken;
             }
@@ -54,7 +54,7 @@ public class DingtalkApiClientManager {
                     .setAppSecret(dingtalkProperties.getAppSecret());
             GetAccessTokenResponse accessTokenResponse = client.getAccessToken(getAccessTokenRequest);
             accessToken = accessTokenResponse.body.getAccessToken();
-            redisHelper.set(DingtalkCacheKeyConst.ACCESS_TOKEN, accessToken, 7000, TimeUnit.SECONDS);
+            redisHelper.set(KEY_ACCESS_TOKEN, accessToken, 7000, TimeUnit.SECONDS);
             return accessToken;
         } catch (TeaException teaException) {
             if (!com.aliyun.teautil.Common.empty(teaException.code) && !com.aliyun.teautil.Common.empty(teaException.message)) {

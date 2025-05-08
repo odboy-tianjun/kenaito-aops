@@ -16,8 +16,8 @@
 package cn.odboy.framework.dingtalk.repository;
 
 import cn.hutool.core.lang.Assert;
-import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.dingtalk.context.DingtalkApiClientManager;
+import cn.odboy.framework.dingtalk.exception.DingtalkApiExceptionCatch;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiChatCreateRequest;
@@ -29,6 +29,7 @@ import com.dingtalk.api.response.OapiChatGetResponse;
 import com.dingtalk.api.response.OapiChatSubadminUpdateResponse;
 import com.dingtalk.api.response.OapiChatUpdateResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -46,208 +47,152 @@ public class DingtalkChatRepository {
     private final DingtalkApiClientManager dingtalkApiClientManager;
 
     /**
-     * 创建群
-     *
+     * @param chatId 群Id
+     * @return /
+     */
+    @SneakyThrows
+    @DingtalkApiExceptionCatch(description = "获取群信息", throwException = false)
+    public OapiChatGetResponse.ChatInfo describeChatById(String chatId) {
+        Assert.notBlank(chatId, "群Id不能为空");
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/get");
+        OapiChatGetRequest req = new OapiChatGetRequest();
+        req.setChatid(chatId);
+        req.setHttpMethod("GET");
+        OapiChatGetResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.getChatInfo();
+    }
+
+    /**
      * @param name        群名称
      * @param ownerUserId 群主UserId
      * @param joinUserIds 群成员UserId列表
      * @return /
      */
-    public OapiChatCreateResponse createChat(String name, String ownerUserId, List<String> joinUserIds) {
-        Assert.notEmpty(name, "群名称不能为空");
-        Assert.notEmpty(ownerUserId, "群主UserId不能为空");
+    @DingtalkApiExceptionCatch(description = "创建群")
+    public OapiChatCreateResponse createChat(String name, String ownerUserId, List<String> joinUserIds) throws Exception {
+        Assert.notBlank(name, "群名称不能为空");
+        Assert.notBlank(ownerUserId, "群主UserId不能为空");
         Assert.notEmpty(joinUserIds, "群成员UserId列表不能为空");
         Assert.checkBetween(joinUserIds.size(), 2, 40, "群成员UserId列表长度范围2~40");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/create");
-            OapiChatCreateRequest req = new OapiChatCreateRequest();
-            req.setName(name);
-            req.setOwner(ownerUserId);
-            req.setUseridlist(joinUserIds);
-            req.setShowHistoryType(1L);
-            req.setSearchable(1L);
-            req.setValidationType(1L);
-            req.setMentionAllAuthority(1L);
-            req.setManagementType(1L);
-            req.setChatBannedType(0L);
-            OapiChatCreateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("创建群成功");
-            return rsp;
-        } catch (Exception e) {
-            log.info("创建群失败", e);
-            throw new BadRequestException("创建群失败");
-        }
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/create");
+        OapiChatCreateRequest req = new OapiChatCreateRequest();
+        req.setName(name);
+        req.setOwner(ownerUserId);
+        req.setUseridlist(joinUserIds);
+        req.setShowHistoryType(1L);
+        req.setSearchable(1L);
+        req.setValidationType(1L);
+        req.setMentionAllAuthority(1L);
+        req.setManagementType(1L);
+        req.setChatBannedType(0L);
+        return client.execute(req, dingtalkApiClientManager.getClient());
     }
 
     /**
-     * 群加人
-     *
      * @param chatId      群Id
      * @param joinUserIds 群成员UserId列表
      * @return /
      */
-    public boolean joinUsersToChat(String chatId, List<String> joinUserIds) {
-        Assert.notEmpty(chatId, "群Id不能为空");
+    @DingtalkApiExceptionCatch(description = "群加人")
+    public boolean joinUsersToChat(String chatId, List<String> joinUserIds) throws Exception {
+        Assert.notBlank(chatId, "群Id不能为空");
         Assert.notEmpty(joinUserIds, "群成员UserId列表不能为空");
         Assert.checkBetween(joinUserIds.size(), 1, 40, "群成员UserId列表长度范围1~40");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
-            OapiChatUpdateRequest req = new OapiChatUpdateRequest();
-            req.setChatid(chatId);
-            req.setAddUseridlist(joinUserIds);
-            OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("群加人成功");
-            return rsp.isSuccess();
-        } catch (Exception e) {
-            log.info("群加人失败", e);
-            throw new BadRequestException("群加人失败");
-        }
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
+        OapiChatUpdateRequest req = new OapiChatUpdateRequest();
+        req.setChatid(chatId);
+        req.setAddUseridlist(joinUserIds);
+        OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.isSuccess();
     }
 
     /**
-     * 群踢人
-     *
      * @param chatId         群Id
      * @param kickOutUserIds 群成员UserId列表
      * @return /
      */
-    public boolean kickOutUsersFromChat(String chatId, List<String> kickOutUserIds) {
-        Assert.notEmpty(chatId, "群Id不能为空");
+    @DingtalkApiExceptionCatch(description = "群踢人")
+    public boolean kickOutUsersFromChat(String chatId, List<String> kickOutUserIds) throws Exception {
+        Assert.notBlank(chatId, "群Id不能为空");
         Assert.notEmpty(kickOutUserIds, "群成员UserId列表不能为空");
         Assert.checkBetween(kickOutUserIds.size(), 1, 40, "群成员UserId列表长度范围1~40");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
-            OapiChatUpdateRequest req = new OapiChatUpdateRequest();
-            req.setChatid(chatId);
-            req.setDelUseridlist(kickOutUserIds);
-            OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("群踢人成功");
-            return rsp.isSuccess();
-        } catch (Exception e) {
-            log.info("群踢人失败", e);
-            throw new BadRequestException("群踢人失败");
-        }
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
+        OapiChatUpdateRequest req = new OapiChatUpdateRequest();
+        req.setChatid(chatId);
+        req.setDelUseridlist(kickOutUserIds);
+        OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.isSuccess();
     }
 
     /**
-     * 修改群名称
-     *
      * @param chatId 群Id
      * @param name   群名称
      * @return /
      */
-    public boolean modifyChatName(String chatId, String name) {
-        Assert.notEmpty(chatId, "群Id不能为空");
-        Assert.notEmpty(name, "群名称不能为空");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
-            OapiChatUpdateRequest req = new OapiChatUpdateRequest();
-            req.setChatid(chatId);
-            req.setName(name);
-            OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("修改群名称成功");
-            return rsp.isSuccess();
-        } catch (Exception e) {
-            log.info("修改群名称失败", e);
-            throw new BadRequestException("修改群名称失败");
-        }
+    @DingtalkApiExceptionCatch(description = "修改群名称")
+    public boolean modifyChatName(String chatId, String name) throws Exception {
+        Assert.notBlank(chatId, "群Id不能为空");
+        Assert.notBlank(name, "群名称不能为空");
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
+        OapiChatUpdateRequest req = new OapiChatUpdateRequest();
+        req.setChatid(chatId);
+        req.setName(name);
+        OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.isSuccess();
     }
 
     /**
-     * 转让群主
-     *
      * @param chatId  群Id
      * @param ownerId 群主Id
      * @return /
      */
-    public boolean transferChatOwner(String chatId, String ownerId) {
-        Assert.notEmpty(chatId, "群Id不能为空");
-        Assert.notEmpty(ownerId, "群主Id不能为空");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
-            OapiChatUpdateRequest req = new OapiChatUpdateRequest();
-            req.setChatid(chatId);
-            req.setOwner(ownerId);
-            OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("转让群主成功");
-            return rsp.isSuccess();
-        } catch (Exception e) {
-            log.info("转让群主失败", e);
-            throw new BadRequestException("转让群主失败");
-        }
+    @DingtalkApiExceptionCatch(description = "转让群主")
+    public boolean transferChatOwner(String chatId, String ownerId) throws Exception {
+        Assert.notBlank(chatId, "群Id不能为空");
+        Assert.notBlank(ownerId, "群主Id不能为空");
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/update");
+        OapiChatUpdateRequest req = new OapiChatUpdateRequest();
+        req.setChatid(chatId);
+        req.setOwner(ownerId);
+        OapiChatUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.isSuccess();
     }
 
     /**
-     * 添加群管理员
-     *
      * @param chatId      群Id
      * @param joinUserIds 群成员UserId列表
      * @return /
      */
-    public boolean joinAdminUsersToChat(String chatId, List<String> joinUserIds) {
-        Assert.notEmpty(chatId, "群Id不能为空");
+    @DingtalkApiExceptionCatch(description = "添加群管理员")
+    public boolean joinAdminUsersToChat(String chatId, List<String> joinUserIds) throws Exception {
+        Assert.notBlank(chatId, "群Id不能为空");
         Assert.notEmpty(joinUserIds, "群成员UserId列表不能为空");
         Assert.checkBetween(joinUserIds.size(), 1, 40, "群成员UserId列表长度范围1~40");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/chat/subadmin/update");
-            OapiChatSubadminUpdateRequest req = new OapiChatSubadminUpdateRequest();
-            req.setChatid(chatId);
-            req.setUserids(String.join(",", joinUserIds));
-            req.setRole(2L);
-            OapiChatSubadminUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("添加群管理员成功");
-            return rsp.isSuccess();
-        } catch (Exception e) {
-            log.info("添加群管理员失败", e);
-            throw new BadRequestException("添加群管理员失败");
-        }
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/chat/subadmin/update");
+        OapiChatSubadminUpdateRequest req = new OapiChatSubadminUpdateRequest();
+        req.setChatid(chatId);
+        req.setUserids(String.join(",", joinUserIds));
+        req.setRole(2L);
+        OapiChatSubadminUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.isSuccess();
     }
 
     /**
-     * 踢出群管理员
-     *
      * @param chatId      群Id
      * @param joinUserIds 群成员UserId列表
      * @return /
      */
-    public boolean kickOutAdminUsersToChat(String chatId, List<String> joinUserIds) {
-        Assert.notEmpty(chatId, "群Id不能为空");
+    @DingtalkApiExceptionCatch(description = "踢出群管理员")
+    public boolean kickOutAdminUsersToChat(String chatId, List<String> joinUserIds) throws Exception {
+        Assert.notBlank(chatId, "群Id不能为空");
         Assert.notEmpty(joinUserIds, "群成员UserId列表不能为空");
         Assert.checkBetween(joinUserIds.size(), 1, 40, "群成员UserId列表长度范围1~40");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/chat/subadmin/update");
-            OapiChatSubadminUpdateRequest req = new OapiChatSubadminUpdateRequest();
-            req.setChatid(chatId);
-            req.setUserids(String.join(",", joinUserIds));
-            req.setRole(3L);
-            OapiChatSubadminUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("踢出群管理员成功");
-            return rsp.isSuccess();
-        } catch (Exception e) {
-            log.info("踢出群管理员失败", e);
-            throw new BadRequestException("踢出群管理员失败");
-        }
-    }
-
-    /**
-     * 获取群信息
-     *
-     * @param chatId 群Id
-     * @return /
-     */
-    public OapiChatGetResponse.ChatInfo describeChatById(String chatId) {
-        Assert.notEmpty(chatId, "群Id不能为空");
-        try {
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/get");
-            OapiChatGetRequest req = new OapiChatGetRequest();
-            req.setChatid(chatId);
-            req.setHttpMethod("GET");
-            OapiChatGetResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
-            log.info("获取群信息成功");
-            return rsp.getChatInfo();
-        } catch (Exception e) {
-            log.info("获取群信息失败", e);
-            return null;
-        }
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/chat/subadmin/update");
+        OapiChatSubadminUpdateRequest req = new OapiChatSubadminUpdateRequest();
+        req.setChatid(chatId);
+        req.setUserids(String.join(",", joinUserIds));
+        req.setRole(3L);
+        OapiChatSubadminUpdateResponse rsp = client.execute(req, dingtalkApiClientManager.getClient());
+        return rsp.isSuccess();
     }
 }

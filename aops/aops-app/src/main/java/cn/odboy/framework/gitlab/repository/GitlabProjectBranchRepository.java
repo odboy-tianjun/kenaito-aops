@@ -18,7 +18,9 @@ package cn.odboy.framework.gitlab.repository;
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.Pager;
@@ -46,14 +48,13 @@ public class GitlabProjectBranchRepository {
     private final GitlabProjectRepository gitlabProjectRepository;
 
     /**
-     * 创建分支
-     *
      * @param projectId  项目id
      * @param branchName 分支名称
      * @param ref        从什么分支创建, 比如: master
      * @return /
      */
-    public Branch createBranchByProjectId(Long projectId, String branchName, String ref) {
+    @GitlabApiExceptionCatch(description = "创建分支")
+    public Branch createBranchByProjectId(Long projectId, String branchName, String ref) throws Exception {
         Project project = gitlabProjectRepository.describeProjectById(projectId);
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             RepositoryApi gitlabApiClientManagerApi = client.getRepositoryApi();
@@ -61,21 +62,17 @@ public class GitlabProjectBranchRepository {
                 ref = project.getDefaultBranch();
             }
             return gitlabApiClientManagerApi.createBranch(projectId, branchName, ref);
-        } catch (Exception e) {
-            log.error("创建分支失败", e);
-            throw new BadRequestException("创建分支失败");
         }
     }
 
     /**
-     * 创建分支
-     *
      * @param projectName 项目名称
      * @param branchName  分支名称
      * @param ref         从什么分支创建, 比如: master
      * @return /
      */
-    public Branch createBranchByProjectName(String projectName, String branchName, String ref) {
+    @GitlabApiExceptionCatch(description = "创建分支")
+    public Branch createBranchByProjectName(String projectName, String branchName, String ref) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -84,28 +81,25 @@ public class GitlabProjectBranchRepository {
     }
 
     /**
-     * 项目id获取分支
-     *
      * @param projectId  项目id
      * @param branchName 分支名称
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "根据projectId获取分支", throwException = false)
     public Branch describeBranchByProjectId(Long projectId, String branchName) {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             return client.getRepositoryApi().getBranch(projectId, branchName);
-        } catch (Exception e) {
-            log.error("根据projectId获取分支失败", e);
-            throw new BadRequestException("根据projectId获取分支失败");
         }
     }
 
     /**
-     * 项目名称获取分支
-     *
      * @param projectName 项目名称
      * @param branchName  分支名称
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "项目名称获取分支", throwException = false)
     public Branch describeBranchByProjectName(String projectName, String branchName) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
@@ -115,12 +109,12 @@ public class GitlabProjectBranchRepository {
     }
 
     /**
-     * 关键字分页获取分支
-     *
      * @param projectId 项目id
      * @param searchKey 关键字
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "关键字分页获取分支", throwException = false)
     public List<Branch> searchBranchesByProjectId(Long projectId, String searchKey) {
         List<Branch> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
@@ -128,19 +122,17 @@ public class GitlabProjectBranchRepository {
             while (pager.hasNext()) {
                 list.addAll(pager.next());
             }
-        } catch (Exception e) {
-            log.error("获取分支列表失败", e);
         }
         return list;
     }
 
     /**
-     * 关键字分页获取分支
-     *
      * @param projectName 项目名称
      * @param searchKey   关键字
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "关键字分页获取分支", throwException = false)
     public List<Branch> searchBranchesByProjectName(String projectName, String searchKey) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
@@ -150,26 +142,22 @@ public class GitlabProjectBranchRepository {
     }
 
     /**
-     * 项目id删除分支
-     *
      * @param projectId  项目id
      * @param branchName 分支名称
      */
-    public void deleteBranchByProjectId(Long projectId, String branchName) {
+    @GitlabApiExceptionCatch(description = "根据projectId删除分支")
+    public void deleteBranchByProjectId(Long projectId, String branchName) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             client.getRepositoryApi().deleteBranch(projectId, branchName);
-        } catch (Exception e) {
-            log.error("根据projectId删除分支失败", e);
         }
     }
 
     /**
-     * 项目名称删除分支
-     *
      * @param projectName 项目名称
      * @param branchName  分支名称
      */
-    public void deleteBranchByProjectName(String projectName, String branchName) {
+    @GitlabApiExceptionCatch(description = "根据projectName删除分支")
+    public void deleteBranchByProjectName(String projectName, String branchName) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -178,13 +166,13 @@ public class GitlabProjectBranchRepository {
     }
 
     /**
-     * 比较分支(合并分支之前, 展示改动的内容)
-     *
      * @param projectId    项目id
      * @param sourceBranch 来源分支
      * @param targetBranch 目标分支
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "根据projectId比较分支差异(合并分支之前, 展示改动的内容)")
     public CompareResults compareBranchByProjectId(Long projectId, String sourceBranch, String targetBranch) {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             // 比较两个分支
@@ -199,20 +187,17 @@ public class GitlabProjectBranchRepository {
                 System.out.println("  " + diff.getOldPath() + " -> " + diff.getNewPath());
             }
             return compareResults;
-        } catch (Exception e) {
-            log.error("根据projectId比较分支差异失败", e);
-            throw new BadRequestException("根据projectId比较分支差异失败");
         }
     }
 
     /**
-     * 比较分支(合并分支之前, 展示改动的内容)
-     *
      * @param projectName  项目名称
      * @param sourceBranch 源分支
      * @param targetBranch 目标分支
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "根据projectName比较分支差异(合并分支之前, 展示改动的内容)")
     public CompareResults compareBranchByProjectName(String projectName, String sourceBranch, String targetBranch) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {

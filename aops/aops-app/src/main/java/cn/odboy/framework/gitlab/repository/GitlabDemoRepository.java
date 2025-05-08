@@ -15,8 +15,8 @@
  */
 package cn.odboy.framework.gitlab.repository;
 
-import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
@@ -34,12 +34,11 @@ import org.springframework.stereotype.Component;
 public class GitlabDemoRepository {
     private final GitlabApiClientManager gitlabApiClientManager;
 
-    public void test() {
+
+    @GitlabApiExceptionCatch(description = "例子")
+    public void test() throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             client.getJobApi().cancelJob(null, null);
-        } catch (Exception e) {
-            log.error("xxx失败", e);
-            throw new BadRequestException("xxx失败");
         }
     }
 }

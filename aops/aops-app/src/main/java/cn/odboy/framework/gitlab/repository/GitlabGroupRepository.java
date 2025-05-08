@@ -15,9 +15,10 @@
  */
 package cn.odboy.framework.gitlab.repository;
 
-import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GroupApi;
@@ -41,12 +42,11 @@ public class GitlabGroupRepository {
     private final GitlabApiClientManager gitlabApiClientManager;
 
     /**
-     * 创建Git分组 -> ok
-     *
      * @param groupName /
      * @return /
      */
-    public Group createGroup(String groupName) {
+    @GitlabApiExceptionCatch(description = "创建Git分组 -> ok")
+    public Group createGroup(String groupName) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             GroupParams groupParams = new GroupParams();
@@ -55,62 +55,50 @@ public class GitlabGroupRepository {
             // 私有分组
             groupParams.withVisibility("0");
             return groupApi.createGroup(groupParams);
-        } catch (Exception e) {
-            log.error("创建Git分组失败", e);
-            throw new BadRequestException("创建Git分组失败");
         }
     }
 
     /**
-     * 通过GroupName查Git分组 -> ok
-     *
      * @param groupName /
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "通过groupName查Git分组 -> ok", throwException = false)
     public Group describeGroupByGroupName(String groupName) {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             return groupApi.getGroupsStream().filter(f -> f.getName().equals(groupName)).findFirst().orElse(null);
-        } catch (Exception e) {
-            log.error("通过groupName查Git分组失败", e);
-            return null;
         }
     }
 
     /**
-     * 分页获取Git分组 -> ok
-     *
      * @param page 当前页
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "分页获取Git分组 -> ok", throwException = false)
     public List<Group> listGroups(int page) {
         int newPage = page <= 0 ? 1 : page;
         List<Group> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             return groupApi.getGroups(newPage, 10000);
-        } catch (Exception e) {
-            log.error("分页获取Git分组失败", e);
-            return list;
         }
     }
 
 
     /**
-     * 分页获取分组项目 -> ok
-     *
      * @param page 当前页
      * @return /
      */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "分页获取分组项目 -> ok", throwException = false)
     public List<Project> listProjects(Long groupId, int page) {
         int newPage = page <= 0 ? 1 : page;
         List<Project> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             return groupApi.getProjects(groupId, newPage, 10000);
-        } catch (Exception e) {
-            log.error("分页获取分组应用失败", e);
-            return list;
         }
     }
 }

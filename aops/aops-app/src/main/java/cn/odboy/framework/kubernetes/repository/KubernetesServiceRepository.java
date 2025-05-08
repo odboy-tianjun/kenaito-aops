@@ -35,6 +35,7 @@ import io.kubernetes.client.openapi.models.V1ServiceBuilder;
 import io.kubernetes.client.openapi.models.V1ServicePort;
 import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.Objects;
@@ -50,6 +51,35 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class KubernetesServiceRepository {
     private final KubernetesApiClientManager k8SClientAdmin;
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "根据appName获取Service", throwException = false)
+    public V1Service describeServiceByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        String serviceName = KubernetesResourceNameUtil.getServiceName(appNameVo.getValue(), clusterCodeVo.getValue());
+        return coreV1Api.readNamespacedService(
+                serviceName,
+                appNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "根据name获取Service", throwException = false)
+    public V1Service describeServiceByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+        return coreV1Api.readNamespacedService(
+                resourceNameVo.getValue(),
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
 
     @KubernetesApiExceptionCatch(description = "创建Service")
     public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Create args) throws Exception {
@@ -100,32 +130,6 @@ public class KubernetesServiceRepository {
         );
     }
 
-    @KubernetesApiExceptionCatch(description = "根据appName获取Service", throwException = false)
-    public V1Service describeServiceByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-        String serviceName = KubernetesResourceNameUtil.getServiceName(appNameVo.getValue(), clusterCodeVo.getValue());
-        return coreV1Api.readNamespacedService(
-                serviceName,
-                appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
-
-    @KubernetesApiExceptionCatch(description = "根据name获取Service", throwException = false)
-    public V1Service describeServiceByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-        CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-        return coreV1Api.readNamespacedService(
-                resourceNameVo.getValue(),
-                namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
 
     @KubernetesApiExceptionCatch(description = "从yml加载Service")
     public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.LoadFromYaml args) throws Exception {

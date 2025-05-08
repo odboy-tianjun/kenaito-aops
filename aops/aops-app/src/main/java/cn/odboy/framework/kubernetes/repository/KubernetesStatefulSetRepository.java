@@ -48,6 +48,7 @@ import io.kubernetes.client.openapi.models.V1Status;
 import io.kubernetes.client.openapi.models.V1TCPSocketAction;
 import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -66,6 +67,35 @@ import java.util.Objects;
 public class KubernetesStatefulSetRepository {
     private final KubernetesApiClientManager k8SClientAdmin;
     private final KubernetesPodRepository kubernetesPodRepository;
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "根据appName获取StatefulSet", throwException = false)
+    public V1StatefulSet describeStatefulSetByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
+        String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(appNameVo.getValue(), clusterCodeVo.getValue());
+        return appsV1Api.readNamespacedStatefulSet(
+                statefulSetName,
+                appNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
+
+    @SneakyThrows
+    @KubernetesApiExceptionCatch(description = "根据name获取StatefulSet", throwException = false)
+    public V1StatefulSet describeStatefulSetByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
+        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
+        return appsV1Api.readNamespacedStatefulSet(
+                resourceNameVo.getValue(),
+                namespaceNameVo.getValue(),
+                new ArgsPrettyVo(false).getValue(),
+                null,
+                null
+        );
+    }
 
     @KubernetesApiExceptionCatch(description = "创建StatefulSet")
     public V1StatefulSet createStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.Create args) throws Exception {
@@ -307,33 +337,6 @@ public class KubernetesStatefulSetRepository {
                 dryRunVo.getValue(),
                 null,
                 null,
-                null,
-                null
-        );
-    }
-
-    @KubernetesApiExceptionCatch(description = "根据appName获取StatefulSet", throwException = false)
-    public V1StatefulSet describeStatefulSetByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) throws Exception {
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(appNameVo.getValue(), clusterCodeVo.getValue());
-        return appsV1Api.readNamespacedStatefulSet(
-                statefulSetName,
-                appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
-                null,
-                null
-        );
-    }
-
-    @KubernetesApiExceptionCatch(description = "根据name获取StatefulSet", throwException = false)
-    public V1StatefulSet describeStatefulSetByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) throws Exception {
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
-        AppsV1Api appsV1Api = new AppsV1Api(apiClient);
-        return appsV1Api.readNamespacedStatefulSet(
-                resourceNameVo.getValue(),
-                namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
                 null,
                 null
         );

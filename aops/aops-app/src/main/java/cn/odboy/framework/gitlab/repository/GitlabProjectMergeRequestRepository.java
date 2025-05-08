@@ -19,7 +19,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.gitlab.constant.GitlabDefaultConst;
 import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
+import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.Constants;
 import org.gitlab4j.api.GitLabApi;
@@ -41,113 +43,6 @@ import java.util.List;
 public class GitlabProjectMergeRequestRepository {
     private final GitlabApiClientManager gitlabApiClientManager;
     private final GitlabProjectRepository gitlabProjectRepository;
-
-    /**
-     * 创建合并请求
-     *
-     * @param projectName  项目名称
-     * @param sourceBranch 源分支名称
-     * @param targetBranch 目标分支名称
-     * @param title        简短标题
-     * @param description  详细说明
-     * @return /
-     */
-    public MergeRequest createMergeRequest(String projectName, String sourceBranch, String targetBranch, String title, String description) {
-        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
-        if (project == null) {
-            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
-        }
-        return createMergeRequest(project.getId(), sourceBranch, targetBranch, title, description);
-    }
-
-    /**
-     * 创建合并请求
-     *
-     * @param projectId    项目Id
-     * @param sourceBranch 源分支名称
-     * @param targetBranch 目标分支名称
-     * @param title        简短标题
-     * @param description  详细说明
-     */
-    public MergeRequest createMergeRequest(Long projectId, String sourceBranch, String targetBranch, String title, String description) {
-        if (StrUtil.isBlank(title)) {
-            title = String.format("%s 合并到 %s", sourceBranch, targetBranch);
-        }
-        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
-            // 这里有个问题，如果不指定assigneeId（处理人）的话，那么合并请求会在冲突解决的同时，自动接受合并请求;
-            // 所以，如果assigneeId=null的时候，无需调用acceptMergeRequest方法
-            return auth.getMergeRequestApi().createMergeRequest(projectId, sourceBranch, targetBranch, title, description, GitlabDefaultConst.ROOT_NAMESPACE_ID);
-        } catch (Exception e) {
-            log.error("创建分支合并请求失败", e);
-            if (e.getMessage().contains("Another open merge request already exists for this source branch")) {
-                throw new BadRequestException("创建分支合并请求失败，已存在一个打开的合并请求");
-            }
-            throw new BadRequestException("创建分支合并请求失败");
-        }
-    }
-
-    /**
-     * 获取合并请求详情
-     *
-     * @param projectName     项目名称
-     * @param mergeRequestIid 合并请求iid
-     * @return /
-     */
-    public MergeRequest describeMergeRequest(String projectName, Long mergeRequestIid) {
-        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
-        if (project == null) {
-            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
-        }
-        return describeMergeRequest(project.getId(), mergeRequestIid);
-    }
-
-    /**
-     * 获取合并请求详情
-     *
-     * @param projectId       项目Id
-     * @param mergeRequestIid 合并请求iid
-     * @return /
-     */
-    public MergeRequest describeMergeRequest(Long projectId, Long mergeRequestIid) {
-        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
-            return auth.getMergeRequestApi().getMergeRequest(projectId, mergeRequestIid);
-        } catch (Exception e) {
-            log.error("获取分支合并请求详情失败", e);
-            throw new BadRequestException("获取分支合并请求详情失败");
-        }
-    }
-
-    /**
-     * 获取Opened状态的合并请求列表
-     *
-     * @param projectName 项目名称
-     * @return /
-     */
-    public List<MergeRequest> listOpenedMergeRequests(String projectName) {
-        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
-        if (project == null) {
-            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
-        }
-        return listOpenedMergeRequests(project.getId());
-    }
-
-    /**
-     * 获取Opened状态的合并请求列表
-     *
-     * @param projectId 项目Id
-     * @return /
-     */
-    public List<MergeRequest> listOpenedMergeRequests(Long projectId) {
-        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
-            MergeRequestFilter filter = new MergeRequestFilter();
-            filter.setProjectId(projectId);
-            filter.setState(Constants.MergeRequestState.OPENED);
-            return auth.getMergeRequestApi().getMergeRequests(filter);
-        } catch (Exception e) {
-            log.error("获取Opened状态的合并请求列表", e);
-            throw new BadRequestException("获取Opened状态的合并请求列表");
-        }
-    }
 
     /**
      * 合并请求是否存在冲突
@@ -202,13 +97,105 @@ public class GitlabProjectMergeRequestRepository {
     }
 
     /**
-     * 接受合并请求
-     *
+     * @param projectName     项目名称
+     * @param mergeRequestIid 合并请求iid
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取合并请求详情", throwException = false)
+    public MergeRequest describeMergeRequest(String projectName, Long mergeRequestIid) {
+        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
+        if (project == null) {
+            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
+        }
+        return describeMergeRequest(project.getId(), mergeRequestIid);
+    }
+
+    /**
+     * @param projectId       项目Id
+     * @param mergeRequestIid 合并请求iid
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取分支合并请求详情", throwException = false)
+    public MergeRequest describeMergeRequest(Long projectId, Long mergeRequestIid) {
+        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
+            return auth.getMergeRequestApi().getMergeRequest(projectId, mergeRequestIid);
+        }
+    }
+
+    /**
+     * @param projectName 项目名称
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取Opened状态的合并请求列表", throwException = false)
+    public List<MergeRequest> listOpenedMergeRequests(String projectName) {
+        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
+        if (project == null) {
+            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
+        }
+        return listOpenedMergeRequests(project.getId());
+    }
+
+    /**
+     * @param projectId 项目Id
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "获取Opened状态的合并请求列表", throwException = false)
+    public List<MergeRequest> listOpenedMergeRequests(Long projectId) {
+        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
+            MergeRequestFilter filter = new MergeRequestFilter();
+            filter.setProjectId(projectId);
+            filter.setState(Constants.MergeRequestState.OPENED);
+            return auth.getMergeRequestApi().getMergeRequests(filter);
+        }
+    }
+
+    /**
+     * @param projectName  项目名称
+     * @param sourceBranch 源分支名称
+     * @param targetBranch 目标分支名称
+     * @param title        简短标题
+     * @param description  详细说明
+     * @return /
+     */
+    @GitlabApiExceptionCatch(description = "创建分支合并请求")
+    public MergeRequest createMergeRequest(String projectName, String sourceBranch, String targetBranch, String title, String description) throws Exception {
+        Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
+        if (project == null) {
+            throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
+        }
+        return createMergeRequest(project.getId(), sourceBranch, targetBranch, title, description);
+    }
+
+    /**
+     * @param projectId    项目Id
+     * @param sourceBranch 源分支名称
+     * @param targetBranch 目标分支名称
+     * @param title        简短标题
+     * @param description  详细说明
+     */
+    @GitlabApiExceptionCatch(description = "创建分支合并请求")
+    public MergeRequest createMergeRequest(Long projectId, String sourceBranch, String targetBranch, String title, String description) throws Exception {
+        if (StrUtil.isBlank(title)) {
+            title = String.format("%s 合并到 %s", sourceBranch, targetBranch);
+        }
+        try (GitLabApi auth = gitlabApiClientManager.getClient()) {
+            // 这里有个问题，如果不指定assigneeId（处理人）的话，那么合并请求会在冲突解决的同时，自动接受合并请求;
+            // 所以，如果assigneeId=null的时候，无需调用acceptMergeRequest方法
+            return auth.getMergeRequestApi().createMergeRequest(projectId, sourceBranch, targetBranch, title, description, GitlabDefaultConst.ROOT_NAMESPACE_ID);
+        }
+    }
+
+    /**
      * @param projectName  项目名称
      * @param mergeRequest 合并请求
      * @return /
      */
-    public MergeRequest acceptMergeRequest(String projectName, MergeRequest mergeRequest) {
+    @GitlabApiExceptionCatch(description = "接受分支合并请求")
+    public MergeRequest acceptMergeRequest(String projectName, MergeRequest mergeRequest) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -217,30 +204,25 @@ public class GitlabProjectMergeRequestRepository {
     }
 
     /**
-     * 接受合并请求
-     *
      * @param projectId    项目Id
      * @param mergeRequest 合并请求
      * @return /
      */
-    public MergeRequest acceptMergeRequest(Long projectId, MergeRequest mergeRequest) {
+    @GitlabApiExceptionCatch(description = "接受分支合并请求")
+    public MergeRequest acceptMergeRequest(Long projectId, MergeRequest mergeRequest) throws Exception {
         String mergeCommitMessage = mergeRequest.getTitle() == null ? mergeRequest.getDescription() : mergeRequest.getTitle();
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getMergeRequestApi().acceptMergeRequest(projectId, mergeRequest.getIid(), mergeCommitMessage, false, false);
-        } catch (Exception e) {
-            log.error("接受合并请求失败", e);
-            throw new BadRequestException("接受合并请求失败");
         }
     }
 
     /**
-     * 关闭合并请求
-     *
      * @param projectName     项目名称
      * @param mergeRequestIid 合并请求iid
      * @return /
      */
-    public MergeRequest closeMergeRequest(String projectName, Long mergeRequestIid) {
+    @GitlabApiExceptionCatch(description = "关闭分支合并请求")
+    public MergeRequest closeMergeRequest(String projectName, Long mergeRequestIid) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
@@ -249,18 +231,14 @@ public class GitlabProjectMergeRequestRepository {
     }
 
     /**
-     * 关闭合并请求
-     *
      * @param projectId       项目Id
      * @param mergeRequestIid 合并请求iid
      * @return /
      */
-    public MergeRequest closeMergeRequest(Long projectId, Long mergeRequestIid) {
+    @GitlabApiExceptionCatch(description = "关闭分支合并请求")
+    public MergeRequest closeMergeRequest(Long projectId, Long mergeRequestIid) throws Exception {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getMergeRequestApi().cancelMergeRequest(projectId, mergeRequestIid);
-        } catch (Exception e) {
-            log.error("关闭合并请求失败", e);
-            throw new BadRequestException("关闭合并请求失败");
         }
     }
 }
