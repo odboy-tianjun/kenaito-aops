@@ -22,8 +22,8 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.informers.SharedInformerFactory;
 import io.fabric8.kubernetes.client.informers.cache.Lister;
 import lombok.extern.slf4j.Slf4j;
@@ -70,11 +70,9 @@ public class KubernetesResourceListener {
      * @param clusterCode 集群编码
      * @param content     连接配置
      */
-    @SuppressWarnings("all")
     public void addListener(String clusterCode, String content) {
-        try {
-            Config config = Config.fromKubeconfig(content);
-            KubernetesClient client = new DefaultKubernetesClient(config);
+        Config config = Config.fromKubeconfig(content);
+        try (KubernetesClient client = new KubernetesClientBuilder().withConfig(config).build()) {
             // 注册 Informer
             SharedInformerFactory sharedInformerFactory = client.informers();
             int reSyncPeriodInMillis = 1000 * 10;
