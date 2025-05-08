@@ -1,10 +1,7 @@
 package cn.odboy.util.kubernetes;
 
 import cn.hutool.core.lang.Dict;
-import cn.hutool.extra.template.Template;
-import cn.hutool.extra.template.TemplateConfig;
-import cn.hutool.extra.template.TemplateEngine;
-import cn.hutool.extra.template.TemplateUtil;
+import cn.odboy.framework.kubernetes.context.KubernetesYamlTemplateManager;
 import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsYamlVo;
@@ -32,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @date 2025-01-16
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class K8sYamlTests {
+public class KubernetesLoadResourceFromYamlTests {
     @Autowired
     private KubernetesNamespaceRepository kubernetesNamespaceRepository;
     @Autowired
@@ -43,15 +40,17 @@ public class K8sYamlTests {
     private KubernetesStatefulSetRepository kubernetesStatefulSetRepository;
     @Autowired
     private KubernetesOpenKruiseStatefulSetRepository kubernetesOpenKruiseStatefulSetRepository;
+    @Autowired
+    private KubernetesYamlTemplateManager kubernetesYamlTemplateManager;
 
     @Test
     @SneakyThrows
     public void testNamespace() {
         String appName = "demo";
-        String clusterCode = "local";
-        TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("kubernetes/templates/v20250113", TemplateConfig.ResourceMode.CLASSPATH));
-        Template template = engine.getTemplate("Namespace.yaml");
-        String content = template.render(Dict.create().set("appName", appName));
+        String clusterCode = "local_daily";
+        String content = kubernetesYamlTemplateManager.renderNamespaceYamlContent(Dict.create()
+                .set("appName", appName)
+        );
         kubernetesNamespaceRepository.loadNamespaceFromYaml(
                 new ArgsClusterCodeVo(clusterCode),
                 new ArgsDryRunVo(false),
@@ -64,11 +63,9 @@ public class K8sYamlTests {
     public void testService() {
         String appName = "demo";
         String envCode = "daily";
-        String clusterCode = "local";
+        String clusterCode = "local_daily";
         String serviceName = KubernetesResourceNameUtil.getServiceName(appName, envCode);
-        TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("kubernetes/templates/v20250113", TemplateConfig.ResourceMode.CLASSPATH));
-        Template template = engine.getTemplate("Service.yaml");
-        String content = template.render(Dict.create()
+        String content = kubernetesYamlTemplateManager.renderServiceYamlContent(Dict.create()
                 .set("appName", appName)
                 .set("envCode", envCode)
                 .set("serviceName", serviceName)
@@ -85,12 +82,10 @@ public class K8sYamlTests {
     @SneakyThrows
     public void testIngress() {
         String appName = "demo";
-        String clusterCode = "local";
+        String clusterCode = "local_daily";
         String envCode = "daily";
         String serviceName = KubernetesResourceNameUtil.getServiceName(appName, envCode);
-        TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("kubernetes/templates/v20250113", TemplateConfig.ResourceMode.CLASSPATH));
-        Template template = engine.getTemplate("Ingress.yaml");
-        String content = template.render(Dict.create()
+        String content = kubernetesYamlTemplateManager.renderIngressYamlContent(Dict.create()
                 .set("appName", appName)
                 .set("envCode", envCode)
                 .set("serviceName", serviceName)
@@ -108,14 +103,12 @@ public class K8sYamlTests {
     @SneakyThrows
     public void testStatefulSet() {
         String appName = "demo";
-        String clusterCode = "local";
+        String clusterCode = "local_daily";
         String envCode = "daily";
         String podName = KubernetesResourceNameUtil.getPodName(appName, envCode);
         Integer replicas = 2;
         String appVersion = "online_20250116";
-        TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("kubernetes/templates/v20250113", TemplateConfig.ResourceMode.CLASSPATH));
-        Template template = engine.getTemplate("StatefulSet.yaml");
-        String content = template.render(Dict.create()
+        String content = kubernetesYamlTemplateManager.renderStatefulSetYamlContent(Dict.create()
                 .set("appName", appName)
                 .set("envCode", envCode)
                 .set("podName", podName)
@@ -133,14 +126,12 @@ public class K8sYamlTests {
     @SneakyThrows
     public void testKruiseStatefulSet() {
         String appName = "demo";
-        String clusterCode = "local";
+        String clusterCode = "local_daily";
         String envCode = "daily";
         String podName = KubernetesResourceNameUtil.getPodName(appName, envCode);
         Integer replicas = 2;
         String appVersion = "online_20250116";
-        TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("kubernetes/templates/v20250113", TemplateConfig.ResourceMode.CLASSPATH));
-        Template template = engine.getTemplate("KruiseStatefulSet.yaml");
-        String content = template.render(Dict.create()
+        String content = kubernetesYamlTemplateManager.renderKruiseStatefulSetYamlContent(Dict.create()
                 .set("appName", appName)
                 .set("envCode", envCode)
                 .set("podName", podName)

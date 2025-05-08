@@ -251,3 +251,5 @@ minio:
   secret-key: minioadmin
   # 分享链接过期时间，单位天
   share-expire-time: 7
+kubernetes:
+  template-version: v20250113

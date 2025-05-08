@@ -15,7 +15,8 @@
  */
 package cn.odboy.framework.dingtalk.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,8 @@ import org.springframework.stereotype.Component;
  * @author odboy
  * @date 2025-01-15
  */
-@Data
+@Getter
+@Setter
 @Component
 @ConfigurationProperties(prefix = "dingtalk")
 public class DingtalkProperties {

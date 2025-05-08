@@ -6,7 +6,8 @@ import cn.odboy.core.framework.properties.dto.JwtAuthSettingModel;
 import cn.odboy.core.framework.properties.dto.QuartzTaskThreadPoolSettingModel;
 import cn.odboy.core.framework.properties.dto.SwaggerApiDocSettingModel;
 import cn.odboy.core.framework.properties.dto.UserLoginSettingModel;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Component;
  * @author odboy
  * @date 2025-04-13
  */
-@Data
+@Getter
+@Setter
 @Component
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
