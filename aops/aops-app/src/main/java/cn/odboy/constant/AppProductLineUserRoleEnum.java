@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,41 +13,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 应用迭代变更状态
+ * 应用产品线人员角色
  *
  * @author odboy
- * @date 2024-11-15
+ * @date 2024-09-13
  */
 @Getter
 @AllArgsConstructor
-public enum AppIterationChangeStatusEnum {
-    ENABLE(1, "集成"),
-    DISABLE(2, "不集成");
+public enum AppProductLineUserRoleEnum {
+    ADMIN("owner", "负责人"),
+    PE("pe", "PE");
 
-    private final Integer code;
+    private final String code;
     private final String desc;
 
-    public static AppIterationChangeStatusEnum getByCode(Integer code) {
-        for (AppIterationChangeStatusEnum item : AppIterationChangeStatusEnum.values()) {
+    public static AppProductLineUserRoleEnum getByCode(String code) {
+        for (AppProductLineUserRoleEnum item : AppProductLineUserRoleEnum.values()) {
             if (item.code.equals(code)) {
                 return item;
             }
         }
         return null;
-    }
-
-    public static String getDescByCode(Integer code) {
-        for (AppIterationChangeStatusEnum item : AppIterationChangeStatusEnum.values()) {
-            if (item.code.equals(code)) {
-                return item.getDesc();
-            }
-        }
-        return "";
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ package cn.odboy.framework.dingtalk.util;
  * @author odboy
  * @date 2025-02-10
  */
-public class DingTalkTextColorUtil {
+public class DingtalkTextColorUtil {
     /**
      * 获取Error样式内容
      *
      * @param text 文字内容
      */
-    public static String getColorErrorText(String text) {
+    public static String getErrorText(String text) {
         return "<font color=\"#ED4014\"> " + text + " </font>";
     }
 
@@ -36,7 +36,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorDangerText(String text) {
+    public static String getDangerText(String text) {
         return "<font color=\"#F56C6C\"> " + text + " </font>";
     }
 
@@ -45,7 +45,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorSuccessText(String text) {
+    public static String getSuccessText(String text) {
         return "<font color=\"#67C23A\"> " + text + " </font>";
     }
 
@@ -54,7 +54,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getBlueColorText(String text) {
+    public static String getBlueText(String text) {
         return "<font color=\"#409EFF\"> " + text + " </font>";
     }
 
@@ -63,7 +63,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorWarningText(String text) {
+    public static String getWarningText(String text) {
         return "<font color=\"#E6A23C\"> " + text + " </font>";
     }
 
@@ -72,7 +72,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorInfoText(String text) {
+    public static String getInfoText(String text) {
         return "<font color=\"#909399\"> " + text + " </font>";
     }
 
@@ -81,7 +81,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorMainFontText(String text) {
+    public static String getMainFontText(String text) {
         return "<font color=\"#303133\"> " + text + " </font>";
     }
 
@@ -90,7 +90,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorConventionFontText(String text) {
+    public static String getConventionFontText(String text) {
         return "<font color=\"#303133\"> " + text + " </font>";
     }
 
@@ -99,7 +99,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorSecondaryFontText(String text) {
+    public static String getSecondaryFontText(String text) {
         return "<font color=\"#303133\"> " + text + " </font>";
     }
 
@@ -108,7 +108,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorSeizeSeatFontText(String text) {
+    public static String getSeizeSeatFontText(String text) {
         return "<font color=\"#303133\"> " + text + " </font>";
     }
 
@@ -117,7 +117,7 @@ public class DingTalkTextColorUtil {
      *
      * @param text 文字内容
      */
-    public static String getColorBaseBlackFontText(String text) {
+    public static String getBaseBlackFontText(String text) {
         return "<font color=\"#000000\"> " + text + " </font>";
     }
 

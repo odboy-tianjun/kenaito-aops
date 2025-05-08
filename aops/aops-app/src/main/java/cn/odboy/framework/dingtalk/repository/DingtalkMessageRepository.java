@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ public class DingtalkMessageRepository {
      * @return /
      */
     @SneakyThrows
-    @DingtalkApiExceptionCatch(description = "获取工作通知的发送结果", throwException = false)
-    public OapiMessageCorpconversationGetsendresultResponse.AsyncSendResult getWorkNoticeSendResult(Long taskId) {
+    @DingtalkApiExceptionCatch(description = "查询工作通知的发送结果", throwException = false)
+    public OapiMessageCorpconversationGetsendresultResponse.AsyncSendResult describeWorkNoticeSendResult(Long taskId) {
         Assert.notNull(taskId, "taskId不能为空");
         DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/message/corpconversation/getsendresult");
         OapiMessageCorpconversationGetsendresultRequest req = new OapiMessageCorpconversationGetsendresultRequest();

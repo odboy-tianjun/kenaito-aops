@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import cn.odboy.framework.gitlab.context.GitlabApiClientManager;
 import cn.odboy.framework.gitlab.context.GitlabCiFileAdmin;
 import cn.odboy.framework.gitlab.context.GitlabIgnoreFileAdmin;
 import cn.odboy.framework.gitlab.exception.GitlabApiExceptionCatch;
-import cn.odboy.framework.gitlab.model.GitlabProject;
+import cn.odboy.framework.gitlab.model.GitlabProjectCreateArgs;
+import cn.odboy.framework.gitlab.model.GitlabProjectCreateResponse;
+import cn.odboy.framework.kubernetes.model.vo.ArgsAppNameVo;
 import cn.odboy.util.ValidationUtil;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.GroupApi;
 import org.gitlab4j.api.ProjectApi;
 import org.gitlab4j.api.models.AccessLevel;
 import org.gitlab4j.api.models.Namespace;
@@ -58,14 +61,28 @@ public class GitlabProjectRepository {
     private final GitlabApiClientManager gitlabApiClientManager;
     private final GitlabIgnoreFileAdmin gitlabIgnoreFileAdmin;
     private final GitlabCiFileAdmin gitlabCiFileAdmin;
+    /**
+     * @param page 当前页
+     * @return /
+     */
+    @SneakyThrows
+    @GitlabApiExceptionCatch(description = "根据groupId分页查询分组项目 -> ok", throwException = false)
+    public List<Project> describeProjectListByGroupId(Long groupId, int page) {
+        int newPage = page <= 0 ? 1 : page;
+        List<Project> list = new ArrayList<>();
+        try (GitLabApi client = gitlabApiClientManager.getClient()) {
+            GroupApi groupApi = client.getGroupApi();
+            return groupApi.getProjects(groupId, newPage, 10000);
+        }
+    }
 
     /**
      * @param projectId /
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "通过projectId查项目 -> ok", throwException = false)
-    public Project describeProjectById(Long projectId) {
+    @GitlabApiExceptionCatch(description = "根据projectId查询项目 -> ok", throwException = false)
+    public Project describeProjectByProjectId(Long projectId) {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             return projectApi.getProjectsStream().filter(f -> f.getId().equals(projectId)).findFirst().orElse(null);
@@ -77,7 +94,7 @@ public class GitlabProjectRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "通过appName查项目 -> ok", throwException = false)
+    @GitlabApiExceptionCatch(description = "根据appName查询项目 -> ok", throwException = false)
     public Project describeProjectByProjectName(String appName) {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
@@ -86,13 +103,13 @@ public class GitlabProjectRepository {
     }
 
     /**
-     * @param page 当前页
+     * @param currentPage 当前页
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "分页获取项目 -> ok", throwException = false)
-    public List<Project> listProjects(int page) {
-        int newPage = page <= 0 ? 1 : page;
+    @GitlabApiExceptionCatch(description = "分页查询项目列表 -> ok", throwException = false)
+    public List<Project> describeProjectListByCurrentPage(int currentPage) {
+        int newPage = currentPage <= 0 ? 1 : currentPage;
         List<Project> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
@@ -105,8 +122,8 @@ public class GitlabProjectRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "分页获取项目 -> ok", throwException = false)
-    public List<Project> listProjectsByAppName(String appName) {
+    @GitlabApiExceptionCatch(description = "根据appName查询项目列表 -> ok", throwException = false)
+    public List<Project> describeProjectListByAppName(String appName) {
         List<Project> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
@@ -119,17 +136,16 @@ public class GitlabProjectRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "根据关键字分页获取项目 -> ok", throwException = false)
-    public List<Project> searchProjects(String key) {
-        List<Project> list = new ArrayList<>();
+    @GitlabApiExceptionCatch(description = "根据关键字查询项目列表 -> ok", throwException = false)
+    public List<Project> describeProjectListByKey(String key) {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             return projectApi.getProjects(key, 1, 20);
         }
     }
 
-    private GitlabProject.CreateResp transformCreateResp(GitlabProject.CreateArgs args, Project newProject, String newProjectName) {
-        GitlabProject.CreateResp createResp = new GitlabProject.CreateResp();
+    private GitlabProjectCreateResponse transformCreateResp(GitlabProjectCreateArgs args, Project newProject, String newProjectName) {
+        GitlabProjectCreateResponse createResp = new GitlabProjectCreateResponse();
         createResp.setCreatorId(newProject.getCreatorId());
         createResp.setCreatedAt(newProject.getCreatedAt());
         createResp.setDefaultBranch(newProject.getDefaultBranch());
@@ -149,16 +165,10 @@ public class GitlabProjectRepository {
      * @return /
      */
     @GitlabApiExceptionCatch(description = "创建项目 -> ok")
-    public GitlabProject.CreateResp createProject(GitlabProject.CreateArgs args) throws Exception {
+    public GitlabProjectCreateResponse createProject(GitlabProjectCreateArgs args) throws Exception {
         ValidationUtil.validate(args);
         String appName = args.getAppName();
-        String newProjectName = appName.trim();
-//        字符串必须以小写字母开头。
-//        字符串中间可以包含小写字母和数字。
-//        - 符号可以出现多次，并且 - 的左右两边都必须是小写字母或数字
-        if (!Pattern.compile(GitlabDefaultConst.REGEX_APP_NAME).matcher(newProjectName).matches()) {
-            throw new BadRequestException("应用名称格式不正确, 只能由小写字母、数字与符号-组成");
-        }
+        String newProjectName = new ArgsAppNameVo(appName).getValue().trim();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             Optional<Project> loadProjectOptional = projectApi.getProjectsStream().filter(f -> f.getPath().equals(args.getAppName())).findFirst();
@@ -245,7 +255,7 @@ public class GitlabProjectRepository {
      * @param projectId /
      */
     @GitlabApiExceptionCatch(description = "根据projectId删除项目 -> ok")
-    public void deleteProjectById(Long projectId) throws Exception {
+    public void deleteProjectByProjectId(Long projectId) throws Exception {
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             projectApi.deleteProject(projectId);
@@ -256,11 +266,11 @@ public class GitlabProjectRepository {
     }
 
     @GitlabApiExceptionCatch(description = "根据projectId集合删除项目 -> ok")
-    public void deleteProjectsById(List<Long> projectIds) throws Exception {
+    public void deleteProjectsByProjectIds(List<Long> projectIds) throws Exception {
         if (CollUtil.isNotEmpty(projectIds)) {
             for (Long projectId : projectIds) {
                 try {
-                    deleteProjectById(projectId);
+                    deleteProjectByProjectId(projectId);
                 } catch (Exception e) {
                     log.error("根据projectId删除应用失败", e);
                 }
@@ -284,7 +294,7 @@ public class GitlabProjectRepository {
     }
 
     @GitlabApiExceptionCatch(description = "根据appName集合删除项目 -> ok")
-    public void deleteProjectsByProjectNameList(List<String> appNames) throws Exception {
+    public void deleteProjectsByProjectNames(List<String> appNames) throws Exception {
         if (CollUtil.isNotEmpty(appNames)) {
             for (String appName : appNames) {
                 try {

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,35 +13,42 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 应用管理人员角色
+ * 环境枚举
  *
  * @author odboy
- * @date 2024-09-13
+ * @date 2025-01-16
  */
 @Getter
 @AllArgsConstructor
-public enum AppUserRoleEnum {
-    OWNER("owner", "应用负责人"),
-    DEV("dev", "开发人员"),
-    DBA("dba", "数据库管理员"),
-    NETWORK("network", "网络管理员"),
-    CONFIG("config", "配置管理员");
-
+public enum GlobalEnvEnum {
+    Daily("daily", "日常环境"),
+    Stage("stage", "预发环境"),
+    Online("online", "生产环境"),
+    DEFAULT("default", "默认环境");
     private final String code;
     private final String desc;
 
-    public static AppUserRoleEnum getByCode(String code) {
-        for (AppUserRoleEnum item : AppUserRoleEnum.values()) {
-            if (item.code.equals(code)) {
+    public static GlobalEnvEnum getByCode(String code) {
+        for (GlobalEnvEnum item : GlobalEnvEnum.values()) {
+            if (item.getCode().equals(code)) {
                 return item;
             }
         }
-        return null;
+        return DEFAULT;
+    }
+
+    public static String getByDesc(String code) {
+        for (GlobalEnvEnum item : GlobalEnvEnum.values()) {
+            if (item.getCode().equals(code)) {
+                return item.getDesc();
+            }
+        }
+        return DEFAULT.getDesc();
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ public class DingtalkDepartmentRepository {
      * @return /
      */
     @SneakyThrows
-    @DingtalkApiExceptionCatch(description = "获取部门列表", throwException = false)
-    public List<OapiV2DepartmentListsubResponse.DeptBaseResponse> listDepartmentSubs(Long deptId) {
+    @DingtalkApiExceptionCatch(description = "查询部门列表", throwException = false)
+    public List<OapiV2DepartmentListsubResponse.DeptBaseResponse> describeSubDepartmentListByDeptId(Long deptId) {
         Assert.notNull(deptId, "部门Id不能为空");
         DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/department/listsub");
         OapiV2DepartmentListsubRequest req = new OapiV2DepartmentListsubRequest();
@@ -58,14 +58,14 @@ public class DingtalkDepartmentRepository {
     }
 
 
-    private void listAllSubDepartments(long deptId, Consumer<List<OapiV2DepartmentListsubResponse.DeptBaseResponse>> consumer) {
-        List<OapiV2DepartmentListsubResponse.DeptBaseResponse> deptBaseResponses = listDepartmentSubs(deptId);
+    private void loopConsumerDepartmentList(long deptId, Consumer<List<OapiV2DepartmentListsubResponse.DeptBaseResponse>> consumer) {
+        List<OapiV2DepartmentListsubResponse.DeptBaseResponse> deptBaseResponses = describeSubDepartmentListByDeptId(deptId);
         if (deptBaseResponses.isEmpty()) {
             return;
         }
         consumer.accept(deptBaseResponses);
         for (OapiV2DepartmentListsubResponse.DeptBaseResponse deptBaseResponse : deptBaseResponses) {
-            listAllSubDepartments(deptBaseResponse.getDeptId(), consumer);
+            loopConsumerDepartmentList(deptBaseResponse.getDeptId(), consumer);
         }
     }
 }

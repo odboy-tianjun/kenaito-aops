@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.dingtalk.util;
+package cn.odboy.util;
 
 /**
  * 适配 logger 占位符
@@ -21,7 +21,7 @@ package cn.odboy.framework.dingtalk.util;
  * @author odboy
  * @date 2025-01-13
  */
-public class DingtalkLogFmtUtil {
+public class LogFmtUtil {
     /**
      * 替换字符串中的占位符 {} 为传入的参数
      *

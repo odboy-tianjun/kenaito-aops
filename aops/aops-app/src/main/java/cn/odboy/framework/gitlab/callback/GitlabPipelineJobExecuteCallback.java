@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package cn.odboy.framework.gitlab.callback;
 
 
-import cn.odboy.framework.gitlab.model.GitlabPipelineJob;
+import cn.odboy.framework.gitlab.model.GitlabPipelineJobInfoResponse;
 
 /**
  * 流水线任务执行回调
@@ -25,5 +25,5 @@ import cn.odboy.framework.gitlab.model.GitlabPipelineJob;
  * @date 2025-01-17
  */
 public interface GitlabPipelineJobExecuteCallback {
-    void execute(GitlabPipelineJob.Info info);
+    void execute(GitlabPipelineJobInfoResponse info);
 }

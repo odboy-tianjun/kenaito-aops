@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ public class KubernetesNodeRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "获取Node节点列表", throwException = false)
-    public V1NodeList listNodes(ArgsClusterCodeVo clusterCodeVo) {
+    @KubernetesApiExceptionCatch(description = "查询Node节点列表", throwException = false)
+    public V1NodeList describeNodeList(ArgsClusterCodeVo clusterCodeVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         return coreV1Api.listNode(

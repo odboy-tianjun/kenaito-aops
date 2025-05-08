@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,25 +26,25 @@ import shade.com.alibaba.fastjson2.JSONObject;
  * @date 2025-01-16
  */
 public class DingtalkWorkflowConsumeRunner implements Runnable {
-    private final GenericOpenDingTalkEvent event;
+    private final GenericOpenDingTalkEvent genericOpenDingTalkEvent;
 
-    public DingtalkWorkflowConsumeRunner(GenericOpenDingTalkEvent event) {
-        this.event = event;
+    public DingtalkWorkflowConsumeRunner(GenericOpenDingTalkEvent genericOpenDingTalkEvent) {
+        this.genericOpenDingTalkEvent = genericOpenDingTalkEvent;
     }
 
     @Override
     public void run() {
         // 事件唯一Id
-        String eventId = event.getEventId();
+        String eventId = this.genericOpenDingTalkEvent.getEventId();
         // 事件类型
-        String eventType = event.getEventType();
+        String eventType = this.genericOpenDingTalkEvent.getEventType();
         // 事件产生时间
-        Long bornTime = event.getEventBornTime();
+        Long bornTime = this.genericOpenDingTalkEvent.getEventBornTime();
         System.err.println("eventId=" + eventId);
         System.err.println("eventType=" + eventType);
         System.err.println("bornTime=" + bornTime);
         // 获取事件体
-        JSONObject bizData = event.getData();
+        JSONObject bizData = this.genericOpenDingTalkEvent.getData();
         // 处理事件
         process(bizData);
     }

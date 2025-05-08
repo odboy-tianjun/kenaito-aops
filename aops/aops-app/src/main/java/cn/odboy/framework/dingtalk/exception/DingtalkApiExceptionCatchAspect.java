@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ package cn.odboy.framework.dingtalk.exception;
 
 import cn.hutool.core.date.TimeInterval;
 import cn.odboy.exception.BadRequestException;
-import cn.odboy.framework.dingtalk.util.DingtalkLogFmtUtil;
+import cn.odboy.util.LogFmtUtil;
+import cn.odboy.util.ReturnValueHandleUtil;
 import com.aliyun.tea.TeaException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -41,7 +42,7 @@ public class DingtalkApiExceptionCatchAspect {
     }
 
     private Object handleDingtalkApiException(ProceedingJoinPoint joinPoint, DingtalkApiExceptionCatch annotation) {
-        var timeInterval = new TimeInterval();
+        TimeInterval timeInterval = new TimeInterval();
         try {
             Object result = joinPoint.proceed();
             log.info("接口 [{}] 执行耗时: {} ms", annotation.description(), timeInterval.intervalMs());
@@ -51,7 +52,7 @@ public class DingtalkApiExceptionCatchAspect {
                 String exceptionMessage = annotation.description() + "失败, code={}, message={}";
                 log.error(exceptionMessage, teaException.code, teaException.message, teaException);
                 if (annotation.throwException()) {
-                    throw new BadRequestException(DingtalkLogFmtUtil.format(exceptionMessage, teaException.code, teaException.message));
+                    throw new BadRequestException(LogFmtUtil.format(exceptionMessage, teaException.code, teaException.message));
                 }
             }
             String exceptionMessage = annotation.description() + "失败";
@@ -65,7 +66,7 @@ public class DingtalkApiExceptionCatchAspect {
                 String exceptionMessage = annotation.description() + "失败, code={}, message={}";
                 log.error(exceptionMessage, err.code, err.message, err);
                 if (annotation.throwException()) {
-                    throw new BadRequestException(DingtalkLogFmtUtil.format(exceptionMessage, err.code, err.message));
+                    throw new BadRequestException(LogFmtUtil.format(exceptionMessage, err.code, err.message));
                 }
             }
             String exceptionMessage = annotation.description() + "失败";
@@ -74,7 +75,6 @@ public class DingtalkApiExceptionCatchAspect {
                 throw new BadRequestException(exceptionMessage);
             }
         }
-        // 记得判空，虽然这会留下坑
-        return null;
+        return ReturnValueHandleUtil.getDefaultValue(joinPoint);
     }
 }

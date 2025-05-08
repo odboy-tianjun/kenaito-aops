@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -70,19 +70,20 @@ public class KubernetesResourceListener {
      * @param clusterCode 集群编码
      * @param content     连接配置
      */
+    @SuppressWarnings("all")
     public void addListener(String clusterCode, String content) {
         try {
             Config config = Config.fromKubeconfig(content);
             KubernetesClient client = new DefaultKubernetesClient(config);
             // 注册 Informer
             SharedInformerFactory sharedInformerFactory = client.informers();
-            int resyncPeriodInMillis = 1000 * 10;
-            sharedInformerFactory.sharedIndexInformerFor(Pod.class, resyncPeriodInMillis);
-            sharedInformerFactory.sharedIndexInformerFor(Namespace.class, resyncPeriodInMillis);
-            sharedInformerFactory.sharedIndexInformerFor(Service.class, resyncPeriodInMillis);
-            sharedInformerFactory.sharedIndexInformerFor(Endpoints.class, resyncPeriodInMillis);
-            sharedInformerFactory.sharedIndexInformerFor(Node.class, resyncPeriodInMillis);
-            sharedInformerFactory.sharedIndexInformerFor(Ingress.class, resyncPeriodInMillis);
+            int reSyncPeriodInMillis = 1000 * 10;
+            sharedInformerFactory.sharedIndexInformerFor(Pod.class, reSyncPeriodInMillis);
+            sharedInformerFactory.sharedIndexInformerFor(Namespace.class, reSyncPeriodInMillis);
+            sharedInformerFactory.sharedIndexInformerFor(Service.class, reSyncPeriodInMillis);
+            sharedInformerFactory.sharedIndexInformerFor(Endpoints.class, reSyncPeriodInMillis);
+            sharedInformerFactory.sharedIndexInformerFor(Node.class, reSyncPeriodInMillis);
+            sharedInformerFactory.sharedIndexInformerFor(Ingress.class, reSyncPeriodInMillis);
             // 启动所有注册的 Informer
             sharedInformerFactory.startAllRegisteredInformers();
             CLIENT_MAP.put(clusterCode, sharedInformerFactory);

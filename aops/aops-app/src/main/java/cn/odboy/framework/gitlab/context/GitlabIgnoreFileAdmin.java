@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 package cn.odboy.framework.gitlab.context;
 
 import cn.hutool.core.io.IoUtil;
-import cn.odboy.framework.gitlab.config.GitlabProperties;
-import cn.odboy.framework.gitlab.constant.AppLanguageEnum;
+import cn.odboy.constant.AppLanguageEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -37,9 +35,6 @@ import java.util.Map;
 @Component
 public class GitlabIgnoreFileAdmin implements InitializingBean {
     private final Map<String, String> innerMap = new HashMap<>();
-
-    @Autowired
-    private GitlabProperties properties;
 
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class DingtalkChatRepository {
      */
     @SneakyThrows
     @DingtalkApiExceptionCatch(description = "获取群信息", throwException = false)
-    public OapiChatGetResponse.ChatInfo describeChatById(String chatId) {
+    public OapiChatGetResponse.ChatInfo describeChatByChatId(String chatId) {
         Assert.notBlank(chatId, "群Id不能为空");
         DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/chat/get");
         OapiChatGetRequest req = new OapiChatGetRequest();

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package cn.odboy.framework.kubernetes.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.odboy.framework.kubernetes.constant.KubernetesResourceLabelEnum;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,33 +44,5 @@ public class KubernetesResourceLabelSelectorUtil {
             }
         }
         return false;
-    }
-
-    public static String genLabelSelectorExpression(Map<String, String> labelSelector) {
-        String labelSelectorStr = null;
-        if (CollUtil.isNotEmpty(labelSelector)) {
-            // labelSelectorStr = "key1=value1,key2=value2";
-            StringBuilder tempBuilder = new StringBuilder();
-            for (Map.Entry<String, String> kvEntry : labelSelector.entrySet()) {
-                tempBuilder.append(kvEntry.getKey()).append("=").append(kvEntry.getValue()).append(",");
-            }
-            if (!tempBuilder.isEmpty()) {
-                tempBuilder.deleteCharAt(tempBuilder.length() - 1);
-            }
-            if (StrUtil.isNotBlank(tempBuilder)) {
-                labelSelectorStr = tempBuilder.toString();
-            }
-        }
-        return labelSelectorStr;
-    }
-
-    public static Map<String, String> getLabelsByAppName(String appName) {
-        return new HashMap<>(1) {{
-            put(KubernetesResourceLabelEnum.AppName.getCode(), appName);
-        }};
-    }
-
-    public static String getLabelsStrByAppName(String appName) {
-        return KubernetesResourceLabelEnum.AppName.getCode() + "=" + appName;
     }
 }

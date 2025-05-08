@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class DingtalkUserRepository {
      */
     @SneakyThrows
     @DingtalkApiExceptionCatch(description = "分页查询部门用户", throwException = false)
-    private OapiV2UserListResponse.PageResult searchDepartmentUsers(Long deptId, Long cursor) {
+    private OapiV2UserListResponse.PageResult describeDepartmentUserPage(Long deptId, Long cursor) {
         Assert.notNull(deptId, "部门Id不能为空");
         Assert.notNull(cursor, "游标不能为空");
         DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/user/list");
@@ -69,10 +69,10 @@ public class DingtalkUserRepository {
      * @param deptId   部门Id
      * @param consumer /
      */
-    public void listDepartmentUsers(Long deptId, Consumer<List<OapiV2UserListResponse.ListUserResponse>> consumer) {
+    public void loopConsumerDepartmentUserList(Long deptId, Consumer<List<OapiV2UserListResponse.ListUserResponse>> consumer) {
         Long cursor = 0L;
         while (true) {
-            OapiV2UserListResponse.PageResult pageResult = searchDepartmentUsers(deptId, cursor);
+            OapiV2UserListResponse.PageResult pageResult = describeDepartmentUserPage(deptId, cursor);
             if (pageResult == null) {
                 break;
             }
@@ -90,7 +90,7 @@ public class DingtalkUserRepository {
      * @return /
      */
     @SneakyThrows
-    @DingtalkApiExceptionCatch(description = "获取部门下用户数量", throwException = false)
+    @DingtalkApiExceptionCatch(description = "查询部门下用户数量", throwException = false)
     public Long getDepartmentUserCount(Long deptId) {
         Assert.notNull(deptId, "部门Id不能为空");
         DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/user/count");

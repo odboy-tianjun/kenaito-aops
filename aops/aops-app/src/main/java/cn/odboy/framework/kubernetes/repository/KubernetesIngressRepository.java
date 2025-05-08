@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class KubernetesIngressRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据appName获取Ingress", throwException = false)
+    @KubernetesApiExceptionCatch(description = "根据appName查询Ingress", throwException = false)
     public V1Ingress describeIngressByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
@@ -72,7 +72,7 @@ public class KubernetesIngressRepository {
 
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据ingress名称获取Ingress", throwException = false)
+    @KubernetesApiExceptionCatch(description = "根据ingress名称和namespace查询Ingress", throwException = false)
     public V1Ingress describeIngressByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
@@ -94,7 +94,7 @@ public class KubernetesIngressRepository {
                 .withNewMetadata()
                 .withName(KubernetesResourceNameUtil.getIngressName(args.getAppName(), envCode))
                 .withNewNamespace(args.getAppName())
-                .withAnnotations(args.getAnnotations())
+//                .withAnnotations(args.getAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .addNewRule()

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,33 +23,33 @@ package cn.odboy.framework.kubernetes.util;
  */
 public class KubernetesResourceNameUtil {
     public static String getStatefulSetName(String appName, String envCode) {
-        return String.format("devops-sts-%s-%s", appName, envCode);
+        return String.format("aops-sts-%s-%s", appName, envCode);
     }
 
     public static String getDeploymentName(String appName, String envCode) {
-        return String.format("devops-dep-%s-%s", appName, envCode);
+        return String.format("aops-dep-%s-%s", appName, envCode);
     }
 
     public static String getServiceName(String appName, String envCode) {
-        return String.format("devops-svc-%s-%s", appName, envCode);
+        return String.format("aops-svc-%s-%s", appName, envCode);
     }
 
     /**
      * 用于创建一个Headless服务，这个服务将提供每个Pod的稳定网络标识符
      */
     public static String getServiceHeadlessName(String appName, String envCode) {
-        return String.format("devops-hls-%s-%s", appName, envCode);
+        return String.format("aops-hls-%s-%s", appName, envCode);
     }
 
     public static String getVolumeName(String appName, String envCode) {
-        return String.format("devops-vol-%s-%s", appName, envCode);
+        return String.format("aops-vol-%s-%s", appName, envCode);
     }
 
     public static String getIngressName(String appName, String envCode) {
-        return String.format("devops-ing-%s-%s", appName, envCode);
+        return String.format("aops-ing-%s-%s", appName, envCode);
     }
 
     public static String getPodName(String appName, String envCode) {
-        return String.format("devops-pod-%s-%s", appName, envCode);
+        return String.format("aops-pod-%s-%s", appName, envCode);
     }
 }

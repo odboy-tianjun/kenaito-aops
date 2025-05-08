@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package cn.odboy.framework.gitlab.exception;
 
 import cn.hutool.core.date.TimeInterval;
 import cn.odboy.exception.BadRequestException;
+import cn.odboy.util.ReturnValueHandleUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -58,7 +59,6 @@ public class GitlabApiExceptionCatchAspect {
                 throw new BadRequestException(exceptionMessage);
             }
         }
-        // 记得判空，虽然这会留下坑
-        return null;
+        return ReturnValueHandleUtil.getDefaultValue(joinPoint);
     }
 }

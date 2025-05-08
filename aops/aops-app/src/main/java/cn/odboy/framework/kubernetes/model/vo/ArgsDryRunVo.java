@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,10 +18,14 @@ package cn.odboy.framework.kubernetes.model.vo;
 import lombok.Value;
 
 /**
- * 选项值	说明
- * "All"	执行所有阶段的验证（包括准入控制、Schema 校验等），但不持久化到存储。
- * null	默认值，不启用 Dry Run，直接执行请求。
- * 其他字符串	通常无效，会被 API Server 忽略（行为等同于 null）。
+ * 通用参数 是否拟运行<br/>
+ * * 选项值	说明
+ * * "All"	执行所有阶段的验证（包括准入控制、Schema 校验等），但不持久化到存储。
+ * * null	默认值，不启用 Dry Run，直接执行请求。
+ * * 其他字符串	通常无效，会被 API Server 忽略（行为等同于 null）。
+ *
+ * @author odboy
+ * @date 2025-05-01
  */
 @Value
 public class ArgsDryRunVo {

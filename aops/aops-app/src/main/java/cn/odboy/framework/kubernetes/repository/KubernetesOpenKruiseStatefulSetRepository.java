@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class KubernetesOpenKruiseStatefulSetRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据name获取KruiseStatefulSet", throwException = false)
+    @KubernetesApiExceptionCatch(description = "根据name和namespace查询KruiseStatefulSet", throwException = false)
     public KruiseAppsV1alpha1StatefulSet describeStatefulSetByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
         CustomObjectsApi customObjectsApi = new CustomObjectsApi(kubernetesApiClientManager.getClient(clusterCodeVo.getValue()));
         Object obj = customObjectsApi.getNamespacedCustomObject(

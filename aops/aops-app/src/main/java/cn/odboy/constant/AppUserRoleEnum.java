@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,45 +13,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.framework.gitlab.constant;
+package cn.odboy.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 应用语言
+ * 应用管理人员角色
  *
  * @author odboy
  * @date 2024-09-13
  */
 @Getter
 @AllArgsConstructor
-public enum AppLanguageEnum {
-    JAVA("java", "Java"),
-    PYTHON("python", "Python"),
-    GO("golang", "Go"),
-    DOTNET("dotnet", "DotNet"),
-    REACT("react", "React"),
-    VUE("vue", "Vue");
+public enum AppUserRoleEnum {
+    OWNER("owner", "应用负责人"),
+    DEV("dev", "开发人员"),
+    DBA("dba", "数据库管理员"),
+    NETWORK("network", "网络管理员"),
+    CONFIG("config", "配置管理员");
 
     private final String code;
     private final String desc;
 
-    public static AppLanguageEnum getByCode(String code) {
-        for (AppLanguageEnum item : AppLanguageEnum.values()) {
+    public static AppUserRoleEnum getByCode(String code) {
+        for (AppUserRoleEnum item : AppUserRoleEnum.values()) {
             if (item.code.equals(code)) {
                 return item;
             }
         }
         return null;
-    }
-
-    public static String getDescByCode(String code) {
-        for (AppLanguageEnum item : AppLanguageEnum.values()) {
-            if (item.code.equals(code)) {
-                return item.getDesc();
-            }
-        }
-        return "";
     }
 }

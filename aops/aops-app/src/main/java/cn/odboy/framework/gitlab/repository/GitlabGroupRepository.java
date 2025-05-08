@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -77,28 +77,12 @@ public class GitlabGroupRepository {
      */
     @SneakyThrows
     @GitlabApiExceptionCatch(description = "分页获取Git分组 -> ok", throwException = false)
-    public List<Group> listGroups(int page) {
+    public List<Group> describeGroupList(int page) {
         int newPage = page <= 0 ? 1 : page;
         List<Group> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             return groupApi.getGroups(newPage, 10000);
-        }
-    }
-
-
-    /**
-     * @param page 当前页
-     * @return /
-     */
-    @SneakyThrows
-    @GitlabApiExceptionCatch(description = "分页获取分组项目 -> ok", throwException = false)
-    public List<Project> listProjects(Long groupId, int page) {
-        int newPage = page <= 0 ? 1 : page;
-        List<Project> list = new ArrayList<>();
-        try (GitLabApi client = gitlabApiClientManager.getClient()) {
-            GroupApi groupApi = client.getGroupApi();
-            return groupApi.getProjects(groupId, newPage, 10000);
         }
     }
 }

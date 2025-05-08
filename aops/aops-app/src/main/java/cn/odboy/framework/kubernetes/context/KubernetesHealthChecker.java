@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class KubernetesHealthChecker {
 
     public void checkConfigContent(ArgsClusterCodeVo clusterCodeVo) {
         try {
-            KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.getNamespace(clusterCodeVo);
+            KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.describeNamespace(clusterCodeVo);
             if (namespace == null) {
                 throw new BadRequestException("无效配置");
             }
@@ -49,7 +49,7 @@ public class KubernetesHealthChecker {
 
     public void checkConfigContent(ApiClient apiClient) {
         try {
-            KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.getNamespaceByApiClient(apiClient);
+            KubernetesResourceResponse.Namespace namespace = kubernetesNamespaceRepository.describeNamespaceByApiClient(apiClient);
             if (namespace == null) {
                 throw new BadRequestException("无效配置");
             }

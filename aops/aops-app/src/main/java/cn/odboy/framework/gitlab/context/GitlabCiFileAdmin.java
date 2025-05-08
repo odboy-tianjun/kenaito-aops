@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 package cn.odboy.framework.gitlab.context;
 
 import cn.hutool.core.io.IoUtil;
+import cn.odboy.constant.AppLanguageEnum;
 import cn.odboy.constant.GlobalEnvEnum;
-import cn.odboy.framework.gitlab.config.GitlabProperties;
-import cn.odboy.framework.gitlab.constant.AppLanguageEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,7 +42,6 @@ public class GitlabCiFileAdmin implements InitializingBean {
     private final Map<String, String> innerDockerStageFileMap = new HashMap<>();
     private final Map<String, String> innerDockerOnlineFileMap = new HashMap<>();
     private final Map<String, String> innerReleaseFileMap = new HashMap<>();
-    private final GitlabProperties gitlabProperties;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -64,16 +62,12 @@ public class GitlabCiFileAdmin implements InitializingBean {
     }
 
     public String getDockerfileContent(String language, GlobalEnvEnum envEnum) {
-        switch (envEnum) {
-            case Daily:
-                return innerDockerDailyFileMap.getOrDefault(language, "");
-            case Stage:
-                return innerDockerStageFileMap.getOrDefault(language, "");
-            case Online:
-                return innerDockerOnlineFileMap.getOrDefault(language, "");
-            default:
-                return innerDockerDailyFileMap.getOrDefault(language, "");
-        }
+        return switch (envEnum) {
+            case Daily -> innerDockerDailyFileMap.getOrDefault(language, "");
+            case Stage -> innerDockerStageFileMap.getOrDefault(language, "");
+            case Online -> innerDockerOnlineFileMap.getOrDefault(language, "");
+            default -> innerDockerDailyFileMap.getOrDefault(language, "");
+        };
     }
 
     public String getReleaseFileContent(String language) {

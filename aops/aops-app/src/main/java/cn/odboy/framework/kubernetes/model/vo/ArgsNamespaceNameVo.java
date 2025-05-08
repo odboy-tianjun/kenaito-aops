@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@ package cn.odboy.framework.kubernetes.model.vo;
 import cn.hutool.core.lang.Assert;
 import lombok.Value;
 
-
+/**
+ * 通用参数 命名空间
+ *
+ * @author odboy
+ * @date 2025-05-01
+ */
 @Value
 public class ArgsNamespaceNameVo {
     String value;

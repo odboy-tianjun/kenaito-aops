@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,36 +19,39 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 环境枚举
+ * 应用语言
  *
  * @author odboy
- * @date 2025-01-16
+ * @date 2024-09-13
  */
 @Getter
 @AllArgsConstructor
-public enum GlobalEnvEnum {
-    Daily("daily", "日常环境"),
-    Stage("stage", "预发环境"),
-    Online("online", "生产环境"),
-    DEFAULT("default", "默认环境");
+public enum AppLanguageEnum {
+    JAVA("java", "Java"),
+    PYTHON("python", "Python"),
+    GO("golang", "Go"),
+    DOTNET("dotnet", "DotNet"),
+    REACT("react", "React"),
+    VUE("vue", "Vue");
+
     private final String code;
     private final String desc;
 
-    public static GlobalEnvEnum getByCode(String code) {
-        for (GlobalEnvEnum item : GlobalEnvEnum.values()) {
-            if (item.getCode().equals(code)) {
+    public static AppLanguageEnum getByCode(String code) {
+        for (AppLanguageEnum item : AppLanguageEnum.values()) {
+            if (item.code.equals(code)) {
                 return item;
             }
         }
-        return DEFAULT;
+        return null;
     }
 
-    public static String getByDesc(String code) {
-        for (GlobalEnvEnum item : GlobalEnvEnum.values()) {
-            if (item.getCode().equals(code)) {
+    public static String getDescByCode(String code) {
+        for (AppLanguageEnum item : AppLanguageEnum.values()) {
+            if (item.code.equals(code)) {
                 return item.getDesc();
             }
         }
-        return DEFAULT.getDesc();
+        return "";
     }
 }

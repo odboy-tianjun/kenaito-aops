@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ public class KubernetesNamespaceRepository {
     private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "获取Namespace列表", throwException = false)
-    public List<KubernetesResourceResponse.Namespace> listNamespaces(ArgsClusterCodeVo clusterCodeVo) {
+    @KubernetesApiExceptionCatch(description = "查询Namespace列表", throwException = false)
+    public List<KubernetesResourceResponse.Namespace> describeNamespaceList(ArgsClusterCodeVo clusterCodeVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         V1NamespaceList namespaceList = coreV1Api.listNamespace(
@@ -81,8 +81,8 @@ public class KubernetesNamespaceRepository {
     }
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "获取任意一个Namespace", throwException = false)
-    public KubernetesResourceResponse.Namespace getNamespace(ArgsClusterCodeVo clusterCodeVo) {
+    @KubernetesApiExceptionCatch(description = "查询任意一个Namespace", throwException = false)
+    public KubernetesResourceResponse.Namespace describeNamespace(ArgsClusterCodeVo clusterCodeVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         V1NamespaceList namespaceList = coreV1Api.listNamespace(
@@ -108,7 +108,7 @@ public class KubernetesNamespaceRepository {
     }
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据appName获取Namespace", throwException = false)
+    @KubernetesApiExceptionCatch(description = "根据appName查询Namespace", throwException = false)
     public KubernetesResourceResponse.Namespace describeNamespaceByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
@@ -130,7 +130,7 @@ public class KubernetesNamespaceRepository {
     }
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据name获取Namespace", throwException = false)
+    @KubernetesApiExceptionCatch(description = "根据name查询Namespace", throwException = false)
     public KubernetesResourceResponse.Namespace describeNamespaceByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo) {
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
@@ -152,8 +152,8 @@ public class KubernetesNamespaceRepository {
     }
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据ApiClient获取任意一个Namespace", throwException = false)
-    public KubernetesResourceResponse.Namespace getNamespaceByApiClient(ApiClient apiClient) {
+    @KubernetesApiExceptionCatch(description = "根据ApiClient查询任意一个Namespace", throwException = false)
+    public KubernetesResourceResponse.Namespace describeNamespaceByApiClient(ApiClient apiClient) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         V1NamespaceList namespaceList = coreV1Api.listNamespace(
                 new ArgsPrettyVo(false).getValue(),

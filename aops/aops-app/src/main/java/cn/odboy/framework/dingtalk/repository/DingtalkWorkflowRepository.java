@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import cn.hutool.core.lang.Assert;
 import cn.odboy.framework.dingtalk.constant.DingtalkProcessInstanceResultEnum;
 import cn.odboy.framework.dingtalk.context.DingtalkApiClientManager;
 import cn.odboy.framework.dingtalk.exception.DingtalkApiExceptionCatch;
-import cn.odboy.framework.dingtalk.model.DingtalkWorkflowArgs;
+import cn.odboy.framework.dingtalk.model.DingtalkWorkflowCreateArgs;
 import cn.odboy.framework.dingtalk.util.DingtalkClientConfigUtil;
 import cn.odboy.util.ValidationUtil;
 import com.aliyun.dingtalkworkflow_1_0.models.ExecuteProcessInstanceResponse;
@@ -47,7 +47,7 @@ public class DingtalkWorkflowRepository {
     private final DingtalkApiClientManager dingtalkApiClientManager;
 
     @DingtalkApiExceptionCatch(description = "创建审批流")
-    public String createWorkflow(DingtalkWorkflowArgs.Create args) throws Exception {
+    public String createWorkflow(DingtalkWorkflowCreateArgs args) throws Exception {
         ValidationUtil.validate(args);
         com.aliyun.dingtalkworkflow_1_0.Client client = DingtalkClientConfigUtil.createWorkflowClient();
         com.aliyun.dingtalkworkflow_1_0.models.StartProcessInstanceHeaders startProcessInstanceHeaders = new com.aliyun.dingtalkworkflow_1_0.models.StartProcessInstanceHeaders();

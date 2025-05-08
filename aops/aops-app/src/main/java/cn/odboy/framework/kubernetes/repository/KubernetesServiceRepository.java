@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,14 +50,15 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class KubernetesServiceRepository {
-    private final KubernetesApiClientManager k8SClientAdmin;
+    private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据appName获取Service", throwException = false)
+    @KubernetesApiExceptionCatch(description = "根据appName查询Service", throwException = false)
     public V1Service describeServiceByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
-        String serviceName = KubernetesResourceNameUtil.getServiceName(appNameVo.getValue(), clusterCodeVo.getValue());
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
+        String serviceName = KubernetesResourceNameUtil.getServiceName(appNameVo.getValue(), envCode);
         return coreV1Api.readNamespacedService(
                 serviceName,
                 appNameVo.getValue(),
@@ -68,9 +69,9 @@ public class KubernetesServiceRepository {
     }
 
     @SneakyThrows
-    @KubernetesApiExceptionCatch(description = "根据name获取Service", throwException = false)
-    public V1Service describeServiceByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+    @KubernetesApiExceptionCatch(description = "根据name和namespace查询Service", throwException = false)
+    public V1Service describeServiceByNameWithNamespace(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         return coreV1Api.readNamespacedService(
                 resourceNameVo.getValue(),
@@ -84,7 +85,7 @@ public class KubernetesServiceRepository {
     @KubernetesApiExceptionCatch(description = "创建Service")
     public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Create args) throws Exception {
         ValidationUtil.validate(args);
-        String envCode = k8SClientAdmin.getEnvCode(clusterCodeVo.getValue());
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), envCode);
         args.getLabelSelector().put(KubernetesResourceLabelEnum.AppName.getCode(), args.getAppName());
         // 构建service的yaml对象
@@ -92,14 +93,14 @@ public class KubernetesServiceRepository {
                 .withNewMetadata()
                 .withName(serviceName)
                 .withNamespace(args.getAppName())
-                .withAnnotations(args.getAnnotations())
+//                .withAnnotations(args.getAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .withPorts(new V1ServicePort().protocol("TCP").port(args.getPort()).targetPort(new IntOrString(args.getTargetPort())))
                 .withSelector(args.getLabelSelector())
                 .endSpec()
                 .build();
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         // Deployment and StatefulSet is defined in apps/v1, so you should use AppsV1Api instead of CoreV1API
         CoreV1Api api = new CoreV1Api(apiClient);
         return api.createNamespacedService(
@@ -114,9 +115,9 @@ public class KubernetesServiceRepository {
     @KubernetesApiExceptionCatch(description = "删除Service")
     public void deleteService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.Delete args) throws Exception {
         ValidationUtil.validate(args);
-        String envCode = k8SClientAdmin.getEnvCode(clusterCodeVo.getValue());
+        String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), envCode);
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api api = new CoreV1Api(apiClient);
         api.deleteNamespacedService(
                 serviceName,
@@ -135,11 +136,11 @@ public class KubernetesServiceRepository {
     public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.LoadFromYaml args) throws Exception {
         ValidationUtil.validate(args);
         V1Service v1Service = Yaml.loadAs(args.getYamlContent(), V1Service.class);
-        ApiClient apiClient = k8SClientAdmin.getClient(clusterCodeVo.getValue());
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String serviceName = Objects.requireNonNull(v1Service.getMetadata()).getName();
         String namespace = Objects.requireNonNull(v1Service.getMetadata()).getNamespace();
-        V1Service localService = describeServiceByName(clusterCodeVo, new ArgsResourceNameVo(serviceName), new ArgsNamespaceNameVo(namespace));
+        V1Service localService = describeServiceByNameWithNamespace(clusterCodeVo, new ArgsResourceNameVo(serviceName), new ArgsNamespaceNameVo(namespace));
         if (localService == null) {
             coreV1Api.createNamespacedService(
                     namespace,

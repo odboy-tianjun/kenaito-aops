@@ -242,3 +242,12 @@ dingtalk:
   app-key:
   app-secret:
   robot-code:
+# minio
+minio:
+  # 控制台登录端口 http://localhost:9001
+  # 文件上传&预览端口 http://localhost:9000
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  # 分享链接过期时间，单位天
+  share-expire-time: 7

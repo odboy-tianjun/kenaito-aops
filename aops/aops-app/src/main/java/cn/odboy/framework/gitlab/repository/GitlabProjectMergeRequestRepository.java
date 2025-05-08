@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -44,57 +44,6 @@ public class GitlabProjectMergeRequestRepository {
     private final GitlabApiClientManager gitlabApiClientManager;
     private final GitlabProjectRepository gitlabProjectRepository;
 
-    /**
-     * 合并请求是否存在冲突
-     *
-     * @param mergeRequest /
-     * @return /
-     */
-    public boolean isMergeRequestHasConflict(MergeRequest mergeRequest) {
-        if (mergeRequest == null) {
-            throw new BadRequestException("参数mergeRequest不能为空");
-        }
-        return "opened".equals(mergeRequest.getState()) && "conflict".equals(mergeRequest.getDetailedMergeStatus()) && mergeRequest.getHasConflicts();
-    }
-
-    /**
-     * 合并请求是否可以Accept
-     *
-     * @param mergeRequest /
-     * @return /
-     */
-    public boolean isMergeRequestCanAccept(MergeRequest mergeRequest) {
-        if (mergeRequest == null) {
-            throw new BadRequestException("参数mergeRequest不能为空");
-        }
-        return "opened".equals(mergeRequest.getState()) && "mergeable".equals(mergeRequest.getDetailedMergeStatus()) && !mergeRequest.getHasConflicts();
-    }
-
-    /**
-     * 合并请求是否已经合并
-     *
-     * @param mergeRequest /
-     * @return /
-     */
-    public boolean isMergeRequestMerged(MergeRequest mergeRequest) {
-        if (mergeRequest == null) {
-            throw new BadRequestException("参数mergeRequest不能为空");
-        }
-        return "merged".equals(mergeRequest.getState()) && "not_open".equals(mergeRequest.getDetailedMergeStatus());
-    }
-
-    /**
-     * 正在检查是否可以合并
-     *
-     * @param mergeRequest /
-     * @return /
-     */
-    public boolean isMergeRequestChecking(MergeRequest mergeRequest) {
-        if (mergeRequest == null) {
-            throw new BadRequestException("参数mergeRequest不能为空");
-        }
-        return "opened".equals(mergeRequest.getState()) && "checking".equals(mergeRequest.getDetailedMergeStatus());
-    }
 
     /**
      * @param projectName     项目名称
@@ -102,13 +51,13 @@ public class GitlabProjectMergeRequestRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取合并请求详情", throwException = false)
-    public MergeRequest describeMergeRequest(String projectName, Long mergeRequestIid) {
+    @GitlabApiExceptionCatch(description = "根据projectName和mergeRequestIid查询合并请求详情", throwException = false)
+    public MergeRequest describeMergeRequestByProjectNameWithMergeRequestIid(String projectName, Long mergeRequestIid) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return describeMergeRequest(project.getId(), mergeRequestIid);
+        return describeMergeRequestByProjectIdWithMergeRequestIid(project.getId(), mergeRequestIid);
     }
 
     /**
@@ -117,8 +66,8 @@ public class GitlabProjectMergeRequestRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取分支合并请求详情", throwException = false)
-    public MergeRequest describeMergeRequest(Long projectId, Long mergeRequestIid) {
+    @GitlabApiExceptionCatch(description = "根据projectId和mergeRequestIid查询合并请求详情", throwException = false)
+    public MergeRequest describeMergeRequestByProjectIdWithMergeRequestIid(Long projectId, Long mergeRequestIid) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getMergeRequestApi().getMergeRequest(projectId, mergeRequestIid);
         }
@@ -129,13 +78,13 @@ public class GitlabProjectMergeRequestRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取Opened状态的合并请求列表", throwException = false)
-    public List<MergeRequest> listOpenedMergeRequests(String projectName) {
+    @GitlabApiExceptionCatch(description = "根据projectName查询Opened状态的合并请求列表", throwException = false)
+    public List<MergeRequest> describeOpenedMergeRequestListByProjectName(String projectName) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return listOpenedMergeRequests(project.getId());
+        return describeOpenedMergeRequestListByProjectId(project.getId());
     }
 
     /**
@@ -143,8 +92,8 @@ public class GitlabProjectMergeRequestRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取Opened状态的合并请求列表", throwException = false)
-    public List<MergeRequest> listOpenedMergeRequests(Long projectId) {
+    @GitlabApiExceptionCatch(description = "根据projectId查询Opened状态的合并请求列表", throwException = false)
+    public List<MergeRequest> describeOpenedMergeRequestListByProjectId(Long projectId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             MergeRequestFilter filter = new MergeRequestFilter();
             filter.setProjectId(projectId);
@@ -161,13 +110,13 @@ public class GitlabProjectMergeRequestRepository {
      * @param description  详细说明
      * @return /
      */
-    @GitlabApiExceptionCatch(description = "创建分支合并请求")
-    public MergeRequest createMergeRequest(String projectName, String sourceBranch, String targetBranch, String title, String description) throws Exception {
+    @GitlabApiExceptionCatch(description = "根据projectName创建分支合并请求")
+    public MergeRequest createMergeRequestByProjectName(String projectName, String sourceBranch, String targetBranch, String title, String description) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return createMergeRequest(project.getId(), sourceBranch, targetBranch, title, description);
+        return createMergeRequestByProjectId(project.getId(), sourceBranch, targetBranch, title, description);
     }
 
     /**
@@ -177,8 +126,8 @@ public class GitlabProjectMergeRequestRepository {
      * @param title        简短标题
      * @param description  详细说明
      */
-    @GitlabApiExceptionCatch(description = "创建分支合并请求")
-    public MergeRequest createMergeRequest(Long projectId, String sourceBranch, String targetBranch, String title, String description) throws Exception {
+    @GitlabApiExceptionCatch(description = "根据projectId创建分支合并请求")
+    public MergeRequest createMergeRequestByProjectId(Long projectId, String sourceBranch, String targetBranch, String title, String description) throws Exception {
         if (StrUtil.isBlank(title)) {
             title = String.format("%s 合并到 %s", sourceBranch, targetBranch);
         }
@@ -194,13 +143,13 @@ public class GitlabProjectMergeRequestRepository {
      * @param mergeRequest 合并请求
      * @return /
      */
-    @GitlabApiExceptionCatch(description = "接受分支合并请求")
-    public MergeRequest acceptMergeRequest(String projectName, MergeRequest mergeRequest) throws Exception {
+    @GitlabApiExceptionCatch(description = "根据projectName接受分支合并请求")
+    public MergeRequest acceptMergeRequestByProjectName(String projectName, MergeRequest mergeRequest) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return acceptMergeRequest(project.getId(), mergeRequest);
+        return acceptMergeRequestByProjectId(project.getId(), mergeRequest);
     }
 
     /**
@@ -208,8 +157,8 @@ public class GitlabProjectMergeRequestRepository {
      * @param mergeRequest 合并请求
      * @return /
      */
-    @GitlabApiExceptionCatch(description = "接受分支合并请求")
-    public MergeRequest acceptMergeRequest(Long projectId, MergeRequest mergeRequest) throws Exception {
+    @GitlabApiExceptionCatch(description = "根据projectId接受分支合并请求")
+    public MergeRequest acceptMergeRequestByProjectId(Long projectId, MergeRequest mergeRequest) throws Exception {
         String mergeCommitMessage = mergeRequest.getTitle() == null ? mergeRequest.getDescription() : mergeRequest.getTitle();
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getMergeRequestApi().acceptMergeRequest(projectId, mergeRequest.getIid(), mergeCommitMessage, false, false);
@@ -221,13 +170,13 @@ public class GitlabProjectMergeRequestRepository {
      * @param mergeRequestIid 合并请求iid
      * @return /
      */
-    @GitlabApiExceptionCatch(description = "关闭分支合并请求")
-    public MergeRequest closeMergeRequest(String projectName, Long mergeRequestIid) throws Exception {
+    @GitlabApiExceptionCatch(description = "根据projectName和mergeRequestIid关闭分支合并请求")
+    public MergeRequest closeMergeRequestByProjectNameWithMergeRequestIid(String projectName, Long mergeRequestIid) throws Exception {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return closeMergeRequest(project.getId(), mergeRequestIid);
+        return closeMergeRequestByProjectIdWithMergeRequestIid(project.getId(), mergeRequestIid);
     }
 
     /**
@@ -235,8 +184,8 @@ public class GitlabProjectMergeRequestRepository {
      * @param mergeRequestIid 合并请求iid
      * @return /
      */
-    @GitlabApiExceptionCatch(description = "关闭分支合并请求")
-    public MergeRequest closeMergeRequest(Long projectId, Long mergeRequestIid) throws Exception {
+    @GitlabApiExceptionCatch(description = "根据projectId和mergeRequestIid关闭分支合并请求")
+    public MergeRequest closeMergeRequestByProjectIdWithMergeRequestIid(Long projectId, Long mergeRequestIid) throws Exception {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getMergeRequestApi().cancelMergeRequest(projectId, mergeRequestIid);
         }

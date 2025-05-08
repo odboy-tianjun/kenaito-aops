@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,10 +22,6 @@ package cn.odboy.framework.gitlab.constant;
  * @date 2024-09-09
  */
 public interface GitlabDefaultConst {
-    /**
-     * 正则表达式
-     */
-    String REGEX_APP_NAME = "^[a-z][a-z0-9]*(-[a-z0-9]+)*$";
     /**
      * ROOT用户命名空间id
      */

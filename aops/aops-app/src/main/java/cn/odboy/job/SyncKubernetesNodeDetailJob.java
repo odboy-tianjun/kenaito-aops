@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class SyncKubernetesNodeDetailJob {
             try {
                 GlobalEnvEnum envEnum = GlobalEnvEnum.getByCode(clusterConfig.getEnvCode());
                 if (envEnum != null) {
-                    V1NodeList v1NodeList = kubernetesNodeRepository.listNodes(new ArgsClusterCodeVo(clusterConfig.getClusterCode()));
+                    V1NodeList v1NodeList = kubernetesNodeRepository.describeNodeList(new ArgsClusterCodeVo(clusterConfig.getClusterCode()));
                     List<V1Node> items = v1NodeList.getItems();
                     for (V1Node item : items) {
                         try {
@@ -144,14 +144,14 @@ public class SyncKubernetesNodeDetailJob {
         // 计算pod数量
         Map<String, String> fieldSelector = new HashMap<>(1);
         fieldSelector.put("spec.nodeName", clusterNode.getNodeName());
-        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.listPods(clusterCodeVo, fieldSelector, null);
+        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.describePodList(clusterCodeVo, fieldSelector, null);
         // 计算Pod数量
         clusterNode.setNodePodSize(podList.size());
-        AopsKubernetesClusterNode localContainerdClusterNode = containerdClusterNodeService.describeKubernetesClusterNodeByArgs(envEnum, clusterNode.getNodeInternalIp());
-        if (localContainerdClusterNode == null) {
+        AopsKubernetesClusterNode kubernetesClusterNode = containerdClusterNodeService.describeKubernetesClusterNodeByArgs(envEnum, clusterNode.getNodeInternalIp());
+        if (kubernetesClusterNode == null) {
             newRecordList.add(clusterNode);
         } else {
-            clusterNode.setId(localContainerdClusterNode.getId());
+            clusterNode.setId(kubernetesClusterNode.getId());
             updRecordList.add(clusterNode);
         }
     }

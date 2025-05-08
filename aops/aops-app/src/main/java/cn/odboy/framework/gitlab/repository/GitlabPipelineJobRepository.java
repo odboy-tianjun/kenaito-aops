@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,13 +46,10 @@ public class GitlabPipelineJobRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取任务列表", throwException = false)
-    public List<Job> listJobsByProjectId(Long projectId, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "根据projectId和pipelineId查询任务列表", throwException = false)
+    public List<Job> describeJobListByProjectIdWithPipelineId(Long projectId, Long pipelineId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getJobApi().getJobsForPipeline(projectId, pipelineId);
-        } catch (Exception e) {
-            log.info("获取任务列表失败", e);
-            throw new BadRequestException("获取任务列表失败");
         }
     }
 
@@ -62,13 +59,13 @@ public class GitlabPipelineJobRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取任务列表", throwException = false)
-    public List<Job> listJobsByProjectName(String projectName, Long pipelineId) {
+    @GitlabApiExceptionCatch(description = "根据projectName和pipelineId查询任务列表", throwException = false)
+    public List<Job> describeJobListByProjectNameWithPipelineId(String projectName, Long pipelineId) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return listJobsByProjectId(project.getId(), pipelineId);
+        return describeJobListByProjectIdWithPipelineId(project.getId(), pipelineId);
     }
 
     /**
@@ -77,13 +74,10 @@ public class GitlabPipelineJobRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取任务详情", throwException = false)
-    public Job describeJobsByProjectId(Long projectId, Long jobId) {
+    @GitlabApiExceptionCatch(description = "根据projectId和jobId查询任务详情", throwException = false)
+    public Job describeJobByProjectIdWithJobId(Long projectId, Long jobId) {
         try (GitLabApi auth = gitlabApiClientManager.getClient()) {
             return auth.getJobApi().getJob(projectId, jobId);
-        } catch (Exception e) {
-            log.info("获取任务详情失败", e);
-            throw new BadRequestException("获取任务详情失败");
         }
     }
 
@@ -93,12 +87,12 @@ public class GitlabPipelineJobRepository {
      * @return /
      */
     @SneakyThrows
-    @GitlabApiExceptionCatch(description = "获取任务详情", throwException = false)
-    public Job describeJobsByProjectName(String projectName, Long jobId) {
+    @GitlabApiExceptionCatch(description = "根据projectName和jobId查询任务详情", throwException = false)
+    public Job describeJobByProjectNameWithJobId(String projectName, Long jobId) {
         Project project = gitlabProjectRepository.describeProjectByProjectName(projectName);
         if (project == null) {
             throw new BadRequestException(String.format("没有找到项目%s，请先去创建项目", projectName));
         }
-        return describeJobsByProjectId(project.getId(), jobId);
+        return describeJobByProjectIdWithJobId(project.getId(), jobId);
     }
 }

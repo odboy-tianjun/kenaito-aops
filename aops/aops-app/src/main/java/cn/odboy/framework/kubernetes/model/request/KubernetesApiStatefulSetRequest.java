@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,10 +38,10 @@ public class KubernetesApiStatefulSetRequest {
          */
         @NotBlank(message = "应用名称不能为空")
         private String appName;
-        /**
-         * statefulset注解
-         */
-        private Map<String, String> annotations;
+//        /**
+//         * statefulset注解
+//         */
+//        private Map<String, String> annotations;
         /**
          * 副本数量
          */

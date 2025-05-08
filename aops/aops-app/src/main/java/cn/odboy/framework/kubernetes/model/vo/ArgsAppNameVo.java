@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,12 @@ import lombok.Value;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * 通用参数 应用名称
+ *
+ * @author odboy
+ * @date 2025-05-01
+ */
 @Value
 public class ArgsAppNameVo {
     private static final Pattern PATTERN = Pattern.compile("^[a-z](?:-?[a-z0-9])*$");

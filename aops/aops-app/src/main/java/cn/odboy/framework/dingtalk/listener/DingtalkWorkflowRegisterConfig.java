@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class DingtalkWorkflowRegisterConfig {
     private Environment environment;
 
     @Bean
-    public DingtalkWorkflowListener listener() {
+    public DingtalkWorkflowListener dingtalkWorkflowListener() {
         return new DingtalkWorkflowListener(dingtalkProperties, environment, event -> {
             try {
                 // 消费成功

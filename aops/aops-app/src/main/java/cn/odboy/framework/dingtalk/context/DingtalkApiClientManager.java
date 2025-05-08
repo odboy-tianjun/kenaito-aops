@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2025 Tian Jun
+ *  Copyright 2021-2025 Odboy
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.odboy.exception.BadRequestException;
 import cn.odboy.framework.dingtalk.config.DingtalkProperties;
 import cn.odboy.framework.dingtalk.util.DingtalkClientConfigUtil;
-import cn.odboy.framework.dingtalk.util.DingtalkLogFmtUtil;
+import cn.odboy.util.LogFmtUtil;
 import cn.odboy.redis.RedisHelper;
 import com.aliyun.dingtalkoauth2_1_0.models.GetAccessTokenResponse;
 import com.aliyun.tea.TeaException;
@@ -60,7 +60,7 @@ public class DingtalkApiClientManager {
             if (!com.aliyun.teautil.Common.empty(teaException.code) && !com.aliyun.teautil.Common.empty(teaException.message)) {
                 String exceptionMessage = "获取DingtalkAccessToken失败, code={}, message={}";
                 log.error(exceptionMessage, teaException.code, teaException.message, teaException);
-                throw new BadRequestException(DingtalkLogFmtUtil.format(exceptionMessage, teaException.code, teaException.message));
+                throw new BadRequestException(LogFmtUtil.format(exceptionMessage, teaException.code, teaException.message));
             }
             String exceptionMessage = "获取DingtalkAccessToken失败";
             log.error(exceptionMessage, teaException);
@@ -70,7 +70,7 @@ public class DingtalkApiClientManager {
             if (!com.aliyun.teautil.Common.empty(err.code) && !com.aliyun.teautil.Common.empty(err.message)) {
                 String exceptionMessage = "获取DingtalkAccessToken失败, code={}, message={}";
                 log.error(exceptionMessage, err.code, err.message, err);
-                throw new BadRequestException(DingtalkLogFmtUtil.format(exceptionMessage, err.code, err.message));
+                throw new BadRequestException(LogFmtUtil.format(exceptionMessage, err.code, err.message));
             }
             String exceptionMessage = "获取DingtalkAccessToken失败";
             log.error(exceptionMessage, exception);
