@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GitlabProjectCreateResponse extends GitlabProjectCreateArgs{
+public class GitlabProjectCreateResponse extends GitlabProjectCreateArgs {
     /**
      * OwnerId
      */

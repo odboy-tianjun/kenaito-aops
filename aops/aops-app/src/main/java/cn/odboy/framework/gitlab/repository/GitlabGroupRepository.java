@@ -24,7 +24,6 @@ import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GroupApi;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.GroupParams;
-import org.gitlab4j.api.models.Project;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;

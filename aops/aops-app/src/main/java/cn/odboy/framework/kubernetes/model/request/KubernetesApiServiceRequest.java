@@ -69,14 +69,4 @@ public class KubernetesApiServiceRequest {
         @NotBlank(message = "应用名称不能为空")
         private String appName;
     }
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class LoadFromYaml extends MyObject {
-        /**
-         * yaml文件内容
-         */
-        @NotBlank(message = "yaml文件内容不能为空")
-        private String yamlContent;
-    }
 }

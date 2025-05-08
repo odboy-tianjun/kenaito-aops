@@ -5,13 +5,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.gitlab4j.api.models.Changes;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Project;
 import java.util.List;
 
 /**
  * Gitlab 系统钩子事件回调 推送提交到项目
+ *
  * @author odboy
  * @date 2025-05-08
  */

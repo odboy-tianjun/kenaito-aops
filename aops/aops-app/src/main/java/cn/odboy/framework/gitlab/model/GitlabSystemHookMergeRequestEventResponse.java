@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Gitlab 系统钩子事件回调 发起合并分支请求
+ *
  * @author odboy
  * @date 2025-05-08
  */

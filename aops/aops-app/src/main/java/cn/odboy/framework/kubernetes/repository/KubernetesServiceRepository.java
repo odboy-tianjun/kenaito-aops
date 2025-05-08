@@ -25,6 +25,7 @@ import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsYamlVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceNameUtil;
 import cn.odboy.util.ValidationUtil;
 import io.kubernetes.client.custom.IntOrString;
@@ -33,7 +34,6 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceBuilder;
 import io.kubernetes.client.openapi.models.V1ServicePort;
-import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -133,9 +133,8 @@ public class KubernetesServiceRepository {
 
 
     @KubernetesApiExceptionCatch(description = "从yml加载Service")
-    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceRequest.LoadFromYaml args) throws Exception {
-        ValidationUtil.validate(args);
-        V1Service v1Service = Yaml.loadAs(args.getYamlContent(), V1Service.class);
+    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1Service> yamlVo) throws Exception {
+        V1Service v1Service = yamlVo.getTarget();
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String serviceName = Objects.requireNonNull(v1Service.getMetadata()).getName();

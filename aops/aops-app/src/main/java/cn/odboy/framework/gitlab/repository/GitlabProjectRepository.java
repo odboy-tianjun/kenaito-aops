@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +60,7 @@ public class GitlabProjectRepository {
     private final GitlabApiClientManager gitlabApiClientManager;
     private final GitlabIgnoreFileAdmin gitlabIgnoreFileAdmin;
     private final GitlabCiFileAdmin gitlabCiFileAdmin;
+
     /**
      * @param page 当前页
      * @return /

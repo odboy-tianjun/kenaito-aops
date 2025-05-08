@@ -29,6 +29,7 @@ import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsYamlVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceLabelMetaUtil;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceNameUtil;
 import cn.odboy.util.ValidationUtil;
@@ -46,7 +47,6 @@ import io.kubernetes.client.openapi.models.V1StatefulSet;
 import io.kubernetes.client.openapi.models.V1StatefulSetBuilder;
 import io.kubernetes.client.openapi.models.V1Status;
 import io.kubernetes.client.openapi.models.V1TCPSocketAction;
-import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -344,9 +344,8 @@ public class KubernetesStatefulSetRepository {
     }
 
     @KubernetesApiExceptionCatch(description = "从yml加载StatefulSet")
-    public V1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetRequest.LoadFromYaml args) throws Exception {
-        ValidationUtil.validate(args);
-        V1StatefulSet statefulSet = Yaml.loadAs(args.getYamlContent(), V1StatefulSet.class);
+    public V1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1StatefulSet> yamlVo) throws Exception {
+        V1StatefulSet statefulSet = yamlVo.getTarget();
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String statefulSetName = Objects.requireNonNull(statefulSet.getMetadata()).getName();

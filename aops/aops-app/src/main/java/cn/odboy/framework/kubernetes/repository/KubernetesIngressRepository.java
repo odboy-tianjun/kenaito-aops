@@ -24,6 +24,7 @@ import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsYamlVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceNameUtil;
 import cn.odboy.util.ValidationUtil;
 import io.kubernetes.client.openapi.ApiClient;
@@ -35,7 +36,6 @@ import io.kubernetes.client.openapi.models.V1IngressBackendBuilder;
 import io.kubernetes.client.openapi.models.V1IngressBuilder;
 import io.kubernetes.client.openapi.models.V1IngressServiceBackendBuilder;
 import io.kubernetes.client.openapi.models.V1ServiceBackendPortBuilder;
-import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -142,9 +142,8 @@ public class KubernetesIngressRepository {
 
 
     @KubernetesApiExceptionCatch(description = "从yml加载Ingress")
-    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressRequest.LoadFromYaml args) throws Exception {
-        ValidationUtil.validate(args);
-        V1Ingress ingress = Yaml.loadAs(args.getYamlContent(), V1Ingress.class);
+    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1Ingress> yamlVo) throws Exception {
+        V1Ingress ingress = yamlVo.getTarget();
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
         String ingressName = Objects.requireNonNull(ingress.getMetadata()).getName();

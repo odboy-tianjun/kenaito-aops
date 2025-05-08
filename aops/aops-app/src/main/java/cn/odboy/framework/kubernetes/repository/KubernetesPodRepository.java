@@ -25,7 +25,6 @@ import cn.odboy.framework.kubernetes.model.vo.ArgsNamespaceNameVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
 import cn.odboy.framework.kubernetes.util.KubernetesResourceLabelMetaUtil;
-import cn.odboy.framework.kubernetes.util.KubernetesResourceLabelSelectorUtil;
 import cn.odboy.util.ValidationUtil;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.CoreV1Api;

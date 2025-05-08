@@ -21,7 +21,6 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 /**
  * 用途: 主要用于无状态应用程序的部署和管理，例如 web 服务器、API 服务等。

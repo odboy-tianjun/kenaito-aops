@@ -21,7 +21,6 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 /**
  * K8s StatefulSet
@@ -153,15 +152,5 @@ public class KubernetesApiStatefulSetRequest {
          */
         @NotBlank(message = "应用名称不能为空")
         private String appName;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class LoadFromYaml extends MyObject {
-        /**
-         * yaml文件内容
-         */
-        @NotBlank(message = "yaml文件内容不能为空")
-        private String yamlContent;
     }
 }

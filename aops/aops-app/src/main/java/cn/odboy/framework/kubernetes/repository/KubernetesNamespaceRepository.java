@@ -24,13 +24,13 @@ import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsPrettyVo;
 import cn.odboy.framework.kubernetes.model.vo.ArgsResourceNameVo;
+import cn.odboy.framework.kubernetes.model.vo.ArgsYamlVo;
 import cn.odboy.util.ValidationUtil;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1NamespaceBuilder;
 import io.kubernetes.client.openapi.models.V1NamespaceList;
-import io.kubernetes.client.util.Yaml;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -204,9 +204,8 @@ public class KubernetesNamespaceRepository {
     }
 
     @KubernetesApiExceptionCatch(description = "从Yml加载Namespace")
-    public KubernetesResourceResponse.Namespace loadNamespaceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiNamespaceRequest.LoadFromYaml args) throws Exception {
-        ValidationUtil.validate(args);
-        V1Namespace v1Namespace = Yaml.loadAs(args.getYamlContent(), V1Namespace.class);
+    public KubernetesResourceResponse.Namespace loadNamespaceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1Namespace> yamlVo) throws Exception {
+        V1Namespace v1Namespace = yamlVo.getTarget();
         ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String namespaceName = Objects.requireNonNull(v1Namespace.getMetadata()).getName();
