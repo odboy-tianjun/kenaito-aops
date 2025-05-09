@@ -3,14 +3,14 @@ package cn.odboy.core.service.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Role;
 import cn.odboy.core.dal.dataobject.system.User;
 import cn.odboy.core.dal.mysql.system.RoleDeptMapper;
 import cn.odboy.core.dal.mysql.system.RoleMapper;
 import cn.odboy.core.dal.mysql.system.RoleMenuMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
-import cn.odboy.core.dal.redis.system.SystemUserJwtService;
+import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
 import cn.odboy.core.service.system.dto.CreateRoleRequest;
 import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
@@ -35,7 +35,7 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> impleme
     private final RoleDeptMapper roleDeptMapper;
     private final RoleMenuMapper roleMenuMapper;
     private final UserMapper userMapper;
-    private final SystemUserJwtService systemUserJwtService;
+    private final SystemUserJwtInfoDAO systemUserJwtInfoDAO;
     private final RedisHelper redisHelper;
 
     @Override
@@ -124,13 +124,13 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> impleme
     public void delCaches(Long id, List<User> users) {
         users = CollectionUtil.isEmpty(users) ? userMapper.queryUserListByRoleId(id) : users;
         if (CollectionUtil.isNotEmpty(users)) {
-            users.forEach(item -> systemUserJwtService.cleanUserJwtModelCacheByUsername(item.getUsername()));
+            users.forEach(item -> systemUserJwtInfoDAO.cleanUserJwtModelCacheByUsername(item.getUsername()));
             Set<Long> userIds = users.stream().map(User::getId).collect(Collectors.toSet());
-            redisHelper.delByKeys(SystemRedisKey.DATA_USER, userIds);
-            redisHelper.delByKeys(SystemRedisKey.MENU_USER, userIds);
-            redisHelper.delByKeys(SystemRedisKey.ROLE_AUTH, userIds);
-            redisHelper.delByKeys(SystemRedisKey.ROLE_USER, userIds);
+            redisHelper.delByKeys(RedisKeyConst.DATA_USER, userIds);
+            redisHelper.delByKeys(RedisKeyConst.MENU_USER, userIds);
+            redisHelper.delByKeys(RedisKeyConst.ROLE_AUTH, userIds);
+            redisHelper.delByKeys(RedisKeyConst.ROLE_USER, userIds);
         }
-        redisHelper.del(SystemRedisKey.ROLE_ID + id);
+        redisHelper.del(RedisKeyConst.ROLE_ID + id);
     }
 }

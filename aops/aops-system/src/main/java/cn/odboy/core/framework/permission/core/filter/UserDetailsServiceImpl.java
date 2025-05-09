@@ -3,9 +3,8 @@ package cn.odboy.core.framework.permission.core.filter;
 import cn.odboy.core.api.system.api.SystemDataApi;
 import cn.odboy.core.api.system.api.SystemRoleApi;
 import cn.odboy.core.api.system.api.SystemUserApi;
-import cn.odboy.core.dal.redis.system.SystemUserJwtApi;
+import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
 import cn.odboy.core.dal.dataobject.system.User;
-import cn.odboy.core.dal.redis.system.SystemUserJwtService;
 import cn.odboy.core.service.system.dto.RoleCodeVo;
 import cn.odboy.core.service.system.dto.UserJwtVo;
 import cn.odboy.common.exception.BadRequestException;
@@ -22,12 +21,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final SystemRoleApi systemRoleApi;
     private final SystemUserApi systemUserApi;
     private final SystemDataApi systemDataApi;
-    private final SystemUserJwtService systemUserJwtService;
-    private final SystemUserJwtApi systemUserJwtApi;
+    private final SystemUserJwtInfoDAO systemUserJwtInfoDAO;
 
     @Override
     public UserJwtVo loadUserByUsername(String username) {
-        UserJwtVo userJwtVo = systemUserJwtApi.describeUserJwtModelByUsername(username);
+        UserJwtVo userJwtVo = systemUserJwtInfoDAO.describeUserJwtModelByUsername(username);
         if (userJwtVo == null) {
             User user = systemUserApi.describeUserByUsername(username);
             if (user == null) {
@@ -41,7 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 // 初始化JwtUserDto
                 userJwtVo = new UserJwtVo(user, systemDataApi.describeDeptIdListByUserIdWithDeptId(user), authorities);
                 // 添加缓存数据
-                systemUserJwtService.saveUserJwtModelByUserName(username, userJwtVo);
+                systemUserJwtInfoDAO.saveUserJwtModelByUserName(username, userJwtVo);
             }
         }
         return userJwtVo;

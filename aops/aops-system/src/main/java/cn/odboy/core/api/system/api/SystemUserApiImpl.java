@@ -1,7 +1,7 @@
 package cn.odboy.core.api.system.api;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.User;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.service.system.dto.QueryUserRequest;
@@ -36,7 +36,7 @@ public class SystemUserApiImpl implements SystemUserApi {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public User describeUserById(long id) {
-        String key = SystemRedisKey.USER_ID + id;
+        String key = RedisKeyConst.USER_ID + id;
         User user = redisHelper.get(key, User.class);
         if (user == null) {
             user = userMapper.selectById(id);

@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.core.api.system.api.SystemRoleApi;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.constant.TransferProtocolConst;
 import cn.odboy.core.dal.dataobject.system.Menu;
 import cn.odboy.core.dal.dataobject.system.Role;
@@ -164,11 +164,11 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
      */
     public void delCaches(Long id) {
         List<User> users = userMapper.queryUserListByMenuId(id);
-        redisHelper.del(SystemRedisKey.MENU_ID + id);
-        redisHelper.delByKeys(SystemRedisKey.MENU_USER, users.stream().map(User::getId).collect(Collectors.toSet()));
+        redisHelper.del(RedisKeyConst.MENU_ID + id);
+        redisHelper.delByKeys(RedisKeyConst.MENU_USER, users.stream().map(User::getId).collect(Collectors.toSet()));
         // 清除 Role 缓存
         List<Role> roles = systemRoleApi.describeRoleListByMenuId(id);
-        redisHelper.delByKeys(SystemRedisKey.ROLE_ID, roles.stream().map(Role::getId).collect(Collectors.toSet()));
+        redisHelper.delByKeys(RedisKeyConst.ROLE_ID, roles.stream().map(Role::getId).collect(Collectors.toSet()));
     }
 
 }

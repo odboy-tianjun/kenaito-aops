@@ -66,7 +66,7 @@ public final class StringUtil extends org.apache.commons.lang3.StringUtils {
      * toCapitalizeCamelCase("hello_world") == "HelloWorld"
      * toUnderScoreCase("helloWorld") = "hello_world"
      */
-    static String toUnderScoreCase(String s) {
+    public static String toUnderScoreCase(String s) {
         if (s == null) {
             return null;
         }

@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Dict;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
@@ -55,6 +55,6 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
 
     public void delCaches(DictDetail dictDetail) {
         Dict dict = dictMapper.selectById(dictDetail.getDictId());
-        redisHelper.del(SystemRedisKey.DICT_NAME + dict.getName());
+        redisHelper.del(RedisKeyConst.DICT_NAME + dict.getName());
     }
 }

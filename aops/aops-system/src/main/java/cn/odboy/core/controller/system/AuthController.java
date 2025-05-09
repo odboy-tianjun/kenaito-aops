@@ -3,17 +3,17 @@ package cn.odboy.core.controller.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.odboy.common.annotation.AnonymousPostMapping;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.core.constant.LoginCodeEnum;
 import cn.odboy.common.constant.SystemConst;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.service.system.dto.UserJwtVo;
 import cn.odboy.core.service.system.dto.UserLoginRequest;
 import cn.odboy.core.controller.system.vo.UserInfoResponse;
 import cn.odboy.core.framework.permission.core.filter.TokenProvider;
 import cn.odboy.core.framework.permission.core.filter.UserDetailsServiceImpl;
-import cn.odboy.core.dal.redis.system.SystemUserOnlineServiceImpl;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.RsaEncryptUtil;
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 @Api(tags = "系统：系统授权接口")
 public class AuthController {
     private final RedisHelper redisHelper;
-    private final SystemUserOnlineServiceImpl onlineUserService;
+    private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
     private final TokenProvider tokenProvider;
     private final AppProperties properties;
     private final PasswordEncoder passwordEncoder;
@@ -87,10 +87,10 @@ public class AuthController {
         }};
         if (properties.getLogin().isSingle()) {
             // 踢掉之前已经登录的token
-            onlineUserService.kickOutByUsername(loginRequest.getUsername());
+            systemUserOnlineInfoDAO.kickOutByUsername(loginRequest.getUsername());
         }
         // 保存在线信息
-        onlineUserService.saveUserJwtModelByToken(jwtUser, token, request);
+        systemUserOnlineInfoDAO.saveUserJwtModelByToken(jwtUser, token, request);
         // 返回登录信息
         return ResponseEntity.ok(authInfo);
     }
@@ -108,7 +108,7 @@ public class AuthController {
     public ResponseEntity<Object> getCode() {
         // 获取运算的结果
         Captcha captcha = properties.getLogin().getCaptchaSetting().getCaptcha();
-        String uuid = SystemRedisKey.CAPTCHA_LOGIN + IdUtil.simpleUUID();
+        String uuid = RedisKeyConst.CAPTCHA_LOGIN + IdUtil.simpleUUID();
         //当验证码类型为 arithmetic时且长度 >= 2 时，captcha.text()的结果有几率为浮点型
         String captchaValue = captcha.text();
         if (captcha.getCharType() - 1 == LoginCodeEnum.ARITHMETIC.ordinal() && captchaValue.contains(SystemConst.SYMBOL_DOT)) {
@@ -128,7 +128,7 @@ public class AuthController {
     @AnonymousPostMapping(value = "/logout")
     public ResponseEntity<Object> logout(HttpServletRequest request) {
         String token = tokenProvider.getToken(request);
-        onlineUserService.logoutByToken(token);
+        systemUserOnlineInfoDAO.logoutByToken(token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

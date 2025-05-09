@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.service.system.dto.CreateDeptRequest;
 import cn.odboy.core.api.system.api.SystemDeptApi;
 import cn.odboy.core.dal.dataobject.system.Dept;
@@ -103,7 +103,7 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
     public void delCaches(Long id) {
         List<User> users = userMapper.queryUserListByDeptId(id);
         // 删除数据权限
-        redisHelper.delByKeys(SystemRedisKey.DATA_USER, users.stream().map(User::getId).collect(Collectors.toSet()));
-        redisHelper.del(SystemRedisKey.DEPT_ID + id);
+        redisHelper.delByKeys(RedisKeyConst.DATA_USER, users.stream().map(User::getId).collect(Collectors.toSet()));
+        redisHelper.del(RedisKeyConst.DEPT_ID + id);
     }
 }

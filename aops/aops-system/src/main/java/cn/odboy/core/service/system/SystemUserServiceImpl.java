@@ -1,16 +1,16 @@
 package cn.odboy.core.service.system;
 
+import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.framework.system.config.AppProperties;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Job;
 import cn.odboy.core.dal.dataobject.system.Role;
 import cn.odboy.core.dal.dataobject.system.User;
 import cn.odboy.core.dal.mysql.system.UserJobMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.mysql.system.UserRoleMapper;
-import cn.odboy.core.dal.redis.system.SystemUserJwtService;
-import cn.odboy.core.dal.redis.system.SystemUserOnlineService;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
@@ -43,8 +43,8 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     private final UserRoleMapper userRoleMapper;
     private final AppProperties properties;
     private final RedisHelper redisHelper;
-    private final SystemUserJwtService systemUserJwtService;
-    private final SystemUserOnlineService systemUserOnlineService;
+    private final SystemUserJwtInfoDAO systemUserJwtInfoDAO;
+    private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -84,18 +84,18 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
         }
         // 如果用户的角色改变
         if (!resources.getRoles().equals(user.getRoles())) {
-            redisHelper.del(SystemRedisKey.DATA_USER + resources.getId());
-            redisHelper.del(SystemRedisKey.MENU_USER + resources.getId());
-            redisHelper.del(SystemRedisKey.ROLE_AUTH + resources.getId());
-            redisHelper.del(SystemRedisKey.ROLE_USER + resources.getId());
+            redisHelper.del(RedisKeyConst.DATA_USER + resources.getId());
+            redisHelper.del(RedisKeyConst.MENU_USER + resources.getId());
+            redisHelper.del(RedisKeyConst.ROLE_AUTH + resources.getId());
+            redisHelper.del(RedisKeyConst.ROLE_USER + resources.getId());
         }
         // 修改部门会影响 数据权限
         if (!Objects.equals(resources.getDept(), user.getDept())) {
-            redisHelper.del(SystemRedisKey.DATA_USER + resources.getId());
+            redisHelper.del(RedisKeyConst.DATA_USER + resources.getId());
         }
         // 如果用户被禁用，则清除用户登录信息
         if (!resources.getEnabled()) {
-            systemUserOnlineService.kickOutByUsername(resources.getUsername());
+            systemUserOnlineInfoDAO.kickOutByUsername(resources.getUsername());
         }
         user.setDeptId(resources.getDept().getId());
         user.setUsername(resources.getUsername());
@@ -165,7 +165,7 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
             // 清除缓存
             flushCache(user.getUsername());
             // 强制退出
-            systemUserOnlineService.kickOutByUsername(user.getUsername());
+            systemUserOnlineInfoDAO.kickOutByUsername(user.getUsername());
         });
         // 重置密码
         userMapper.updatePasswordByUserIds(password, ids);
@@ -231,7 +231,7 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
      * @param id /
      */
     public void delCaches(Long id, String username) {
-        redisHelper.del(SystemRedisKey.USER_ID + id);
+        redisHelper.del(RedisKeyConst.USER_ID + id);
         flushCache(username);
     }
 
@@ -241,6 +241,6 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
      * @param username /
      */
     private void flushCache(String username) {
-        systemUserJwtService.cleanUserJwtModelCacheByUsername(username);
+        systemUserJwtInfoDAO.cleanUserJwtModelCacheByUsername(username);
     }
 }

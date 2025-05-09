@@ -5,7 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.common.constant.SystemConst;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.service.system.dto.UserJwtVo;
 import cn.odboy.common.redis.RedisHelper;
 import io.jsonwebtoken.Claims;
@@ -125,7 +125,7 @@ public class TokenProvider implements InitializingBean {
      */
     public String loginKey(String token) {
         Claims claims = getClaims(token);
-        return SystemRedisKey.ONLINE_USER + claims.getSubject() + ":" + getId(token);
+        return RedisKeyConst.ONLINE_USER + claims.getSubject() + ":" + getId(token);
     }
 
     /**

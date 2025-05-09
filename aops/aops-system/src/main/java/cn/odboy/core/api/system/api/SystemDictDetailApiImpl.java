@@ -2,7 +2,7 @@ package cn.odboy.core.api.system.api;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.service.system.dto.QueryDictDetailRequest;
@@ -25,7 +25,7 @@ public class SystemDictDetailApiImpl implements SystemDictDetailApi {
     }
     @Override
     public List<DictDetail> describeDictDetailListByName(String name) {
-        String key = SystemRedisKey.DICT_NAME + name;
+        String key = RedisKeyConst.DICT_NAME + name;
         List<DictDetail> dictDetails = redisHelper.getList(key, DictDetail.class);
         if (CollUtil.isEmpty(dictDetails)) {
             dictDetails = dictDetailMapper.queryDictDetailListByDictName(name);

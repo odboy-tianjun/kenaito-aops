@@ -2,7 +2,7 @@ package cn.odboy.core.api.system.api;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Menu;
 import cn.odboy.core.dal.dataobject.system.Role;
 import cn.odboy.core.dal.dataobject.system.User;
@@ -51,7 +51,7 @@ public class SystemRoleApiImpl implements SystemRoleApi {
 
     @Override
     public Role describeRoleById(long id) {
-        String key = SystemRedisKey.ROLE_ID + id;
+        String key = RedisKeyConst.ROLE_ID + id;
         Role role = redisHelper.get(key, Role.class);
         if (role == null) {
             role = roleMapper.selectById(id);
@@ -62,7 +62,7 @@ public class SystemRoleApiImpl implements SystemRoleApi {
 
     @Override
     public List<Role> describeRoleListByUsersId(Long userId) {
-        String key = SystemRedisKey.ROLE_USER + userId;
+        String key = RedisKeyConst.ROLE_USER + userId;
         List<Role> roles = redisHelper.getList(key, Role.class);
         if (CollUtil.isEmpty(roles)) {
             roles = roleMapper.queryRoleListByUserId(userId);
@@ -85,7 +85,7 @@ public class SystemRoleApiImpl implements SystemRoleApi {
 
     @Override
     public List<RoleCodeVo> buildUserRolePermissions(User user) {
-        String key = SystemRedisKey.ROLE_AUTH + user.getId();
+        String key = RedisKeyConst.ROLE_AUTH + user.getId();
         List<RoleCodeVo> authorityList = redisHelper.getList(key, RoleCodeVo.class);
         if (CollUtil.isEmpty(authorityList)) {
             Set<String> permissions = new HashSet<>();

@@ -2,7 +2,7 @@ package cn.odboy.core.api.system.api;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.odboy.core.constant.DataScopeEnum;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Dept;
 import cn.odboy.core.dal.dataobject.system.Role;
 import cn.odboy.core.dal.dataobject.system.User;
@@ -34,7 +34,7 @@ public class SystemDataApiImpl implements SystemDataApi {
      */
     @Override
     public List<Long> describeDeptIdListByUserIdWithDeptId(User user) {
-        String key = SystemRedisKey.DATA_USER + user.getId();
+        String key = RedisKeyConst.DATA_USER + user.getId();
         List<Long> ids = redisHelper.getList(key, Long.class);
         if (CollUtil.isEmpty(ids)) {
             Set<Long> deptIds = new HashSet<>();

@@ -1,7 +1,7 @@
 package cn.odboy.core.framework.permission.core.filter;
 
 import cn.odboy.common.constant.RequestMethodEnum;
-import cn.odboy.core.dal.redis.system.SystemUserOnlineApi;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.common.util.AnonTagUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -30,7 +30,7 @@ public class SpringSecurityConfig {
     private final JwtAuthenticationEntryPoint authenticationErrorHandler;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final ApplicationContext applicationContext;
-    private final SystemUserOnlineApi systemUserOnlineApi;
+    private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
 
     @Bean
     GrantedAuthorityDefaults grantedAuthorityDefaults() {
@@ -108,6 +108,6 @@ public class SpringSecurityConfig {
     }
 
     private TokenConfigurer securityConfigurerAdapter() {
-        return new TokenConfigurer(tokenProvider, systemUserOnlineApi);
+        return new TokenConfigurer(tokenProvider, systemUserOnlineInfoDAO);
     }
 }

@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.service.system.dto.CreateJobRequest;
 import cn.odboy.core.dal.dataobject.system.Job;
 import cn.odboy.core.dal.mysql.system.JobMapper;
@@ -75,6 +75,6 @@ public class SystemJobServiceImpl extends ServiceImpl<JobMapper, Job> implements
 
 
     public void delCaches(Long id) {
-        redisHelper.del(SystemRedisKey.JOB_ID + id);
+        redisHelper.del(RedisKeyConst.JOB_ID + id);
     }
 }

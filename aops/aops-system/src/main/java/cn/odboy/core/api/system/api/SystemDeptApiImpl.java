@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.odboy.common.pojo.BaseResult;
 import cn.odboy.core.constant.DataScopeEnum;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Dept;
 import cn.odboy.core.dal.mysql.system.DeptMapper;
 import cn.odboy.core.dal.mysql.system.RoleMapper;
@@ -87,7 +87,7 @@ public class SystemDeptApiImpl implements SystemDeptApi {
 
     @Override
     public Dept describeDeptById(Long id) {
-        String key = SystemRedisKey.DEPT_ID + id;
+        String key = RedisKeyConst.DEPT_ID + id;
         Dept dept = redisHelper.get(key, Dept.class);
         if (dept == null) {
             dept = deptMapper.selectById(id);

@@ -1,9 +1,11 @@
-package cn.odboy.core.constant;
+package cn.odboy.core.dal.redis;
 
 /**
- * 关于缓存的Key集合
+ * System模块RedisKey
+ * @author odboy
+ * @date 2025-05-09
  */
-public interface SystemRedisKey {
+public interface RedisKeyConst {
 
     /**
      * 用户

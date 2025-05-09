@@ -28,7 +28,7 @@ public class StringUtilTest {
 
     @Test
     public void testToUnderScoreCase() {
-        assertNull(StringUtil.toUnderScoreCase(null));
+        assertNull(toUnderScoreCase(null));
         assertEquals("hello_world", toUnderScoreCase("helloWorld"));
         assertEquals("\u0000\u0000", toUnderScoreCase("\u0000\u0000"));
         assertEquals("\u0000_a", toUnderScoreCase("\u0000A"));

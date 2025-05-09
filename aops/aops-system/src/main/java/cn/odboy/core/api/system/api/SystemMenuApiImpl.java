@@ -3,7 +3,7 @@ package cn.odboy.core.api.system.api;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Menu;
 import cn.odboy.core.dal.dataobject.system.Role;
 import cn.odboy.core.dal.mysql.system.MenuMapper;
@@ -57,7 +57,7 @@ public class SystemMenuApiImpl implements SystemMenuApi {
 
     @Override
     public Menu describeMenuById(long id) {
-        String key = SystemRedisKey.MENU_ID + id;
+        String key = RedisKeyConst.MENU_ID + id;
         Menu menu = redisHelper.get(key, Menu.class);
         if (menu == null) {
             menu = menuMapper.selectById(id);
@@ -74,7 +74,7 @@ public class SystemMenuApiImpl implements SystemMenuApi {
      */
     @Override
     public List<Menu> describeMenuListByUserId(Long currentUserId) {
-        String key = SystemRedisKey.MENU_USER + currentUserId;
+        String key = RedisKeyConst.MENU_USER + currentUserId;
         List<Menu> menus = redisHelper.getList(key, Menu.class);
         if (CollUtil.isEmpty(menus)) {
             List<Role> roles = systemRoleApi.describeRoleListByUsersId(currentUserId);

@@ -1,7 +1,7 @@
 package cn.odboy.core.api.system.api;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.constant.SystemRedisKey;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Job;
 import cn.odboy.core.dal.mysql.system.JobMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
@@ -34,7 +34,7 @@ public class SystemJobApiImpl implements SystemJobApi {
 
     @Override
     public Job describeJobById(Long id) {
-        String key = SystemRedisKey.JOB_ID + id;
+        String key = RedisKeyConst.JOB_ID + id;
         Job job = redisHelper.get(key, Job.class);
         if (job == null) {
             job = jobMapper.selectById(id);
