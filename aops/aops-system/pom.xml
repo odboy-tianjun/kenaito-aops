@@ -75,8 +75,8 @@
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz-jobDOS</artifactId>
-            <version>2.3.2</version>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartzjob.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mchange</groupId>

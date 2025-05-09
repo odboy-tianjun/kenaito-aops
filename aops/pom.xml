@@ -39,6 +39,9 @@
         <mail.version>1.4.7</mail.version>
         <qiniu.version>7.11.0</qiniu.version>
         <spring-framework.version>5.3.39</spring-framework.version>
+        <pinyin4j.version>2.5.1</pinyin4j.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <quartzjob.version>2.3.2</quartzjob.version>
     </properties>
 
     <dependencies>
