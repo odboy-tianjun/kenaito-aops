@@ -2,6 +2,8 @@ package cn.odboy.core.service.system;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Dict;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
@@ -10,6 +12,9 @@ import cn.odboy.core.dal.mysql.system.DictMapper;
 import cn.odboy.core.service.system.dto.CreateDictRequest;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
+import cn.odboy.core.service.system.dto.QueryDictRequest;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +33,16 @@ public class SystemDictServiceImpl extends ServiceImpl<DictMapper, Dict> impleme
     private final DictMapper dictMapper;
     private final DictDetailMapper dictDetailMapper;
     private final RedisHelper redisHelper;
+    @Override
+    public PageResult<Dict> describeDictPage(QueryDictRequest criteria, Page<Object> page) {
+        IPage<Dict> dicts = dictMapper.queryDictPageByArgs(criteria, page);
+        return PageUtil.toPage(dicts);
+    }
 
+    @Override
+    public List<Dict> describeDictList(QueryDictRequest criteria) {
+        return dictMapper.queryDictPageByArgs(criteria, PageUtil.getCount(dictMapper)).getRecords();
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)

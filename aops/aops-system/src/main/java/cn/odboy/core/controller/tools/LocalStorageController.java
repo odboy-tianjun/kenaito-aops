@@ -2,7 +2,6 @@ package cn.odboy.core.controller.tools;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.constant.FileTypeEnum;
-import cn.odboy.core.api.tools.api.LocalStorageApi;
 import cn.odboy.core.service.tools.dto.QueryLocalStorageRequest;
 import cn.odboy.core.dal.dataobject.tools.LocalStorage;
 import cn.odboy.core.service.tools.LocalStorageService;
@@ -32,21 +31,20 @@ import java.io.IOException;
 @RequestMapping("/api/localStorage")
 public class LocalStorageController {
     private final LocalStorageService localStorageService;
-    private final LocalStorageApi localStorageApi;
 
     @ApiOperation("查询文件")
     @GetMapping
     @PreAuthorize("@el.check('storage:list')")
     public ResponseEntity<PageResult<LocalStorage>> queryFile(QueryLocalStorageRequest criteria) {
         Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(localStorageApi.describeLocalStoragePage(criteria, page), HttpStatus.OK);
+        return new ResponseEntity<>(localStorageService.describeLocalStoragePage(criteria, page), HttpStatus.OK);
     }
 
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('storage:list')")
     public void exportFile(HttpServletResponse response, QueryLocalStorageRequest criteria) throws IOException {
-        localStorageService.downloadExcel(localStorageApi.describeLocalStorageList(criteria), response);
+        localStorageService.downloadExcel(localStorageService.describeLocalStorageList(criteria), response);
     }
 
     @ApiOperation("上传文件")

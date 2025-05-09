@@ -2,16 +2,16 @@ package cn.odboy.core.service.tools;
 
 import cn.hutool.extra.mail.Mail;
 import cn.hutool.extra.mail.MailAccount;
-import cn.odboy.core.service.tools.dto.SendEmailRequest;
-import cn.odboy.core.api.tools.api.EmailApi;
-import cn.odboy.core.dal.dataobject.tools.EmailConfig;
-import cn.odboy.core.dal.mysql.tools.EmailConfigMapper;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.DesEncryptUtil;
+import cn.odboy.core.dal.dataobject.tools.EmailConfig;
+import cn.odboy.core.dal.mysql.tools.EmailConfigMapper;
+import cn.odboy.core.service.tools.dto.SendEmailRequest;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +22,19 @@ public class EmailServiceImpl extends ServiceImpl<EmailConfigMapper, EmailConfig
     @Lazy
     @Autowired
     private EmailService emailService;
-    @Autowired
-    private EmailApi emailApi;
+
+    @Override
+    @Cacheable(key = "'config'")
+    public EmailConfig describeEmailConfig() {
+        EmailConfig emailConfig = getById(1L);
+        return emailConfig == null ? new EmailConfig() : emailConfig;
+    }
 
     @Override
     @CachePut(key = "'config'")
     @Transactional(rollbackFor = Exception.class)
     public void modifyEmailConfigOnPassChange(EmailConfig emailConfig) throws Exception {
-        EmailConfig localConfig = emailApi.describeEmailConfig();
+        EmailConfig localConfig = emailService.describeEmailConfig();
         if (!emailConfig.getPassword().equals(localConfig.getPassword())) {
             // 对称加密
             emailConfig.setPassword(DesEncryptUtil.desEncrypt(emailConfig.getPassword()));
@@ -42,7 +47,7 @@ public class EmailServiceImpl extends ServiceImpl<EmailConfigMapper, EmailConfig
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void sendEmail(SendEmailRequest sendEmailRequest) {
-        EmailConfig emailConfig = emailApi.describeEmailConfig();
+        EmailConfig emailConfig = emailService.describeEmailConfig();
         if (emailConfig.getId() == null) {
             throw new BadRequestException("请先配置，再操作");
         }

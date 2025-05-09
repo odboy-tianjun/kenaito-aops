@@ -1,13 +1,16 @@
 package cn.odboy.core.service.tools;
 
-import cn.odboy.core.api.tools.api.QiniuConfigApi;
+import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.util.FileUtil;
+import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfig;
 import cn.odboy.core.dal.dataobject.tools.QiniuContent;
 import cn.odboy.core.dal.mysql.tools.QiniuContentMapper;
+import cn.odboy.core.service.tools.dto.QueryQiniuRequest;
 import cn.odboy.core.service.tools.util.QiniuUtil;
-import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.util.FileUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
@@ -35,16 +38,26 @@ import java.util.Map;
 @CacheConfig(cacheNames = "qiNiu")
 public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, QiniuContent> implements QiniuContentService {
     private final QiniuContentMapper qiniuContentMapper;
-    private final QiniuConfigApi qiniuConfigApi;
+    private final QiniuConfigService qiniuConfigService;
 
     @Value("${app.oss.qiniu.max-size}")
     private Long maxSize;
 
     @Override
+    public PageResult<QiniuContent> describeQiniuContentPage(QueryQiniuRequest criteria, Page<Object> page) {
+        return PageUtil.toPage(qiniuContentMapper.queryQiniuContentPageByArgs(criteria, page));
+    }
+
+    @Override
+    public List<QiniuContent> describeQiniuContentList(QueryQiniuRequest criteria) {
+        return qiniuContentMapper.queryQiniuContentPageByArgs(criteria, PageUtil.getCount(qiniuContentMapper)).getRecords();
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public QiniuContent uploadFile(MultipartFile file) {
         FileUtil.checkSize(maxSize, file.getSize());
-        QiniuConfig qiniuConfig = qiniuConfigApi.describeQiniuConfig();
+        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
         if (qiniuConfig.getId() == null) {
             throw new BadRequestException("请先添加相应配置，再操作");
         }
@@ -82,7 +95,7 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
 
     @Override
     public String createFilePreviewUrl(QiniuContent content) {
-        QiniuConfig qiniuConfig = qiniuConfigApi.describeQiniuConfig();
+        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
         String finalUrl;
         String type = "公开";
         if (type.equals(content.getType())) {
@@ -99,7 +112,7 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeFileById(Long id) {
-        QiniuConfig qiniuConfig = qiniuConfigApi.describeQiniuConfig();
+        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
         QiniuContent qiniuContent = qiniuContentMapper.selectById(id);
         if (qiniuContent == null) {
             throw new BadRequestException("文件不存在");
@@ -120,7 +133,7 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void synchronize() {
-        QiniuConfig qiniuConfig = qiniuConfigApi.describeQiniuConfig();
+        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
         if (qiniuConfig.getId() == null) {
             throw new BadRequestException("请先添加相应配置，再操作");
         }

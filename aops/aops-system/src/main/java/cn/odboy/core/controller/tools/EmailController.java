@@ -1,6 +1,5 @@
 package cn.odboy.core.controller.tools;
 
-import cn.odboy.core.api.tools.api.EmailApi;
 import cn.odboy.core.service.tools.dto.SendEmailRequest;
 import cn.odboy.core.dal.dataobject.tools.EmailConfig;
 import cn.odboy.core.service.tools.EmailService;
@@ -23,13 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/email")
 @Api(tags = "工具：邮件管理")
 public class EmailController {
-    private final EmailApi emailApi;
     private final EmailService emailService;
 
     @ApiOperation("查询配置")
     @PostMapping(value = "/describeEmailConfig")
     public ResponseEntity<EmailConfig> describeEmailConfig() {
-        return new ResponseEntity<>(emailApi.describeEmailConfig(), HttpStatus.OK);
+        return new ResponseEntity<>(emailService.describeEmailConfig(), HttpStatus.OK);
     }
 
     @ApiOperation("配置邮件")

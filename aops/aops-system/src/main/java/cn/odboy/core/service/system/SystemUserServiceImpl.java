@@ -1,5 +1,7 @@
 package cn.odboy.core.service.system;
 
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
 import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
@@ -16,6 +18,8 @@ import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.service.system.dto.QueryUserRequest;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +51,35 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     private final SystemUserJwtInfoDAO systemUserJwtInfoDAO;
     private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
 
+    @Override
+    public PageResult<User> describeUserPage(QueryUserRequest criteria, Page<Object> page) {
+        criteria.setOffset(page.offset());
+        List<User> users = userMapper.queryUserPageByArgs(criteria, PageUtil.getCount(userMapper)).getRecords();
+        Long total = userMapper.getUserCountByArgs(criteria);
+        return PageUtil.toPage(users, total);
+    }
+
+    @Override
+    public List<User> describeUserList(QueryUserRequest criteria) {
+        return userMapper.queryUserPageByArgs(criteria, PageUtil.getCount(userMapper)).getRecords();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public User describeUserById(long id) {
+        String key = RedisKeyConst.USER_ID + id;
+        User user = redisHelper.get(key, User.class);
+        if (user == null) {
+            user = userMapper.selectById(id);
+            redisHelper.set(key, user, 1, TimeUnit.DAYS);
+        }
+        return user;
+    }
+
+    @Override
+    public User describeUserByUsername(String username) {
+        return userMapper.getUserByUsername(username);
+    }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveUser(User resources) {

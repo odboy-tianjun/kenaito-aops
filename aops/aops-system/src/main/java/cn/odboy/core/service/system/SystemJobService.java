@@ -1,7 +1,10 @@
 package cn.odboy.core.service.system;
 
+import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.service.system.dto.CreateJobRequest;
 import cn.odboy.core.dal.dataobject.system.Job;
+import cn.odboy.core.service.system.dto.QueryJobRequest;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -10,6 +13,38 @@ import java.util.Set;
 
 
 public interface SystemJobService extends IService<Job> {
+    /**
+     * 分页查询
+     *
+     * @param criteria 条件
+     * @param page     分页参数
+     * @return /
+     */
+    PageResult<Job> describeJobPage(QueryJobRequest criteria, Page<Object> page);
+
+    /**
+     * 查询全部数据
+     *
+     * @param criteria /
+     * @return /
+     */
+    List<Job> describeJobList(QueryJobRequest criteria);
+
+
+    /**
+     * 验证是否被用户关联
+     *
+     * @param ids /
+     */
+    void verifyBindRelationByIds(Set<Long> ids);
+
+    /**
+     * 根据ID查询
+     *
+     * @param id /
+     * @return /
+     */
+    Job describeJobById(Long id);
     /**
      * 创建
      *

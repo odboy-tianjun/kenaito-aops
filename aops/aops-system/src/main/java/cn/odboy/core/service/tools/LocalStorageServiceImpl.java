@@ -1,12 +1,16 @@
 package cn.odboy.core.service.tools;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.core.dal.dataobject.tools.LocalStorage;
 import cn.odboy.core.dal.mysql.tools.LocalStorageMapper;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.service.tools.dto.QueryLocalStorageRequest;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +30,15 @@ import java.util.Map;
 public class LocalStorageServiceImpl extends ServiceImpl<LocalStorageMapper, LocalStorage> implements LocalStorageService {
     private final LocalStorageMapper localStorageMapper;
     private final AppProperties properties;
+    @Override
+    public PageResult<LocalStorage> describeLocalStoragePage(QueryLocalStorageRequest criteria, Page<Object> page) {
+        return PageUtil.toPage(localStorageMapper.queryLocalStoragePageByArgs(criteria, page));
+    }
 
+    @Override
+    public List<LocalStorage> describeLocalStorageList(QueryLocalStorageRequest criteria) {
+        return localStorageMapper.queryLocalStoragePageByArgs(criteria, PageUtil.getCount(localStorageMapper)).getRecords();
+    }
     @Override
     @Transactional(rollbackFor = Exception.class)
     public LocalStorage uploadFile(String name, MultipartFile multipartFile) {

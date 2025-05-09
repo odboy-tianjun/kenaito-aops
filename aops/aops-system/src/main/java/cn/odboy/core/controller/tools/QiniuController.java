@@ -1,8 +1,6 @@
 package cn.odboy.core.controller.tools;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.api.tools.api.QiniuConfigApi;
-import cn.odboy.core.api.tools.api.QiniuContentApi;
 import cn.odboy.core.service.tools.dto.QueryQiniuRequest;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfig;
 import cn.odboy.core.dal.dataobject.tools.QiniuContent;
@@ -41,13 +39,11 @@ import java.util.Map;
 public class QiniuController {
     private final QiniuContentService qiniuContentService;
     private final QiniuConfigService qiNiuConfigService;
-    private final QiniuConfigApi qiniuConfigApi;
-    private final QiniuContentApi qiniuContentApi;
 
     @ApiOperation("查询七牛云存储配置")
     @PostMapping(value = "/describeQiniuConfig")
     public ResponseEntity<QiniuConfig> describeQiniuConfig() {
-        return new ResponseEntity<>(qiniuConfigApi.describeQiniuConfig(), HttpStatus.OK);
+        return new ResponseEntity<>(qiNiuConfigService.describeQiniuConfig(), HttpStatus.OK);
     }
 
     @ApiOperation("配置七牛云存储")
@@ -61,14 +57,14 @@ public class QiniuController {
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
     public void exportQiNiu(HttpServletResponse response, QueryQiniuRequest criteria) throws IOException {
-        qiniuContentService.downloadExcel(qiniuContentApi.describeQiniuContentList(criteria), response);
+        qiniuContentService.downloadExcel(qiniuContentService.describeQiniuContentList(criteria), response);
     }
 
     @ApiOperation("查询文件")
     @GetMapping
     public ResponseEntity<PageResult<QiniuContent>> queryQiNiu(QueryQiniuRequest criteria) {
         Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(qiniuContentApi.describeQiniuContentPage(criteria, page), HttpStatus.OK);
+        return new ResponseEntity<>(qiniuContentService.describeQiniuContentPage(criteria, page), HttpStatus.OK);
     }
 
     @ApiOperation("上传文件")

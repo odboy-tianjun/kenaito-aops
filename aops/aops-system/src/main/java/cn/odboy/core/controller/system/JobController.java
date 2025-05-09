@@ -1,7 +1,6 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.api.system.api.SystemJobApi;
 import cn.odboy.core.dal.dataobject.system.Job;
 import cn.odboy.core.service.system.SystemJobService;
 import cn.odboy.core.service.system.dto.CreateJobRequest;
@@ -29,14 +28,13 @@ import java.util.Set;
 @Api(tags = "系统：岗位管理")
 @RequestMapping("/api/job")
 public class JobController {
-    private final SystemJobApi systemJobApi;
     private final SystemJobService systemJobService;
 
     @ApiOperation("导出岗位数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('job:list')")
     public void exportJob(HttpServletResponse response, QueryJobRequest criteria) throws IOException {
-        systemJobService.downloadJobExcel(systemJobApi.describeJobList(criteria), response);
+        systemJobService.downloadJobExcel(systemJobService.describeJobList(criteria), response);
     }
 
     @ApiOperation("查询岗位")
@@ -44,7 +42,7 @@ public class JobController {
     @PreAuthorize("@el.check('job:list','user:list')")
     public ResponseEntity<PageResult<Job>> queryJob(QueryJobRequest criteria) {
         Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(systemJobApi.describeJobPage(criteria, page), HttpStatus.OK);
+        return new ResponseEntity<>(systemJobService.describeJobPage(criteria, page), HttpStatus.OK);
     }
 
     @ApiOperation("新增岗位")
@@ -68,7 +66,7 @@ public class JobController {
     @PreAuthorize("@el.check('job:del')")
     public ResponseEntity<Object> removeJobByIds(@RequestBody Set<Long> ids) {
         // 验证是否被用户关联
-        systemJobApi.verifyBindRelationByIds(ids);
+        systemJobService.verifyBindRelationByIds(ids);
         systemJobService.removeJobByIds(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }

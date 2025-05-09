@@ -2,7 +2,6 @@ package cn.odboy.core.controller.system;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.api.system.api.SystemMenuApi;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.service.system.dto.QueryMenuRequest;
 import cn.odboy.core.dal.dataobject.system.Menu;
@@ -38,29 +37,28 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/menus")
 public class MenuController {
     private static final String ENTITY_NAME = "menu";
-    private final SystemMenuApi systemMenuApi;
     private final SystemMenuService systemMenuService;
 
     @ApiOperation("导出菜单数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('menu:list')")
     public void exportMenu(HttpServletResponse response, QueryMenuRequest criteria) throws Exception {
-        systemMenuService.downloadMenuExcel(systemMenuApi.describeMenuList(criteria, false), response);
+        systemMenuService.downloadMenuExcel(systemMenuService.describeMenuList(criteria, false), response);
     }
 
     @PostMapping(value = "/buildMenus")
     @ApiOperation("获取前端所需菜单")
     public ResponseEntity<List<MenuResponse>> buildMenus() {
-        List<Menu> menuList = systemMenuApi.describeMenuListByUserId(SecurityHelper.getCurrentUserId());
-        List<Menu> menus = systemMenuApi.buildMenuTree(menuList);
-        return new ResponseEntity<>(systemMenuApi.buildMenuResponse(menus), HttpStatus.OK);
+        List<Menu> menuList = systemMenuService.describeMenuListByUserId(SecurityHelper.getCurrentUserId());
+        List<Menu> menus = systemMenuService.buildMenuTree(menuList);
+        return new ResponseEntity<>(systemMenuService.buildMenuResponse(menus), HttpStatus.OK);
     }
 
     @ApiOperation("返回全部的菜单")
     @PostMapping(value = "/describeMenuListByPid")
     @PreAuthorize("@el.check('menu:list','roles:list')")
     public ResponseEntity<List<Menu>> describeMenuListByPid(@RequestParam Long pid) {
-        return new ResponseEntity<>(systemMenuApi.describeMenuListByPid(pid), HttpStatus.OK);
+        return new ResponseEntity<>(systemMenuService.describeMenuListByPid(pid), HttpStatus.OK);
     }
 
     @ApiOperation("根据菜单ID返回所有子节点ID，包含自身ID")
@@ -68,9 +66,9 @@ public class MenuController {
     @PreAuthorize("@el.check('menu:list','roles:list')")
     public ResponseEntity<Object> describeChildMenuSet(@RequestParam Long id) {
         Set<Menu> menuSet = new HashSet<>();
-        List<Menu> menuList = systemMenuApi.describeMenuListByPid(id);
-        menuSet.add(systemMenuApi.describeMenuById(id));
-        menuSet = systemMenuApi.describeChildMenuSet(menuList, menuSet);
+        List<Menu> menuList = systemMenuService.describeMenuListByPid(id);
+        menuSet.add(systemMenuService.describeMenuById(id));
+        menuSet = systemMenuService.describeChildMenuSet(menuList, menuSet);
         Set<Long> ids = menuSet.stream().map(Menu::getId).collect(Collectors.toSet());
         return new ResponseEntity<>(ids, HttpStatus.OK);
     }
@@ -79,7 +77,7 @@ public class MenuController {
     @ApiOperation("查询菜单")
     @PreAuthorize("@el.check('menu:list')")
     public ResponseEntity<PageResult<Menu>> queryMenu(QueryMenuRequest criteria) throws Exception {
-        List<Menu> menuList = systemMenuApi.describeMenuList(criteria, true);
+        List<Menu> menuList = systemMenuService.describeMenuList(criteria, true);
         return new ResponseEntity<>(PageUtil.toPage(menuList), HttpStatus.OK);
     }
 
@@ -90,8 +88,8 @@ public class MenuController {
         Set<Menu> menus = new LinkedHashSet<>();
         if (CollectionUtil.isNotEmpty(ids)) {
             for (Long id : ids) {
-                Menu menu = systemMenuApi.describeMenuById(id);
-                List<Menu> menuList = systemMenuApi.describeSuperiorMenuList(menu, new ArrayList<>());
+                Menu menu = systemMenuService.describeMenuById(id);
+                List<Menu> menuList = systemMenuService.describeSuperiorMenuList(menu, new ArrayList<>());
                 for (Menu data : menuList) {
                     if (data.getId().equals(menu.getPid())) {
                         data.setSubCount(data.getSubCount() - 1);
@@ -101,9 +99,9 @@ public class MenuController {
             }
             // 编辑菜单时不显示自己以及自己下级的数据，避免出现PID数据环形问题
             menus = menus.stream().filter(i -> !ids.contains(i.getId())).collect(Collectors.toSet());
-            return new ResponseEntity<>(systemMenuApi.buildMenuTree(new ArrayList<>(menus)), HttpStatus.OK);
+            return new ResponseEntity<>(systemMenuService.buildMenuTree(new ArrayList<>(menus)), HttpStatus.OK);
         }
-        return new ResponseEntity<>(systemMenuApi.describeMenuListByPid(null), HttpStatus.OK);
+        return new ResponseEntity<>(systemMenuService.describeMenuListByPid(null), HttpStatus.OK);
     }
 
     @ApiOperation("新增菜单")
@@ -131,9 +129,9 @@ public class MenuController {
     public ResponseEntity<Object> removeMenuByIds(@RequestBody Set<Long> ids) {
         Set<Menu> menuSet = new HashSet<>();
         for (Long id : ids) {
-            List<Menu> menuList = systemMenuApi.describeMenuListByPid(id);
-            menuSet.add(systemMenuApi.describeMenuById(id));
-            menuSet = systemMenuApi.describeChildMenuSet(menuList, menuSet);
+            List<Menu> menuList = systemMenuService.describeMenuListByPid(id);
+            menuSet.add(systemMenuService.describeMenuById(id));
+            menuSet = systemMenuService.describeChildMenuSet(menuList, menuSet);
         }
         systemMenuService.removeMenuByIds(menuSet);
         return new ResponseEntity<>(HttpStatus.OK);

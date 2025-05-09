@@ -1,12 +1,12 @@
-package cn.odboy.core.api.system.api;
+package cn.odboy.core.service.system;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.core.constant.DataScopeEnum;
-import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.Dept;
 import cn.odboy.core.dal.dataobject.system.Role;
 import cn.odboy.core.dal.dataobject.system.User;
-import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @RequiredArgsConstructor
-public class SystemDataApiImpl implements SystemDataApi {
+public class SystemDataServiceImpl implements SystemDataService {
     private final RedisHelper redisHelper;
-    private final SystemRoleApi systemRoleApi;
-    private final SystemDeptApi systemDeptApi;
+    private final SystemRoleService systemRoleService;
+    private final SystemDeptService systemDeptService;
 
     /**
      * 用户角色和用户部门改变时需清理缓存
@@ -39,7 +39,7 @@ public class SystemDataApiImpl implements SystemDataApi {
         if (CollUtil.isEmpty(ids)) {
             Set<Long> deptIds = new HashSet<>();
             // 查询用户角色
-            List<Role> roleList = systemRoleApi.describeRoleListByUsersId(user.getId());
+            List<Role> roleList = systemRoleService.describeRoleListByUsersId(user.getId());
             // 获取对应的部门ID
             for (Role role : roleList) {
                 DataScopeEnum dataScopeEnum = DataScopeEnum.find(role.getDataScope());
@@ -68,12 +68,12 @@ public class SystemDataApiImpl implements SystemDataApi {
      * @return 数据权限ID
      */
     public Set<Long> getCustomize(Set<Long> deptIds, Role role) {
-        Set<Dept> deptList = systemDeptApi.describeDeptByRoleId(role.getId());
+        Set<Dept> deptList = systemDeptService.describeDeptByRoleId(role.getId());
         for (Dept dept : deptList) {
             deptIds.add(dept.getId());
-            List<Dept> deptChildren = systemDeptApi.describeDeptListByPid(dept.getId());
+            List<Dept> deptChildren = systemDeptService.describeDeptListByPid(dept.getId());
             if (CollUtil.isNotEmpty(deptChildren)) {
-                deptIds.addAll(systemDeptApi.describeChildDeptIdListByDeptIds(deptChildren));
+                deptIds.addAll(systemDeptService.describeChildDeptIdListByDeptIds(deptChildren));
             }
         }
         return deptIds;

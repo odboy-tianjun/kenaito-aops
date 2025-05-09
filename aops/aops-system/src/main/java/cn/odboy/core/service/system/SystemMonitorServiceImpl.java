@@ -1,4 +1,4 @@
-package cn.odboy.core.api.system.api;
+package cn.odboy.core.service.system;
 
 import cn.hutool.core.date.BetweenFormatter.Level;
 import cn.hutool.core.date.DateUtil;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class SystemMonitorApiImpl implements SystemMonitorApi {
+public class SystemMonitorServiceImpl implements SystemMonitorService {
     private final DecimalFormat df = new DecimalFormat("0.00");
 
     @Override

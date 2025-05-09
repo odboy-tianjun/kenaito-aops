@@ -1,8 +1,8 @@
-package cn.odboy.core.api.system.api;
+package cn.odboy.core.service.system;
 
 import java.util.Map;
 
-public interface SystemMonitorApi {
+public interface SystemMonitorService {
 
     /**
      * 查询服务器监控信息

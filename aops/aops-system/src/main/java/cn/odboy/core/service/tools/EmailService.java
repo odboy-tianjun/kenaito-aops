@@ -6,7 +6,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 
 public interface EmailService extends IService<EmailConfig> {
-
+    /**
+     * 查询配置
+     *
+     * @return EmailConfig 邮件配置
+     */
+    EmailConfig describeEmailConfig();
     /**
      * 更新邮件配置
      *

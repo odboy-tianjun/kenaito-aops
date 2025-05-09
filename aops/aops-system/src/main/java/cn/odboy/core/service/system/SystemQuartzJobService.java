@@ -1,8 +1,11 @@
 package cn.odboy.core.service.system;
 
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.service.system.dto.QueryQuartzJobRequest;
 import cn.odboy.core.service.system.dto.UpdateQuartzJobRequest;
 import cn.odboy.core.dal.dataobject.job.QuartzJob;
 import cn.odboy.core.dal.dataobject.job.QuartzLog;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,6 +14,39 @@ import java.util.Set;
 
 
 public interface SystemQuartzJobService extends IService<QuartzJob> {
+    /**
+     * 分页查询
+     *
+     * @param criteria 条件
+     * @param page     分页参数
+     * @return /
+     */
+    PageResult<QuartzJob> describeQuartzJobPage(QueryQuartzJobRequest criteria, Page<Object> page);
+
+    /**
+     * 查询全部
+     *
+     * @param criteria 条件
+     * @return /
+     */
+    List<QuartzJob> describeQuartzJobList(QueryQuartzJobRequest criteria);
+
+    /**
+     * 分页查询日志
+     *
+     * @param criteria 条件
+     * @param page     分页参数
+     * @return /
+     */
+    PageResult<QuartzLog> describeQuartzLogPage(QueryQuartzJobRequest criteria, Page<Object> page);
+
+    /**
+     * 查询全部
+     *
+     * @param criteria 条件
+     * @return /
+     */
+    List<QuartzLog> describeQuartzLogList(QueryQuartzJobRequest criteria);
     /**
      * 创建
      *
