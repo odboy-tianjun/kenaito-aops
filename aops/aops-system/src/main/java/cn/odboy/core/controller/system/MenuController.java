@@ -1,15 +1,15 @@
 package cn.odboy.core.controller.system;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.system.SystemMenuApi;
-import cn.odboy.core.framework.permission.util.SecurityHelper;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.system.api.SystemMenuApi;
+import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.service.system.dto.QueryMenuRequest;
 import cn.odboy.core.dal.dataobject.system.Menu;
-import cn.odboy.core.dal.model.MenuResponse;
+import cn.odboy.core.controller.system.vo.MenuResponse;
 import cn.odboy.core.service.system.SystemMenuService;
-import cn.odboy.exception.BadRequestException;
-import cn.odboy.util.PageUtil;
+import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

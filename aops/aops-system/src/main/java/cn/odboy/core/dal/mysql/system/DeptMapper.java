@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.system;
 
-import cn.odboy.core.service.system.dto.QueryDeptRequest;
 import cn.odboy.core.dal.dataobject.system.Dept;
+import cn.odboy.core.service.system.dto.QueryDeptRequest;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

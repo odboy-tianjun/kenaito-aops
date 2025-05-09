@@ -1,7 +1,7 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.system.SystemDictApi;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.system.api.SystemDictApi;
 import cn.odboy.core.service.system.dto.CreateDictRequest;
 import cn.odboy.core.service.system.dto.QueryDictRequest;
 import cn.odboy.core.dal.dataobject.system.Dict;

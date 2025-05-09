@@ -1,10 +1,10 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.core.cache.api.SystemUserOnlineApi;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineApi;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineService;
 import cn.odboy.core.service.system.dto.UserOnlineVo;
-import cn.odboy.core.cache.service.SystemUserOnlineService;
-import cn.odboy.util.DesEncryptUtil;
+import cn.odboy.common.util.DesEncryptUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

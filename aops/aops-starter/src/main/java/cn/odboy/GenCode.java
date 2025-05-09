@@ -1,7 +1,7 @@
 package cn.odboy;
 
 
-import cn.odboy.core.framework.mybatisplus.util.CmdGenHelper;
+import cn.odboy.core.framework.mybatisplus.mybatis.core.util.CmdGenHelper;
 import java.util.List;
 
 /**

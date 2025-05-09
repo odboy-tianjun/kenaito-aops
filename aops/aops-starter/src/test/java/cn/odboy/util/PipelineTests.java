@@ -1,7 +1,7 @@
 package cn.odboy.util;
 
-import cn.odboy.core.framework.flow.context.PipelineManager;
-import cn.odboy.core.framework.flow.context.PipelineProcessManager;
+import cn.odboy.core.framework.flow.core.context.PipelineManager;
+import cn.odboy.core.framework.flow.core.context.PipelineProcessManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

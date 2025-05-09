@@ -1,14 +1,14 @@
 package cn.odboy.core.controller.job;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.context.SpringBeanHolder;
-import cn.odboy.core.api.system.SystemQuartzJobApi;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.context.SpringBeanHolder;
+import cn.odboy.core.api.system.api.SystemQuartzJobApi;
 import cn.odboy.core.service.system.dto.QueryQuartzJobRequest;
 import cn.odboy.core.service.system.dto.UpdateQuartzJobRequest;
 import cn.odboy.core.dal.dataobject.job.QuartzJob;
 import cn.odboy.core.dal.dataobject.job.QuartzLog;
 import cn.odboy.core.service.system.SystemQuartzJobService;
-import cn.odboy.exception.BadRequestException;
+import cn.odboy.common.exception.BadRequestException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -1,11 +1,11 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.system.SystemJobApi;
-import cn.odboy.core.service.system.dto.CreateJobRequest;
-import cn.odboy.core.service.system.dto.QueryJobRequest;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.system.api.SystemJobApi;
 import cn.odboy.core.dal.dataobject.system.Job;
 import cn.odboy.core.service.system.SystemJobService;
+import cn.odboy.core.service.system.dto.CreateJobRequest;
+import cn.odboy.core.service.system.dto.QueryJobRequest;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

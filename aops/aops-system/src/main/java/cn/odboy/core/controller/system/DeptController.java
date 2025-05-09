@@ -1,12 +1,12 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.system.SystemDeptApi;
-import cn.odboy.core.service.system.dto.CreateDeptRequest;
-import cn.odboy.core.service.system.dto.QueryDeptRequest;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.system.api.SystemDeptApi;
 import cn.odboy.core.dal.dataobject.system.Dept;
 import cn.odboy.core.service.system.SystemDeptService;
-import cn.odboy.util.PageUtil;
+import cn.odboy.core.service.system.dto.CreateDeptRequest;
+import cn.odboy.core.service.system.dto.QueryDeptRequest;
+import cn.odboy.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

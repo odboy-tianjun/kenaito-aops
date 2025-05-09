@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
-import cn.odboy.core.dal.dataobject.system.Dept;
 import cn.odboy.core.service.system.dto.CreateDeptRequest;
+import cn.odboy.core.dal.dataobject.system.Dept;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

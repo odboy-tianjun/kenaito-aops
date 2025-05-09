@@ -1,16 +1,16 @@
 package cn.odboy.util.kubernetes;
 
 import cn.hutool.core.lang.Dict;
-import cn.odboy.framework.kubernetes.context.KubernetesYamlTemplateManager;
-import cn.odboy.framework.kubernetes.model.vo.ArgsClusterCodeVo;
-import cn.odboy.framework.kubernetes.model.vo.ArgsDryRunVo;
-import cn.odboy.framework.kubernetes.model.vo.ArgsYamlVo;
-import cn.odboy.framework.kubernetes.repository.KubernetesIngressRepository;
-import cn.odboy.framework.kubernetes.repository.KubernetesNamespaceRepository;
-import cn.odboy.framework.kubernetes.repository.KubernetesOpenKruiseStatefulSetRepository;
-import cn.odboy.framework.kubernetes.repository.KubernetesServiceRepository;
-import cn.odboy.framework.kubernetes.repository.KubernetesStatefulSetRepository;
-import cn.odboy.framework.kubernetes.util.KubernetesResourceNameUtil;
+import cn.odboy.app.framework.kubernetes.context.KubernetesYamlTemplateManager;
+import cn.odboy.app.framework.kubernetes.model.vo.ArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.model.vo.ArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.model.vo.ArgsYamlVo;
+import cn.odboy.app.framework.kubernetes.repository.KubernetesIngressRepository;
+import cn.odboy.app.framework.kubernetes.repository.KubernetesNamespaceRepository;
+import cn.odboy.app.framework.kubernetes.repository.KubernetesOpenKruiseStatefulSetRepository;
+import cn.odboy.app.framework.kubernetes.repository.KubernetesServiceRepository;
+import cn.odboy.app.framework.kubernetes.repository.KubernetesStatefulSetRepository;
+import cn.odboy.app.framework.kubernetes.util.KubernetesResourceNameUtil;
 import io.kubernetes.client.openapi.models.V1Ingress;
 import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1Service;

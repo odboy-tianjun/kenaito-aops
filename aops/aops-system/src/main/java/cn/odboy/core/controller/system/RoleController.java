@@ -1,14 +1,14 @@
 package cn.odboy.core.controller.system;
 
 import cn.hutool.core.lang.Dict;
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.system.SystemRoleApi;
-import cn.odboy.core.framework.permission.util.SecurityHelper;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.system.api.SystemRoleApi;
+import cn.odboy.core.dal.dataobject.system.Role;
+import cn.odboy.core.framework.permission.core.util.SecurityHelper;
+import cn.odboy.core.service.system.SystemRoleService;
 import cn.odboy.core.service.system.dto.CreateRoleRequest;
 import cn.odboy.core.service.system.dto.QueryRoleRequest;
-import cn.odboy.core.dal.dataobject.system.Role;
-import cn.odboy.core.service.system.SystemRoleService;
-import cn.odboy.exception.BadRequestException;
+import cn.odboy.common.exception.BadRequestException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

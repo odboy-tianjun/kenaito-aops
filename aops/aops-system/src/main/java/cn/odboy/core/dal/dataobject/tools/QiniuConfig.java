@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.dataobject.tools;
 
-import cn.odboy.base.MyObject;
+import cn.odboy.common.pojo.MyObject;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;

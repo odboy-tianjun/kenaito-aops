@@ -1,6 +1,6 @@
 package cn.odboy.core.service.system.dto;
 
-import cn.odboy.base.MyObject;
+import cn.odboy.common.pojo.MyObject;
 import cn.odboy.core.dal.dataobject.system.Dept;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

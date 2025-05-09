@@ -2,10 +2,10 @@ package cn.odboy.util;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import static cn.odboy.util.FileUtil.getPrefix;
-import static cn.odboy.util.FileUtil.getSize;
-import static cn.odboy.util.FileUtil.getSuffix;
-import static cn.odboy.util.FileUtil.toFile;
+import static cn.odboy.common.util.FileUtil.getPrefix;
+import static cn.odboy.common.util.FileUtil.getSize;
+import static cn.odboy.common.util.FileUtil.getSuffix;
+import static cn.odboy.common.util.FileUtil.toFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FileUtilTest {

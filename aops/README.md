@@ -12,16 +12,21 @@ https://github.com/odboy-tianjun/kenaito-aops
 
 ### 基础框架
 
-基于 [CuteJava 1.3.1](https://github.com/odboy-tianjun/cutejava) 二次开发
+- 基于 [CuteJava 1.3.1](https://github.com/odboy-tianjun/cutejava) 二次开发
+- 编码规范化
 
 ### 依赖环境
 
 - Node v16.20.2
 - Jdk 17
+
 ---
+
 - MySQL 8.0.25
 - Redis 7.0.5
+
 ---
+
 - Gitlab 14.8.2
 - Kubernetes v1.30.1, Docker v26.1.3, Containerd v1.7.15
 

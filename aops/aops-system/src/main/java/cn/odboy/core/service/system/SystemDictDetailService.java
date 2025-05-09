@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
-import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.service.system.dto.CreateDictDetailRequest;
+import cn.odboy.core.dal.dataobject.system.DictDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 

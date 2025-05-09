@@ -1,7 +1,7 @@
 package cn.odboy;
 
-import cn.odboy.annotation.AnonymousGetMapping;
-import cn.odboy.context.BootApplication;
+import cn.odboy.common.annotation.AnonymousGetMapping;
+import cn.odboy.common.context.BootApplication;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

@@ -1,8 +1,8 @@
 package cn.odboy.core.controller.tools;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.tools.QiniuConfigApi;
-import cn.odboy.core.api.tools.QiniuContentApi;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.tools.api.QiniuConfigApi;
+import cn.odboy.core.api.tools.api.QiniuContentApi;
 import cn.odboy.core.service.tools.dto.QueryQiniuRequest;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfig;
 import cn.odboy.core.dal.dataobject.tools.QiniuContent;

@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.dataobject.system;
 
-import cn.odboy.base.MyEntity;
+import cn.odboy.common.pojo.MyEntity;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

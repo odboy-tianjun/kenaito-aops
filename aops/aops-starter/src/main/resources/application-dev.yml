@@ -253,3 +253,8 @@ minio:
   share-expire-time: 7
 kubernetes:
   template-version: v20250113
+pipeline-task-pool:
+  core-size: 5
+  max-size: 10
+  keep-alive-time: 60
+  queue-capacity: 100

@@ -1,6 +1,6 @@
 package cn.odboy.core.service.system.dto;
 
-import cn.odboy.base.MyObject;
+import cn.odboy.common.pojo.MyObject;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

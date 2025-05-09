@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.system;
 
-import cn.odboy.core.service.system.dto.QueryJobRequest;
 import cn.odboy.core.dal.dataobject.system.Job;
+import cn.odboy.core.service.system.dto.QueryJobRequest;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

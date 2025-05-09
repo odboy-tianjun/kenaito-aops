@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.dataobject.job;
 
-import cn.odboy.base.MyObject;
+import cn.odboy.common.pojo.MyObject;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

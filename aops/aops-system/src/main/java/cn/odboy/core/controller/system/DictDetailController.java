@@ -1,11 +1,11 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.base.PageResult;
-import cn.odboy.core.api.system.SystemDictDetailApi;
-import cn.odboy.core.service.system.dto.CreateDictDetailRequest;
-import cn.odboy.core.service.system.dto.QueryDictDetailRequest;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.api.system.api.SystemDictDetailApi;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.service.system.SystemDictDetailService;
+import cn.odboy.core.service.system.dto.CreateDictDetailRequest;
+import cn.odboy.core.service.system.dto.QueryDictDetailRequest;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

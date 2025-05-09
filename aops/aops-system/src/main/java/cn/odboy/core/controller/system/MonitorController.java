@@ -1,6 +1,6 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.core.api.system.SystemMonitorApi;
+import cn.odboy.core.api.system.api.SystemMonitorApi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

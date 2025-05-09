@@ -1,7 +1,7 @@
 package cn.odboy.core.framework.doc;
 
-import cn.odboy.constant.SystemConst;
-import cn.odboy.util.AnonTagUtil;
+import cn.odboy.common.constant.SystemConst;
+import cn.odboy.common.util.AnonTagUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
