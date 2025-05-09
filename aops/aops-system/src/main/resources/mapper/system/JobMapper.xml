@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.odboy.core.dal.mysql.system.JobMapper">
-    <select id="getJobByName" resultType="cn.odboy.core.dal.dataobject.system.Job">
+    <select id="getJobByName" resultType="cn.odboy.core.dal.dataobject.system.JobDO">
         select id
         from system_job
         where name = #{name}
     </select>
-    <select id="queryJobPageByArgs" resultType="cn.odboy.core.dal.dataobject.system.Job">
+    <select id="queryJobPageByArgs" resultType="cn.odboy.core.dal.dataobject.system.JobDO">
         select
         *
         from system_job
         <where>
-            <if test="criteria.name != null and criteria.name != ''">
-                and name like concat('%', #{criteria.name}, '%')
+            <if test="args.name != null and args.name != ''">
+                and name like concat('%', #{args.name}, '%')
             </if>
-            <if test="criteria.enabled != null">
-                and enabled = #{criteria.enabled}
+            <if test="args.enabled != null">
+                and enabled = #{args.enabled}
             </if>
-            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
-                and create_time between #{criteria.createTime[0]} and #{criteria.createTime[1]}
+            <if test="args.createTime != null and args.createTime.size() != 0">
+                and create_time between #{args.createTime[0]} and #{args.createTime[1]}
             </if>
         </where>
         order by job_sort, id desc

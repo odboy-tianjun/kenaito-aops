@@ -16,7 +16,7 @@
 package cn.odboy.app.service.kubernetes;
 
 import cn.odboy.common.constant.GlobalEnvEnum;
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterNode;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterNodeDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterNodeMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -37,20 +37,20 @@ public class AopsKubernetesClusterNodeServiceImpl implements AopsKubernetesClust
     private final AopsKubernetesClusterNodeMapper aopsKubernetesClusterNodeMapper;
 
     @Override
-    public AopsKubernetesClusterNode describeKubernetesClusterNodeByArgs(GlobalEnvEnum envEnum, String nodeInternalIp) {
-        return aopsKubernetesClusterNodeMapper.selectOne(new LambdaQueryWrapper<AopsKubernetesClusterNode>()
-                .eq(AopsKubernetesClusterNode::getEnvCode, envEnum.getCode())
-                .eq(AopsKubernetesClusterNode::getNodeInternalIp, nodeInternalIp)
+    public AopsKubernetesClusterNodeDO describeKubernetesClusterNodeByArgs(GlobalEnvEnum envEnum, String nodeInternalIp) {
+        return aopsKubernetesClusterNodeMapper.selectOne(new LambdaQueryWrapper<AopsKubernetesClusterNodeDO>()
+                .eq(AopsKubernetesClusterNodeDO::getEnvCode, envEnum.getCode())
+                .eq(AopsKubernetesClusterNodeDO::getNodeInternalIp, nodeInternalIp)
         );
     }
 
     @Override
-    public void saveBatch(List<AopsKubernetesClusterNode> newRecordList, int batchSize) {
+    public void saveBatch(List<AopsKubernetesClusterNodeDO> newRecordList, int batchSize) {
         aopsKubernetesClusterNodeMapper.insert(newRecordList, batchSize);
     }
 
     @Override
-    public void updateBatchById(List<AopsKubernetesClusterNode> updRecordList, int batchSize) {
+    public void updateBatchById(List<AopsKubernetesClusterNodeDO> updRecordList, int batchSize) {
         aopsKubernetesClusterNodeMapper.updateById(updRecordList, batchSize);
     }
 }

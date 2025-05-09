@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.system;
 
-import cn.odboy.core.service.system.dto.QueryUserRequest;
-import cn.odboy.core.dal.dataobject.system.User;
+import cn.odboy.core.dal.dataobject.system.UserDO;
+import cn.odboy.core.service.system.dto.QueryUserArgs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,27 +12,27 @@ import java.util.List;
 import java.util.Set;
 
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper extends BaseMapper<UserDO> {
 
-    Long getUserCountByArgs(@Param("criteria") QueryUserRequest criteria);
+    Long getUserCountByArgs(@Param("args") QueryUserArgs args);
 
-    IPage<User> queryUserPageByArgs(@Param("criteria") QueryUserRequest criteria, Page<Object> page);
+    IPage<UserDO> queryUserPageByArgs(@Param("args") QueryUserArgs args, Page<Object> page);
 
-    User getUserByUsername(@Param("username") String username);
+    UserDO getUserByUsername(@Param("username") String username);
 
-    User getUserByEmail(@Param("email") String email);
+    UserDO getUserByEmail(@Param("email") String email);
 
-    User getUserByPhone(@Param("phone") String phone);
+    UserDO getUserByPhone(@Param("phone") String phone);
 
     void updatePasswordByUsername(@Param("username") String username, @Param("password") String password, @Param("lastPasswordResetTime") Date lastPasswordResetTime);
 
     void updateEmailByUsername(@Param("username") String username, @Param("email") String email);
 
-    List<User> queryUserListByRoleId(@Param("roleId") Long roleId);
+    List<UserDO> queryUserListByRoleId(@Param("roleId") Long roleId);
 
-    List<User> queryUserListByDeptId(@Param("deptId") Long deptId);
+    List<UserDO> queryUserListByDeptId(@Param("deptId") Long deptId);
 
-    List<User> queryUserListByMenuId(@Param("menuId") Long menuId);
+    List<UserDO> queryUserListByMenuId(@Param("menuId") Long menuId);
 
     int getUserCountByJobIds(@Param("jobIds") Set<Long> jobIds);
 

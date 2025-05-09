@@ -1,10 +1,10 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.system.Job;
+import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.service.system.SystemJobService;
-import cn.odboy.core.service.system.dto.CreateJobRequest;
-import cn.odboy.core.service.system.dto.QueryJobRequest;
+import cn.odboy.core.service.system.dto.CreateJobArgs;
+import cn.odboy.core.service.system.dto.QueryJobArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,30 +33,30 @@ public class JobController {
     @ApiOperation("导出岗位数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('job:list')")
-    public void exportJob(HttpServletResponse response, QueryJobRequest criteria) throws IOException {
-        systemJobService.downloadJobExcel(systemJobService.describeJobList(criteria), response);
+    public void exportJob(HttpServletResponse response, QueryJobArgs args) throws IOException {
+        systemJobService.downloadJobExcel(systemJobService.describeJobList(args), response);
     }
 
     @ApiOperation("查询岗位")
     @GetMapping
     @PreAuthorize("@el.check('job:list','user:list')")
-    public ResponseEntity<PageResult<Job>> queryJob(QueryJobRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(systemJobService.describeJobPage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<JobDO>> queryJob(QueryJobArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(systemJobService.describeJobPage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("新增岗位")
     @PostMapping(value = "/saveJob")
     @PreAuthorize("@el.check('job:add')")
-    public ResponseEntity<Object> saveJob(@Validated @RequestBody CreateJobRequest resources) {
-        systemJobService.saveJob(resources);
+    public ResponseEntity<Object> saveJob(@Validated @RequestBody CreateJobArgs args) {
+        systemJobService.saveJob(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ApiOperation("修改岗位")
     @PostMapping(value = "/modifyJobById")
     @PreAuthorize("@el.check('job:edit')")
-    public ResponseEntity<Object> modifyJobById(@Validated(Job.Update.class) @RequestBody Job resources) {
+    public ResponseEntity<Object> modifyJobById(@Validated(JobDO.Update.class) @RequestBody JobDO resources) {
         systemJobService.modifyJobById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

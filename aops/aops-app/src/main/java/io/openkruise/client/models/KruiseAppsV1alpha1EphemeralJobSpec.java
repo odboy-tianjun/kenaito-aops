@@ -161,10 +161,10 @@ public class KruiseAppsV1alpha1EphemeralJobSpec {
   }
 
    /**
-   * ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the eJob finishes, it is eligible to be automatically deleted. When the Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, default value is 1800 If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes.
+   * ttlSecondsAfterFinished limits the lifetime of a JobDO that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the eJob finishes, it is eligible to be automatically deleted. When the JobDO is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, default value is 1800 If this field is set to zero, the JobDO becomes eligible to be deleted immediately after it finishes.
    * @return ttlSecondsAfterFinished
   **/
-  @ApiModelProperty(value = "ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the eJob finishes, it is eligible to be automatically deleted. When the Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, default value is 1800 If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes.")
+  @ApiModelProperty(value = "ttlSecondsAfterFinished limits the lifetime of a JobDO that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the eJob finishes, it is eligible to be automatically deleted. When the JobDO is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, default value is 1800 If this field is set to zero, the JobDO becomes eligible to be deleted immediately after it finishes.")
   public Integer getTtlSecondsAfterFinished() {
     return ttlSecondsAfterFinished;
   }

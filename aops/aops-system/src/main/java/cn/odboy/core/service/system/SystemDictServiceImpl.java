@@ -4,15 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
+import cn.odboy.core.dal.dataobject.system.DictDO;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.dal.dataobject.system.Dict;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.dal.mysql.system.DictMapper;
-import cn.odboy.core.service.system.dto.CreateDictRequest;
+import cn.odboy.core.service.system.dto.CreateDictArgs;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
-import cn.odboy.core.service.system.dto.QueryDictRequest;
+import cn.odboy.core.service.system.dto.QueryDictArgs;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,45 +29,45 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class SystemDictServiceImpl extends ServiceImpl<DictMapper, Dict> implements SystemDictService {
+public class SystemDictServiceImpl extends ServiceImpl<DictMapper, DictDO> implements SystemDictService {
     private final DictMapper dictMapper;
     private final DictDetailMapper dictDetailMapper;
     private final RedisHelper redisHelper;
     @Override
-    public PageResult<Dict> describeDictPage(QueryDictRequest criteria, Page<Object> page) {
-        IPage<Dict> dicts = dictMapper.queryDictPageByArgs(criteria, page);
+    public PageResult<DictDO> describeDictPage(QueryDictArgs args, Page<Object> page) {
+        IPage<DictDO> dicts = dictMapper.queryDictPageByArgs(args, page);
         return PageUtil.toPage(dicts);
     }
 
     @Override
-    public List<Dict> describeDictList(QueryDictRequest criteria) {
-        return dictMapper.queryDictPageByArgs(criteria, PageUtil.getCount(dictMapper)).getRecords();
+    public List<DictDO> describeDictList(QueryDictArgs args) {
+        return dictMapper.queryDictPageByArgs(args, PageUtil.getCount(dictMapper)).getRecords();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDict(CreateDictRequest resources) {
-        save(BeanUtil.copyProperties(resources, Dict.class));
+    public void saveDict(CreateDictArgs args) {
+        save(BeanUtil.copyProperties(args, DictDO.class));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyDictById(Dict resources) {
+    public void modifyDictById(DictDO resources) {
         // 清理缓存
         delCaches(resources);
-        Dict dict = getById(resources.getId());
-        dict.setName(resources.getName());
-        dict.setDescription(resources.getDescription());
-        saveOrUpdate(dict);
+        DictDO dictDO = getById(resources.getId());
+        dictDO.setName(resources.getName());
+        dictDO.setDescription(resources.getDescription());
+        saveOrUpdate(dictDO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeDictByIds(Set<Long> ids) {
         // 清理缓存
-        List<Dict> dicts = dictMapper.selectByIds(ids);
-        for (Dict dict : dicts) {
-            delCaches(dict);
+        List<DictDO> dictDOS = dictMapper.selectByIds(ids);
+        for (DictDO dictDO : dictDOS) {
+            delCaches(dictDO);
         }
         // 删除字典
         dictMapper.deleteByIds(ids);
@@ -76,15 +76,15 @@ public class SystemDictServiceImpl extends ServiceImpl<DictMapper, Dict> impleme
     }
 
     @Override
-    public void downloadDictExcel(List<Dict> dicts, HttpServletResponse response) throws IOException {
+    public void downloadDictExcel(List<DictDO> dictDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (Dict dict : dicts) {
-            List<DictDetail> dictDetails = dictDetailMapper.queryDictDetailListByDictName(dict.getName());
+        for (DictDO dictDO : dictDOS) {
+            List<DictDetail> dictDetails = dictDetailMapper.queryDictDetailListByDictName(dictDO.getName());
             if (CollectionUtil.isNotEmpty(dictDetails)) {
                 for (DictDetail dictDetail : dictDetails) {
                     Map<String, Object> map = new LinkedHashMap<>();
-                    map.put("字典名称", dict.getName());
-                    map.put("字典描述", dict.getDescription());
+                    map.put("字典名称", dictDO.getName());
+                    map.put("字典描述", dictDO.getDescription());
                     map.put("字典标签", dictDetail.getLabel());
                     map.put("字典值", dictDetail.getValue());
                     map.put("创建日期", dictDetail.getCreateTime());
@@ -92,18 +92,18 @@ public class SystemDictServiceImpl extends ServiceImpl<DictMapper, Dict> impleme
                 }
             } else {
                 Map<String, Object> map = new LinkedHashMap<>();
-                map.put("字典名称", dict.getName());
-                map.put("字典描述", dict.getDescription());
+                map.put("字典名称", dictDO.getName());
+                map.put("字典描述", dictDO.getDescription());
                 map.put("字典标签", null);
                 map.put("字典值", null);
-                map.put("创建日期", dict.getCreateTime());
+                map.put("创建日期", dictDO.getCreateTime());
                 list.add(map);
             }
         }
         FileUtil.downloadExcel(list, response);
     }
 
-    public void delCaches(Dict dict) {
-        redisHelper.del(RedisKeyConst.DICT_NAME + dict.getName());
+    public void delCaches(DictDO dictDO) {
+        redisHelper.del(RedisKeyConst.DICT_NAME + dictDO.getName());
     }
 }

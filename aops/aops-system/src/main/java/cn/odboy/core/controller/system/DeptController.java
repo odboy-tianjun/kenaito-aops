@@ -1,10 +1,10 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.system.Dept;
+import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.service.system.SystemDeptService;
-import cn.odboy.core.service.system.dto.CreateDeptRequest;
-import cn.odboy.core.service.system.dto.QueryDeptRequest;
+import cn.odboy.core.service.system.dto.CreateDeptArgs;
+import cn.odboy.core.service.system.dto.QueryDeptArgs;
 import cn.odboy.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,52 +37,52 @@ public class DeptController {
     @ApiOperation("导出部门数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dept:list')")
-    public void exportDept(HttpServletResponse response, QueryDeptRequest criteria) throws Exception {
-        systemDeptService.downloadDeptExcel(systemDeptService.describeDeptList(criteria, false), response);
+    public void exportDept(HttpServletResponse response, QueryDeptArgs args) throws Exception {
+        systemDeptService.downloadDeptExcel(systemDeptService.describeDeptList(args, false), response);
     }
 
     @ApiOperation("查询部门")
     @GetMapping
     @PreAuthorize("@el.check('user:list','dept:list')")
-    public ResponseEntity<PageResult<Dept>> describeDeptPage(QueryDeptRequest criteria) throws Exception {
-        List<Dept> depts = systemDeptService.describeDeptList(criteria, true);
-        return new ResponseEntity<>(PageUtil.toPage(depts), HttpStatus.OK);
+    public ResponseEntity<PageResult<DeptDO>> describeDeptPage(QueryDeptArgs args) throws Exception {
+        List<DeptDO> deptDOS = systemDeptService.describeDeptList(args, true);
+        return new ResponseEntity<>(PageUtil.toPage(deptDOS), HttpStatus.OK);
     }
 
     @ApiOperation("查询部门:根据ID获取同级与上级数据")
     @PostMapping("/describeDeptSuperiorTree")
     @PreAuthorize("@el.check('user:list','dept:list')")
     public ResponseEntity<Object> describeDeptSuperiorTree(@RequestBody List<Long> ids, @RequestParam(defaultValue = "false") Boolean exclude) {
-        Set<Dept> deptSet = new LinkedHashSet<>();
+        Set<DeptDO> deptDOSet = new LinkedHashSet<>();
         for (Long id : ids) {
-            Dept dept = systemDeptService.describeDeptById(id);
-            List<Dept> depts = systemDeptService.describeSuperiorDeptListByPid(dept, new ArrayList<>());
+            DeptDO deptDO = systemDeptService.describeDeptById(id);
+            List<DeptDO> deptDOS = systemDeptService.describeSuperiorDeptListByPid(deptDO, new ArrayList<>());
             if (exclude) {
-                for (Dept data : depts) {
-                    if (data.getId().equals(dept.getPid())) {
+                for (DeptDO data : deptDOS) {
+                    if (data.getId().equals(deptDO.getPid())) {
                         data.setSubCount(data.getSubCount() - 1);
                     }
                 }
                 // 编辑部门时不显示自己以及自己下级的数据，避免出现PID数据环形问题
-                depts = depts.stream().filter(i -> !ids.contains(i.getId())).collect(Collectors.toList());
+                deptDOS = deptDOS.stream().filter(i -> !ids.contains(i.getId())).collect(Collectors.toList());
             }
-            deptSet.addAll(depts);
+            deptDOSet.addAll(deptDOS);
         }
-        return new ResponseEntity<>(systemDeptService.buildDeptTree(new ArrayList<>(deptSet)), HttpStatus.OK);
+        return new ResponseEntity<>(systemDeptService.buildDeptTree(new ArrayList<>(deptDOSet)), HttpStatus.OK);
     }
 
     @ApiOperation("新增部门")
     @PostMapping(value = "/saveDept")
     @PreAuthorize("@el.check('dept:add')")
-    public ResponseEntity<Object> saveDept(@Validated @RequestBody CreateDeptRequest resources) {
-        systemDeptService.saveDept(resources);
+    public ResponseEntity<Object> saveDept(@Validated @RequestBody CreateDeptArgs args) {
+        systemDeptService.saveDept(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ApiOperation("修改部门")
     @PostMapping(value = "/modifyDept")
     @PreAuthorize("@el.check('dept:edit')")
-    public ResponseEntity<Object> modifyDept(@Validated(Dept.Update.class) @RequestBody Dept resources) {
+    public ResponseEntity<Object> modifyDept(@Validated(DeptDO.Update.class) @RequestBody DeptDO resources) {
         systemDeptService.modifyDept(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -91,12 +91,12 @@ public class DeptController {
     @PostMapping(value = "/removeDeptByIds")
     @PreAuthorize("@el.check('dept:del')")
     public ResponseEntity<Object> removeDeptByIds(@RequestBody Set<Long> ids) {
-        Set<Dept> depts = new HashSet<>();
+        Set<DeptDO> deptDOS = new HashSet<>();
         // 获取部门，和其所有子部门
-        systemDeptService.traverseDeptByIdWithPids(ids, depts);
+        systemDeptService.traverseDeptByIdWithPids(ids, deptDOS);
         // 验证是否被角色或用户关联
-        systemDeptService.verifyBindRelationByIds(depts);
-        systemDeptService.removeDeptByIds(depts);
+        systemDeptService.verifyBindRelationByIds(deptDOS);
+        systemDeptService.removeDeptByIds(deptDOS);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

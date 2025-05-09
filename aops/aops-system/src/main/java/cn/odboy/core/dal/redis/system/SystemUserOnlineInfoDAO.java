@@ -11,8 +11,8 @@ import cn.odboy.common.util.StringUtil;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.framework.permission.core.filter.TokenProvider;
 import cn.odboy.core.framework.system.config.AppProperties;
-import cn.odboy.core.service.system.dto.UserJwtVo;
-import cn.odboy.core.service.system.dto.UserOnlineVo;
+import cn.odboy.core.controller.system.vo.UserJwtVo;
+import cn.odboy.core.controller.system.vo.UserOnlineVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -85,7 +85,7 @@ public class SystemUserOnlineInfoDAO {
      * @param request   /
      */
     public void saveUserJwtModelByToken(UserJwtVo userJwtVo, String token, HttpServletRequest request) {
-        String dept = userJwtVo.getUser().getDept().getName();
+        String dept = userJwtVo.getUserDO().getDeptDO().getName();
         String ip = BrowserUtil.getIp(request);
         String id = tokenProvider.getId(token);
         String version = BrowserUtil.getVersion(request);
@@ -95,7 +95,7 @@ public class SystemUserOnlineInfoDAO {
             userOnlineVo = new UserOnlineVo();
             userOnlineVo.setUid(id);
             userOnlineVo.setUserName(userJwtVo.getUsername());
-            userOnlineVo.setNickName(userJwtVo.getUser().getNickName());
+            userOnlineVo.setNickName(userJwtVo.getUserDO().getNickName());
             userOnlineVo.setDept(dept);
             userOnlineVo.setBrowser(version);
             userOnlineVo.setIp(ip);

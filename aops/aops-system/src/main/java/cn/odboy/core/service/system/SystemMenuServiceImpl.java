@@ -4,12 +4,12 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.odboy.common.util.ClassUtil;
-import cn.odboy.core.controller.system.vo.MenuResponse;
+import cn.odboy.core.controller.system.vo.MenuVo;
+import cn.odboy.core.dal.dataobject.system.MenuDO;
+import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.constant.TransferProtocolConst;
-import cn.odboy.core.dal.dataobject.system.Menu;
-import cn.odboy.core.dal.dataobject.system.Role;
-import cn.odboy.core.dal.dataobject.system.User;
+import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.dal.mysql.system.MenuMapper;
 import cn.odboy.core.dal.mysql.system.RoleMenuMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
@@ -18,8 +18,8 @@ import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.StringUtil;
-import cn.odboy.core.service.system.dto.MenuMetaVo;
-import cn.odboy.core.service.system.dto.QueryMenuRequest;
+import cn.odboy.core.controller.system.vo.MenuMetaVo;
+import cn.odboy.core.service.system.dto.QueryMenuArgs;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements SystemMenuService {
+public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> implements SystemMenuService {
     private final MenuMapper menuMapper;
     private final RoleMenuMapper roleMenuMapper;
     private final UserMapper userMapper;
@@ -51,36 +51,36 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
     private static final String NO_STR = "否";
 
     @Override
-    public List<Menu> describeMenuList(QueryMenuRequest criteria, Boolean isQuery) throws Exception {
+    public List<MenuDO> describeMenuList(QueryMenuArgs args, Boolean isQuery) throws Exception {
         if (Boolean.TRUE.equals(isQuery)) {
-            criteria.setPidIsNull(true);
-            List<Field> fields = ClassUtil.getAllFields(criteria.getClass(), new ArrayList<>());
+            args.setPidIsNull(true);
+            List<Field> fields = ClassUtil.getAllFields(args.getClass(), new ArrayList<>());
             for (Field field : fields) {
                 //设置对象的访问权限，保证对private的属性的访问
                 field.setAccessible(true);
-                Object val = field.get(criteria);
+                Object val = field.get(args);
                 if ("pidIsNull".equals(field.getName())) {
                     continue;
                 }
                 // 如果有查询条件，则不指定pidIsNull
                 if (ObjectUtil.isNotNull(val)) {
-                    criteria.setPidIsNull(null);
+                    args.setPidIsNull(null);
                     break;
                 }
             }
         }
-        return menuMapper.queryMenuListByArgs(criteria);
+        return menuMapper.queryMenuListByArgs(args);
     }
 
     @Override
-    public Menu describeMenuById(long id) {
+    public MenuDO describeMenuById(long id) {
         String key = RedisKeyConst.MENU_ID + id;
-        Menu menu = redisHelper.get(key, Menu.class);
-        if (menu == null) {
-            menu = menuMapper.selectById(id);
-            redisHelper.set(key, menu, 1, TimeUnit.DAYS);
+        MenuDO menuDO = redisHelper.get(key, MenuDO.class);
+        if (menuDO == null) {
+            menuDO = menuMapper.selectById(id);
+            redisHelper.set(key, menuDO, 1, TimeUnit.DAYS);
         }
-        return menu;
+        return menuDO;
     }
 
     /**
@@ -90,112 +90,112 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
      * @return /
      */
     @Override
-    public List<Menu> describeMenuListByUserId(Long currentUserId) {
+    public List<MenuDO> describeMenuListByUserId(Long currentUserId) {
         String key = RedisKeyConst.MENU_USER + currentUserId;
-        List<Menu> menus = redisHelper.getList(key, Menu.class);
-        if (CollUtil.isEmpty(menus)) {
-            List<Role> roles = systemRoleService.describeRoleListByUsersId(currentUserId);
-            Set<Long> roleIds = roles.stream().map(Role::getId).collect(Collectors.toSet());
-            menus = new ArrayList<>(menuMapper.queryMenuSetByRoleIdsAndType(roleIds, 2));
-            redisHelper.set(key, menus, 1, TimeUnit.DAYS);
+        List<MenuDO> menuDOS = redisHelper.getList(key, MenuDO.class);
+        if (CollUtil.isEmpty(menuDOS)) {
+            List<RoleDO> roleDOS = systemRoleService.describeRoleListByUsersId(currentUserId);
+            Set<Long> roleIds = roleDOS.stream().map(RoleDO::getId).collect(Collectors.toSet());
+            menuDOS = new ArrayList<>(menuMapper.queryMenuSetByRoleIdsAndType(roleIds, 2));
+            redisHelper.set(key, menuDOS, 1, TimeUnit.DAYS);
         }
-        return menus;
+        return menuDOS;
     }
     @Override
-    public Set<Menu> describeChildMenuSet(List<Menu> menuList, Set<Menu> menuSet) {
-        for (Menu menu : menuList) {
-            menuSet.add(menu);
-            List<Menu> menus = menuMapper.queryMenuListByPidOrderByMenuSort(menu.getId());
-            if (CollUtil.isNotEmpty(menus)) {
-                describeChildMenuSet(menus, menuSet);
+    public Set<MenuDO> describeChildMenuSet(List<MenuDO> menuDOList, Set<MenuDO> menuDOSet) {
+        for (MenuDO menuDO : menuDOList) {
+            menuDOSet.add(menuDO);
+            List<MenuDO> menuDOS = menuMapper.queryMenuListByPidOrderByMenuSort(menuDO.getId());
+            if (CollUtil.isNotEmpty(menuDOS)) {
+                describeChildMenuSet(menuDOS, menuDOSet);
             }
         }
-        return menuSet;
+        return menuDOSet;
     }
 
     @Override
-    public List<Menu> describeMenuListByPid(Long pid) {
-        List<Menu> menus;
+    public List<MenuDO> describeMenuListByPid(Long pid) {
+        List<MenuDO> menuDOS;
         if (pid != null && !pid.equals(0L)) {
-            menus = menuMapper.queryMenuListByPidOrderByMenuSort(pid);
+            menuDOS = menuMapper.queryMenuListByPidOrderByMenuSort(pid);
         } else {
-            menus = menuMapper.queryMenuListByPidIsNullOrderByMenuSort();
+            menuDOS = menuMapper.queryMenuListByPidIsNullOrderByMenuSort();
         }
-        return menus;
+        return menuDOS;
     }
 
     @Override
-    public List<Menu> describeSuperiorMenuList(Menu menu, List<Menu> menus) {
-        if (menu.getPid() == null) {
-            menus.addAll(menuMapper.queryMenuListByPidIsNullOrderByMenuSort());
-            return menus;
+    public List<MenuDO> describeSuperiorMenuList(MenuDO menuDO, List<MenuDO> menuDOS) {
+        if (menuDO.getPid() == null) {
+            menuDOS.addAll(menuMapper.queryMenuListByPidIsNullOrderByMenuSort());
+            return menuDOS;
         }
-        menus.addAll(menuMapper.queryMenuListByPidOrderByMenuSort(menu.getPid()));
-        return describeSuperiorMenuList(describeMenuById(menu.getPid()), menus);
+        menuDOS.addAll(menuMapper.queryMenuListByPidOrderByMenuSort(menuDO.getPid()));
+        return describeSuperiorMenuList(describeMenuById(menuDO.getPid()), menuDOS);
     }
 
     @Override
-    public List<Menu> buildMenuTree(List<Menu> menus) {
-        List<Menu> trees = new ArrayList<>();
+    public List<MenuDO> buildMenuTree(List<MenuDO> menuDOS) {
+        List<MenuDO> trees = new ArrayList<>();
         Set<Long> ids = new HashSet<>();
-        for (Menu menu : menus) {
-            if (menu.getPid() == null) {
-                trees.add(menu);
+        for (MenuDO menuDO : menuDOS) {
+            if (menuDO.getPid() == null) {
+                trees.add(menuDO);
             }
-            for (Menu it : menus) {
-                if (menu.getId().equals(it.getPid())) {
-                    if (menu.getChildren() == null) {
-                        menu.setChildren(new ArrayList<>());
+            for (MenuDO it : menuDOS) {
+                if (menuDO.getId().equals(it.getPid())) {
+                    if (menuDO.getChildren() == null) {
+                        menuDO.setChildren(new ArrayList<>());
                     }
-                    menu.getChildren().add(it);
+                    menuDO.getChildren().add(it);
                     ids.add(it.getId());
                 }
             }
         }
         if (CollUtil.isNotEmpty(trees)) {
-            trees = menus.stream().filter(s -> !ids.contains(s.getId())).collect(Collectors.toList());
+            trees = menuDOS.stream().filter(s -> !ids.contains(s.getId())).collect(Collectors.toList());
         }
         return trees;
     }
 
     @Override
-    public List<MenuResponse> buildMenuResponse(List<Menu> menus) {
-        List<MenuResponse> list = new LinkedList<>();
-        menus.forEach(menu -> {
+    public List<MenuVo> buildMenuResponse(List<MenuDO> menuDOS) {
+        List<MenuVo> list = new LinkedList<>();
+        menuDOS.forEach(menu -> {
                     if (menu != null) {
-                        List<Menu> menuList = menu.getChildren();
-                        MenuResponse menuResponse = new MenuResponse();
-                        menuResponse.setName(ObjectUtil.isNotEmpty(menu.getComponentName()) ? menu.getComponentName() : menu.getTitle());
+                        List<MenuDO> menuDOList = menu.getChildren();
+                        MenuVo menuVo = new MenuVo();
+                        menuVo.setName(ObjectUtil.isNotEmpty(menu.getComponentName()) ? menu.getComponentName() : menu.getTitle());
                         // 一级目录需要加斜杠，不然会报警告
-                        menuResponse.setPath(menu.getPid() == null ? "/" + menu.getPath() : menu.getPath());
-                        menuResponse.setHidden(menu.getHidden());
+                        menuVo.setPath(menu.getPid() == null ? "/" + menu.getPath() : menu.getPath());
+                        menuVo.setHidden(menu.getHidden());
                         // 如果不是外链
                         if (!menu.getIFrame()) {
                             if (menu.getPid() == null) {
-                                menuResponse.setComponent(StringUtil.isEmpty(menu.getComponent()) ? "Layout" : menu.getComponent());
+                                menuVo.setComponent(StringUtil.isEmpty(menu.getComponent()) ? "Layout" : menu.getComponent());
                                 // 如果不是一级菜单，并且菜单类型为目录，则代表是多级菜单
                             } else if (menu.getType() == 0) {
-                                menuResponse.setComponent(StringUtil.isEmpty(menu.getComponent()) ? "ParentView" : menu.getComponent());
+                                menuVo.setComponent(StringUtil.isEmpty(menu.getComponent()) ? "ParentView" : menu.getComponent());
                             } else if (StringUtil.isNoneBlank(menu.getComponent())) {
-                                menuResponse.setComponent(menu.getComponent());
+                                menuVo.setComponent(menu.getComponent());
                             }
                         }
-                        menuResponse.setMeta(new MenuMetaVo(menu.getTitle(), menu.getIcon(), !menu.getCache()));
-                        if (CollectionUtil.isNotEmpty(menuList)) {
-                            menuResponse.setAlwaysShow(true);
-                            menuResponse.setRedirect("noredirect");
-                            menuResponse.setChildren(buildMenuResponse(menuList));
+                        menuVo.setMeta(new MenuMetaVo(menu.getTitle(), menu.getIcon(), !menu.getCache()));
+                        if (CollectionUtil.isNotEmpty(menuDOList)) {
+                            menuVo.setAlwaysShow(true);
+                            menuVo.setRedirect("noredirect");
+                            menuVo.setChildren(buildMenuResponse(menuDOList));
                             // 处理是一级菜单并且没有子菜单的情况
                         } else if (menu.getPid() == null) {
-                            MenuResponse menuResponse1 = getMenuVo(menu, menuResponse);
-                            menuResponse.setName(null);
-                            menuResponse.setMeta(null);
-                            menuResponse.setComponent("Layout");
-                            List<MenuResponse> list1 = new ArrayList<>();
-                            list1.add(menuResponse1);
-                            menuResponse.setChildren(list1);
+                            MenuVo menuVo1 = getMenuVo(menu, menuVo);
+                            menuVo.setName(null);
+                            menuVo.setMeta(null);
+                            menuVo.setComponent("Layout");
+                            List<MenuVo> list1 = new ArrayList<>();
+                            list1.add(menuVo1);
+                            menuVo.setChildren(list1);
                         }
-                        list.add(menuResponse);
+                        list.add(menuVo);
                     }
                 }
         );
@@ -203,35 +203,35 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
     }
 
     /**
-     * 获取 MenuResponse
+     * 获取 MenuVo
      *
-     * @param menu         /
-     * @param menuResponse /
+     * @param menuDO         /
+     * @param menuVo /
      * @return /
      */
-    private static MenuResponse getMenuVo(Menu menu, MenuResponse menuResponse) {
-        MenuResponse menuResponse1 = new MenuResponse();
-        menuResponse1.setMeta(menuResponse.getMeta());
+    private static MenuVo getMenuVo(MenuDO menuDO, MenuVo menuVo) {
+        MenuVo menuVo1 = new MenuVo();
+        menuVo1.setMeta(menuVo.getMeta());
         // 非外链
-        if (!menu.getIFrame()) {
-            menuResponse1.setPath("index");
-            menuResponse1.setName(menuResponse.getName());
-            menuResponse1.setComponent(menuResponse.getComponent());
+        if (!menuDO.getIFrame()) {
+            menuVo1.setPath("index");
+            menuVo1.setName(menuVo.getName());
+            menuVo1.setComponent(menuVo.getComponent());
         } else {
-            menuResponse1.setPath(menu.getPath());
+            menuVo1.setPath(menuDO.getPath());
         }
-        return menuResponse1;
+        return menuVo1;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveMenu(Menu resources) {
+    public void saveMenu(MenuDO resources) {
         if (menuMapper.getMenuByTitle(resources.getTitle()) != null) {
-            throw new EntityExistException(Menu.class, "title", resources.getTitle());
+            throw new EntityExistException(MenuDO.class, "title", resources.getTitle());
         }
         if (StringUtil.isNotBlank(resources.getComponentName())) {
             if (menuMapper.getMenuByComponentName(resources.getComponentName()) != null) {
-                throw new EntityExistException(Menu.class, "componentName", resources.getComponentName());
+                throw new EntityExistException(MenuDO.class, "componentName", resources.getComponentName());
             }
         }
         if (Long.valueOf(0L).equals(resources.getPid())) {
@@ -251,20 +251,20 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyMenuById(Menu resources) {
+    public void modifyMenuById(MenuDO resources) {
         if (resources.getId().equals(resources.getPid())) {
             throw new BadRequestException("上级不能为自己");
         }
-        Menu menu = getById(resources.getId());
+        MenuDO menuDO = getById(resources.getId());
         if (resources.getIFrame()) {
             if (!(resources.getPath().toLowerCase().startsWith(TransferProtocolConst.PREFIX_HTTP) || resources.getPath().toLowerCase().startsWith(TransferProtocolConst.PREFIX_HTTPS))) {
                 throw new BadRequestException(TransferProtocolConst.PREFIX_HTTPS_BAD_REQUEST);
             }
         }
-        Menu menu1 = menuMapper.getMenuByTitle(resources.getTitle());
+        MenuDO menuDO1 = menuMapper.getMenuByTitle(resources.getTitle());
 
-        if (menu1 != null && !menu1.getId().equals(menu.getId())) {
-            throw new EntityExistException(Menu.class, "title", resources.getTitle());
+        if (menuDO1 != null && !menuDO1.getId().equals(menuDO.getId())) {
+            throw new EntityExistException(MenuDO.class, "title", resources.getTitle());
         }
 
         if (resources.getPid().equals(0L)) {
@@ -272,28 +272,28 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
         }
 
         // 记录的父节点ID
-        Long oldPid = menu.getPid();
+        Long oldPid = menuDO.getPid();
         Long newPid = resources.getPid();
 
         if (StringUtil.isNotBlank(resources.getComponentName())) {
-            menu1 = menuMapper.getMenuByComponentName(resources.getComponentName());
-            if (menu1 != null && !menu1.getId().equals(menu.getId())) {
-                throw new EntityExistException(Menu.class, "componentName", resources.getComponentName());
+            menuDO1 = menuMapper.getMenuByComponentName(resources.getComponentName());
+            if (menuDO1 != null && !menuDO1.getId().equals(menuDO.getId())) {
+                throw new EntityExistException(MenuDO.class, "componentName", resources.getComponentName());
             }
         }
-        menu.setTitle(resources.getTitle());
-        menu.setComponent(resources.getComponent());
-        menu.setPath(resources.getPath());
-        menu.setIcon(resources.getIcon());
-        menu.setIFrame(resources.getIFrame());
-        menu.setPid(resources.getPid());
-        menu.setMenuSort(resources.getMenuSort());
-        menu.setCache(resources.getCache());
-        menu.setHidden(resources.getHidden());
-        menu.setComponentName(resources.getComponentName());
-        menu.setPermission(resources.getPermission());
-        menu.setType(resources.getType());
-        saveOrUpdate(menu);
+        menuDO.setTitle(resources.getTitle());
+        menuDO.setComponent(resources.getComponent());
+        menuDO.setPath(resources.getPath());
+        menuDO.setIcon(resources.getIcon());
+        menuDO.setIFrame(resources.getIFrame());
+        menuDO.setPid(resources.getPid());
+        menuDO.setMenuSort(resources.getMenuSort());
+        menuDO.setCache(resources.getCache());
+        menuDO.setHidden(resources.getHidden());
+        menuDO.setComponentName(resources.getComponentName());
+        menuDO.setPermission(resources.getPermission());
+        menuDO.setType(resources.getType());
+        saveOrUpdate(menuDO);
         // 计算父级菜单节点数目
         updateSubCnt(oldPid);
         updateSubCnt(newPid);
@@ -304,29 +304,29 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeMenuByIds(Set<Menu> menuSet) {
-        for (Menu menu : menuSet) {
+    public void removeMenuByIds(Set<MenuDO> menuDOSet) {
+        for (MenuDO menuDO : menuDOSet) {
             // 清理缓存
-            delCaches(menu.getId());
-            roleMenuMapper.deleteByMenuId(menu.getId());
-            menuMapper.deleteById(menu.getId());
-            updateSubCnt(menu.getPid());
+            delCaches(menuDO.getId());
+            roleMenuMapper.deleteByMenuId(menuDO.getId());
+            menuMapper.deleteById(menuDO.getId());
+            updateSubCnt(menuDO.getPid());
         }
     }
 
 
     @Override
-    public void downloadMenuExcel(List<Menu> menus, HttpServletResponse response) throws IOException {
+    public void downloadMenuExcel(List<MenuDO> menuDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (Menu menu : menus) {
+        for (MenuDO menuDO : menuDOS) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("菜单标题", menu.getTitle());
-            map.put("菜单类型", menu.getType() == null ? "目录" : menu.getType() == 1 ? "菜单" : "按钮");
-            map.put("权限标识", menu.getPermission());
-            map.put("外链菜单", menu.getIFrame() ? YES_STR : NO_STR);
-            map.put("菜单可见", menu.getHidden() ? NO_STR : YES_STR);
-            map.put("是否缓存", menu.getCache() ? YES_STR : NO_STR);
-            map.put("创建日期", menu.getCreateTime());
+            map.put("菜单标题", menuDO.getTitle());
+            map.put("菜单类型", menuDO.getType() == null ? "目录" : menuDO.getType() == 1 ? "菜单" : "按钮");
+            map.put("权限标识", menuDO.getPermission());
+            map.put("外链菜单", menuDO.getIFrame() ? YES_STR : NO_STR);
+            map.put("菜单可见", menuDO.getHidden() ? NO_STR : YES_STR);
+            map.put("是否缓存", menuDO.getCache() ? YES_STR : NO_STR);
+            map.put("创建日期", menuDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
@@ -345,12 +345,12 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, Menu> impleme
      * @param id 菜单ID
      */
     public void delCaches(Long id) {
-        List<User> users = userMapper.queryUserListByMenuId(id);
+        List<UserDO> userDOS = userMapper.queryUserListByMenuId(id);
         redisHelper.del(RedisKeyConst.MENU_ID + id);
-        redisHelper.delByKeys(RedisKeyConst.MENU_USER, users.stream().map(User::getId).collect(Collectors.toSet()));
-        // 清除 Role 缓存
-        List<Role> roles = systemRoleService.describeRoleListByMenuId(id);
-        redisHelper.delByKeys(RedisKeyConst.ROLE_ID, roles.stream().map(Role::getId).collect(Collectors.toSet()));
+        redisHelper.delByKeys(RedisKeyConst.MENU_USER, userDOS.stream().map(UserDO::getId).collect(Collectors.toSet()));
+        // 清除 RoleDO 缓存
+        List<RoleDO> roleDOS = systemRoleService.describeRoleListByMenuId(id);
+        redisHelper.delByKeys(RedisKeyConst.ROLE_ID, roleDOS.stream().map(RoleDO::getId).collect(Collectors.toSet()));
     }
 
 }

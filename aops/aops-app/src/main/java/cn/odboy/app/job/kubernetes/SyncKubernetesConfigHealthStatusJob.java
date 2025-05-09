@@ -15,11 +15,11 @@
  */
 package cn.odboy.app.job.kubernetes;
 
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfig;
-import cn.odboy.app.framework.kubernetes.context.KubernetesConfigHelper;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
+import cn.odboy.app.framework.kubernetes.core.context.KubernetesConfigHelper;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterConfigService;
-import cn.odboy.app.framework.kubernetes.constant.KubernetesResourceHealthStatusEnum;
-import cn.odboy.app.framework.kubernetes.context.KubernetesHealthChecker;
+import cn.odboy.app.framework.kubernetes.core.constant.KubernetesResourceHealthStatusEnum;
+import cn.odboy.app.framework.kubernetes.core.context.KubernetesHealthChecker;
 import cn.odboy.common.util.CollUtil;
 import io.kubernetes.client.openapi.ApiClient;
 import lombok.RequiredArgsConstructor;
@@ -42,20 +42,20 @@ public class SyncKubernetesConfigHealthStatusJob {
     private final AopsKubernetesClusterConfigService aopsKubernetesClusterConfigService;
 
     public void run() {
-        List<AopsKubernetesClusterConfig> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfig();
+        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfig();
         if (CollUtil.isEmpty(list)) {
             log.info("没有找到配置信息");
             return;
         }
-        for (AopsKubernetesClusterConfig aopsKubernetesClusterConfig : list) {
+        for (AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO : list) {
             try {
-                ApiClient apiClient = kubernetesConfigHelper.loadFormContent(aopsKubernetesClusterConfig.getConfigContent());
+                ApiClient apiClient = kubernetesConfigHelper.loadFormContent(aopsKubernetesClusterConfigDO.getConfigContent());
                 kubernetesHealthChecker.checkConfigContent(apiClient);
-                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfig.getId(), KubernetesResourceHealthStatusEnum.HEALTH);
-                log.info("{} K8s服务端健康", aopsKubernetesClusterConfig.getClusterName());
+                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfigDO.getId(), KubernetesResourceHealthStatusEnum.HEALTH);
+                log.info("{} K8s服务端健康", aopsKubernetesClusterConfigDO.getClusterName());
             } catch (Exception e) {
-                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfig.getId(), KubernetesResourceHealthStatusEnum.UN_HEALTH);
-                log.error("{} K8s服务端不健康", aopsKubernetesClusterConfig.getClusterName(), e);
+                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfigDO.getId(), KubernetesResourceHealthStatusEnum.UN_HEALTH);
+                log.error("{} K8s服务端不健康", aopsKubernetesClusterConfigDO.getClusterName(), e);
             }
         }
     }

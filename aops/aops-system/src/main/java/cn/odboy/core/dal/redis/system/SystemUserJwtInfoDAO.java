@@ -4,7 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.StringUtil;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.service.system.dto.UserJwtVo;
+import cn.odboy.core.controller.system.vo.UserJwtVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;

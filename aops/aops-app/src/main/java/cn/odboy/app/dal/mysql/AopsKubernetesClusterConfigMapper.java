@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.dal.mysql;
 
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfig;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -28,6 +28,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2025-05-07
  */
 @Mapper
-public interface AopsKubernetesClusterConfigMapper extends BaseMapper<AopsKubernetesClusterConfig> {
+public interface AopsKubernetesClusterConfigMapper extends BaseMapper<AopsKubernetesClusterConfigDO> {
 
 }

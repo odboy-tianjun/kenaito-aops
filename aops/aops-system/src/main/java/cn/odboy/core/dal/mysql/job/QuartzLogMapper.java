@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.job;
 
-import cn.odboy.core.dal.dataobject.job.QuartzLog;
-import cn.odboy.core.service.system.dto.QueryQuartzJobRequest;
+import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
+import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,6 +10,6 @@ import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
-public interface QuartzLogMapper extends BaseMapper<QuartzLog> {
-    IPage<QuartzLog> queryQuartzLogPageByArgs(@Param("criteria") QueryQuartzJobRequest criteria, Page<Object> page);
+public interface QuartzLogMapper extends BaseMapper<QuartzLogDO> {
+    IPage<QuartzLogDO> queryQuartzLogPageByArgs(@Param("args") QueryQuartzJobArgs args, Page<Object> page);
 }

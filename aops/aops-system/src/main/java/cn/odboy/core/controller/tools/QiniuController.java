@@ -1,9 +1,9 @@
 package cn.odboy.core.controller.tools;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.tools.dto.QueryQiniuRequest;
-import cn.odboy.core.dal.dataobject.tools.QiniuConfig;
-import cn.odboy.core.dal.dataobject.tools.QiniuContent;
+import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
+import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
+import cn.odboy.core.service.tools.dto.QueryQiniuArgs;
 import cn.odboy.core.service.tools.QiniuConfigService;
 import cn.odboy.core.service.tools.QiniuContentService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,39 +42,39 @@ public class QiniuController {
 
     @ApiOperation("查询七牛云存储配置")
     @PostMapping(value = "/describeQiniuConfig")
-    public ResponseEntity<QiniuConfig> describeQiniuConfig() {
+    public ResponseEntity<QiniuConfigDO> describeQiniuConfig() {
         return new ResponseEntity<>(qiNiuConfigService.describeQiniuConfig(), HttpStatus.OK);
     }
 
     @ApiOperation("配置七牛云存储")
     @PostMapping(value = "/modifyQiniuConfig")
-    public ResponseEntity<Object> modifyQiniuConfig(@Validated @RequestBody QiniuConfig qiniuConfig) {
-        qiNiuConfigService.saveQiniuConfig(qiniuConfig);
-        qiNiuConfigService.modifyQiniuConfigType(qiniuConfig.getType());
+    public ResponseEntity<Object> modifyQiniuConfig(@Validated @RequestBody QiniuConfigDO qiniuConfigDO) {
+        qiNiuConfigService.saveQiniuConfig(qiniuConfigDO);
+        qiNiuConfigService.modifyQiniuConfigType(qiniuConfigDO.getType());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    public void exportQiNiu(HttpServletResponse response, QueryQiniuRequest criteria) throws IOException {
-        qiniuContentService.downloadExcel(qiniuContentService.describeQiniuContentList(criteria), response);
+    public void exportQiNiu(HttpServletResponse response, QueryQiniuArgs args) throws IOException {
+        qiniuContentService.downloadExcel(qiniuContentService.describeQiniuContentList(args), response);
     }
 
     @ApiOperation("查询文件")
     @GetMapping
-    public ResponseEntity<PageResult<QiniuContent>> queryQiNiu(QueryQiniuRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(qiniuContentService.describeQiniuContentPage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<QiniuContentDO>> queryQiNiu(QueryQiniuArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(qiniuContentService.describeQiniuContentPage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("上传文件")
     @PostMapping
     public ResponseEntity<Object> uploadQiNiu(@RequestParam MultipartFile file) {
-        QiniuContent qiniuContent = qiniuContentService.uploadFile(file);
+        QiniuContentDO qiniuContentDO = qiniuContentService.uploadFile(file);
         Map<String, Object> map = new HashMap<>(3);
-        map.put("id", qiniuContent.getId());
+        map.put("id", qiniuContentDO.getId());
         map.put("errno", 0);
-        map.put("data", new String[]{qiniuContent.getUrl()});
+        map.put("data", new String[]{qiniuContentDO.getUrl()});
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 

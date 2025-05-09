@@ -16,7 +16,7 @@
 package cn.odboy.app.service.kubernetes;
 
 import cn.odboy.common.constant.GlobalEnvEnum;
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterNode;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterNodeDO;
 import java.util.List;
 
 /**
@@ -28,9 +28,9 @@ import java.util.List;
  * @since 2025-05-07
  */
 public interface AopsKubernetesClusterNodeService {
-    AopsKubernetesClusterNode describeKubernetesClusterNodeByArgs(GlobalEnvEnum envEnum, String nodeInternalIp);
+    AopsKubernetesClusterNodeDO describeKubernetesClusterNodeByArgs(GlobalEnvEnum envEnum, String nodeInternalIp);
 
-    void saveBatch(List<AopsKubernetesClusterNode> newRecordList, int batchSize);
+    void saveBatch(List<AopsKubernetesClusterNodeDO> newRecordList, int batchSize);
 
-    void updateBatchById(List<AopsKubernetesClusterNode> updRecordList, int batchSize);
+    void updateBatchById(List<AopsKubernetesClusterNodeDO> updRecordList, int batchSize);
 }

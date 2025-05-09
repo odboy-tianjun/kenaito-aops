@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.odboy.core.dal.mysql.system.MenuMapper">
-    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.Menu">
+    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.MenuDO">
         <id column="menu_id" property="id"/>
         <result column="title" property="title"/>
         <result column="name" property="componentName"/>
@@ -27,21 +27,21 @@
         i_frame, create_by, update_by, create_time, update_time
         from system_menu
         <where>
-            <if test="criteria.blurry != null and criteria.blurry != ''">
+            <if test="args.blurry != null and args.blurry != ''">
                 and (
-                title like concat('%',#{criteria.blurry},'%')
-                or name like concat('%',#{criteria.blurry},'%')
-                or permission like concat('%',#{criteria.blurry},'%')
+                title like concat('%',#{args.blurry},'%')
+                or name like concat('%',#{args.blurry},'%')
+                or permission like concat('%',#{args.blurry},'%')
                 )
             </if>
-            <if test="criteria.pidIsNull != null">
+            <if test="args.pidIsNull != null">
                 and pid is null
             </if>
-            <if test="criteria.pid != null">
-                and pid = #{criteria.pid}
+            <if test="args.pid != null">
+                and pid = #{args.pid}
             </if>
-            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
-                and create_time between #{criteria.createTime[0]} and #{criteria.createTime[1]}
+            <if test="args.createTime != null and args.createTime.size() != 0">
+                and create_time between #{args.createTime[0]} and #{args.createTime[1]}
             </if>
         </where>
         order by menu_sort
@@ -101,12 +101,12 @@
         WHERE pid = #{pid}
         ORDER BY menu_sort
     </select>
-    <select id="getMenuByTitle" resultType="cn.odboy.core.dal.dataobject.system.Menu">
+    <select id="getMenuByTitle" resultType="cn.odboy.core.dal.dataobject.system.MenuDO">
         SELECT menu_id id
         FROM system_menu
         WHERE title = #{title}
     </select>
-    <select id="getMenuByComponentName" resultType="cn.odboy.core.dal.dataobject.system.Menu">
+    <select id="getMenuByComponentName" resultType="cn.odboy.core.dal.dataobject.system.MenuDO">
         SELECT menu_id id
         FROM system_menu
         WHERE name = #{name}

@@ -2,7 +2,7 @@ package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
-import cn.odboy.core.service.system.dto.UserOnlineVo;
+import cn.odboy.core.controller.system.vo.UserOnlineVo;
 import cn.odboy.common.util.DesEncryptUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

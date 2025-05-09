@@ -1,8 +1,8 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.system.User;
-import cn.odboy.core.service.system.dto.QueryUserRequest;
+import cn.odboy.core.dal.dataobject.system.UserDO;
+import cn.odboy.core.service.system.dto.QueryUserArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface SystemUserService extends IService<User> {
+public interface SystemUserService extends IService<UserDO> {
 
     /**
      * 根据ID查询
@@ -20,7 +20,7 @@ public interface SystemUserService extends IService<User> {
      * @param id ID
      * @return /
      */
-    User describeUserById(long id);
+    UserDO describeUserById(long id);
 
     /**
      * 根据用户名查询
@@ -28,31 +28,31 @@ public interface SystemUserService extends IService<User> {
      * @param username /
      * @return /
      */
-    User describeUserByUsername(String username);
+    UserDO describeUserByUsername(String username);
 
     /**
      * 查询全部
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<User> describeUserPage(QueryUserRequest criteria, Page<Object> page);
+    PageResult<UserDO> describeUserPage(QueryUserArgs args, Page<Object> page);
 
     /**
      * 查询全部不分页
      *
-     * @param criteria 条件
+     * @param args 条件
      * @return /
      */
-    List<User> describeUserList(QueryUserRequest criteria);
+    List<UserDO> describeUserList(QueryUserArgs args);
 
     /**
      * 新增用户
      *
      * @param resources /
      */
-    void saveUser(User resources);
+    void saveUser(UserDO resources);
 
     /**
      * 编辑用户
@@ -60,7 +60,7 @@ public interface SystemUserService extends IService<User> {
      * @param resources /
      * @throws Exception /
      */
-    void modifyUserById(User resources) throws Exception;
+    void modifyUserById(UserDO resources) throws Exception;
 
     /**
      * 删除用户
@@ -99,14 +99,14 @@ public interface SystemUserService extends IService<User> {
      * @param response /
      * @throws IOException /
      */
-    void downloadUserExcel(List<User> queryAll, HttpServletResponse response) throws IOException;
+    void downloadUserExcel(List<UserDO> queryAll, HttpServletResponse response) throws IOException;
 
     /**
      * 用户自助修改资料
      *
      * @param resources /
      */
-    void modifyUserCenterInfoById(User resources);
+    void modifyUserCenterInfoById(UserDO resources);
 
     /**
      * 重置密码

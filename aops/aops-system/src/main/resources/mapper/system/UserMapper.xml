@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.odboy.core.dal.mysql.system.UserMapper">
-    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.User">
+    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.UserDO">
         <id column="user_user_id" property="id"/>
         <result column="user_dept_id" property="deptId"/>
         <result column="user_username" property="username"/>
@@ -19,15 +19,15 @@
         <result column="user_update_by" property="updateBy"/>
         <result column="user_create_time" property="createTime"/>
         <result column="user_update_time" property="updateTime"/>
-        <association property="dept" javaType="cn.odboy.core.dal.dataobject.system.Dept">
+        <association property="deptDO" javaType="cn.odboy.core.dal.dataobject.system.DeptDO">
             <id column="dept_id" property="id"/>
             <result column="dept_name" property="name"/>
         </association>
-        <collection property="jobs" ofType="cn.odboy.core.dal.dataobject.system.Job">
+        <collection property="jobDOS" ofType="cn.odboy.core.dal.dataobject.system.JobDO">
             <id column="job_id" property="id"/>
             <result column="job_name" property="name"/>
         </collection>
-        <collection property="roles" ofType="cn.odboy.core.dal.dataobject.system.Role">
+        <collection property="roleDOS" ofType="cn.odboy.core.dal.dataobject.system.RoleDO">
             <id column="role_id" property="id"/>
             <result column="role_name" property="name"/>
             <result column="role_level" property="level"/>
@@ -38,27 +38,27 @@
         select count(*)
         from system_user u
         <where>
-            <if test="criteria.id != null">
-                and u.user_id = #{criteria.id}
+            <if test="args.id != null">
+                and u.user_id = #{args.id}
             </if>
-            <if test="criteria.enabled != null">
-                and u.enabled = #{criteria.enabled}
+            <if test="args.enabled != null">
+                and u.enabled = #{args.enabled}
             </if>
-            <if test="criteria.deptIds != null and criteria.deptIds.size() != 0">
+            <if test="args.deptIds != null and args.deptIds.size() != 0">
                 and u.dept_id in
-                <foreach collection="criteria.deptIds" item="deptId" open="(" separator="," close=")">
+                <foreach collection="args.deptIds" item="deptId" open="(" separator="," close=")">
                     #{deptId}
                 </foreach>
             </if>
-            <if test="criteria.blurry != null and criteria.blurry != ''">
+            <if test="args.blurry != null and args.blurry != ''">
                 and (
-                u.username like concat('%', #{criteria.blurry}, '%')
-                or u.nick_name like concat('%', #{criteria.blurry}, '%')
-                or u.email like concat('%', #{criteria.blurry}, '%')
+                u.username like concat('%', #{args.blurry}, '%')
+                or u.nick_name like concat('%', #{args.blurry}, '%')
+                or u.email like concat('%', #{args.blurry}, '%')
                 )
             </if>
-            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
-                and u.create_time between #{criteria.createTime[0]} and #{criteria.createTime[1]}
+            <if test="args.createTime != null and args.createTime.size() != 0">
+                and u.create_time between #{args.createTime[0]} and #{args.createTime[1]}
             </if>
         </where>
     </select>
@@ -77,32 +77,32 @@
         from system_user u
         left join system_dept d on u.dept_id = d.dept_id
         <where>
-            <if test="criteria.id != null">
-                and u.user_id = #{criteria.id}
+            <if test="args.id != null">
+                and u.user_id = #{args.id}
             </if>
-            <if test="criteria.enabled != null">
-                and u.enabled = #{criteria.enabled}
+            <if test="args.enabled != null">
+                and u.enabled = #{args.enabled}
             </if>
-            <if test="criteria.deptIds != null and criteria.deptIds.size() != 0">
+            <if test="args.deptIds != null and args.deptIds.size() != 0">
                 and u.dept_id in
-                <foreach collection="criteria.deptIds" item="deptId" open="(" separator="," close=")">
+                <foreach collection="args.deptIds" item="deptId" open="(" separator="," close=")">
                     #{deptId}
                 </foreach>
             </if>
-            <if test="criteria.blurry != null and criteria.blurry != ''">
+            <if test="args.blurry != null and args.blurry != ''">
                 and (
-                u.username like concat('%', #{criteria.blurry}, '%')
-                or u.nick_name like concat('%', #{criteria.blurry}, '%')
-                or u.email like concat('%', #{criteria.blurry}, '%')
+                u.username like concat('%', #{args.blurry}, '%')
+                or u.nick_name like concat('%', #{args.blurry}, '%')
+                or u.email like concat('%', #{args.blurry}, '%')
                 )
             </if>
-            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
-                and u.create_time between #{criteria.createTime[0]} and #{criteria.createTime[1]}
+            <if test="args.createTime != null and args.createTime.size() != 0">
+                and u.create_time between #{args.createTime[0]} and #{args.createTime[1]}
             </if>
         </where>
         order by u.user_id desc
-        <if test="criteria.offset != null">
-            limit #{criteria.offset}, #{criteria.size}
+        <if test="args.offset != null">
+            limit #{args.offset}, #{args.size}
         </if>
         ) u
         left join system_users_jobs suj on u.user_user_id = suj.user_id
@@ -135,12 +135,12 @@
                  left join system_dept d on u.dept_id = d.dept_id
         where u.username = #{username}
     </select>
-    <select id="getUserByEmail" resultType="cn.odboy.core.dal.dataobject.system.User">
+    <select id="getUserByEmail" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         select user_id as id, username
         from system_user
         where email = #{email}
     </select>
-    <select id="getUserByPhone" resultType="cn.odboy.core.dal.dataobject.system.User">
+    <select id="getUserByPhone" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         select user_id as id, username
         from system_user
         where phone = #{phone}
@@ -156,7 +156,7 @@
         set email = #{email}
         where username = #{username}
     </update>
-    <select id="queryUserListByRoleId" resultType="cn.odboy.core.dal.dataobject.system.User">
+    <select id="queryUserListByRoleId" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         SELECT u.user_id as id, u.username
         FROM system_user u,
              system_users_roles r
@@ -164,7 +164,7 @@
           AND r.role_id = #{roleId}
         group by u.user_id
     </select>
-    <select id="queryUserListByDeptId" resultType="cn.odboy.core.dal.dataobject.system.User">
+    <select id="queryUserListByDeptId" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         SELECT u.*
         FROM system_user u,
              system_users_roles r,
@@ -174,7 +174,7 @@
           AND d.dept_id = #{deptId}
         group by u.user_id
     </select>
-    <select id="queryUserListByMenuId" resultType="cn.odboy.core.dal.dataobject.system.User">
+    <select id="queryUserListByMenuId" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         SELECT u.user_id as id, u.username
         FROM system_user u,
              system_users_roles ur,

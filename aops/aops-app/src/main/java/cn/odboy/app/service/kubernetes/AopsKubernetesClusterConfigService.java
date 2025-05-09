@@ -15,8 +15,8 @@
  */
 package cn.odboy.app.service.kubernetes;
 
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfig;
-import cn.odboy.app.framework.kubernetes.constant.KubernetesResourceHealthStatusEnum;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
+import cn.odboy.app.framework.kubernetes.core.constant.KubernetesResourceHealthStatusEnum;
 import java.util.List;
 
 /**
@@ -28,9 +28,9 @@ import java.util.List;
  * @since 2025-05-07
  */
 public interface AopsKubernetesClusterConfigService {
-    List<AopsKubernetesClusterConfig> describeKubernetesClusterConfig();
+    List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfig();
 
     void modifyStatusById(Long id, KubernetesResourceHealthStatusEnum healthStatusEnum);
 
-    List<AopsKubernetesClusterConfig> describeKubernetesClusterConfigWithHealth();
+    List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigWithHealth();
 }

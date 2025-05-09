@@ -9,9 +9,9 @@ import cn.odboy.core.constant.LoginCodeEnum;
 import cn.odboy.common.constant.SystemConst;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
-import cn.odboy.core.service.system.dto.UserJwtVo;
-import cn.odboy.core.service.system.dto.UserLoginRequest;
-import cn.odboy.core.controller.system.vo.UserInfoResponse;
+import cn.odboy.core.controller.system.vo.UserJwtVo;
+import cn.odboy.core.service.system.dto.UserLoginArgs;
+import cn.odboy.core.controller.system.vo.UserInfoVo;
 import cn.odboy.core.framework.permission.core.filter.TokenProvider;
 import cn.odboy.core.framework.permission.core.filter.UserDetailsServiceImpl;
 import cn.odboy.common.exception.BadRequestException;
@@ -57,21 +57,21 @@ public class AuthController {
 
     @ApiOperation("登录授权")
     @AnonymousPostMapping(value = "/login")
-    public ResponseEntity<Object> login(@Validated @RequestBody UserLoginRequest loginRequest, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Object> login(@Validated @RequestBody UserLoginArgs args, HttpServletRequest request) throws Exception {
         // 密码解密
-        String password = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), loginRequest.getPassword());
+        String password = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), args.getPassword());
         // 查询验证码
-        String code = redisHelper.get(loginRequest.getUuid(), String.class);
+        String code = redisHelper.get(args.getUuid(), String.class);
         // 清除验证码
-        redisHelper.del(loginRequest.getUuid());
+        redisHelper.del(args.getUuid());
         if (StringUtil.isBlank(code)) {
             throw new BadRequestException("验证码不存在或已过期");
         }
-        if (StringUtil.isBlank(loginRequest.getCode()) || !loginRequest.getCode().equalsIgnoreCase(code)) {
+        if (StringUtil.isBlank(args.getCode()) || !args.getCode().equalsIgnoreCase(code)) {
             throw new BadRequestException("验证码错误");
         }
         // 获取用户信息
-        UserJwtVo jwtUser = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+        UserJwtVo jwtUser = userDetailsService.loadUserByUsername(args.getUsername());
         // 验证用户密码
         if (!passwordEncoder.matches(password, jwtUser.getPassword())) {
             throw new BadRequestException("登录密码错误");
@@ -83,11 +83,11 @@ public class AuthController {
         // 返回 token 与 用户信息
         Map<String, Object> authInfo = new HashMap<>(2) {{
             put("token", String.format("%s %s", SystemConst.TOKEN_PREFIX, token));
-            put("user", BeanUtil.copyProperties(jwtUser, UserInfoResponse.class));
+            put("user", BeanUtil.copyProperties(jwtUser, UserInfoVo.class));
         }};
         if (properties.getLogin().isSingle()) {
             // 踢掉之前已经登录的token
-            systemUserOnlineInfoDAO.kickOutByUsername(loginRequest.getUsername());
+            systemUserOnlineInfoDAO.kickOutByUsername(args.getUsername());
         }
         // 保存在线信息
         systemUserOnlineInfoDAO.saveUserJwtModelByToken(jwtUser, token, request);
@@ -97,10 +97,10 @@ public class AuthController {
 
     @ApiOperation("获取用户信息")
     @PostMapping(value = "/info")
-    public ResponseEntity<UserInfoResponse> getUserInfo() {
+    public ResponseEntity<UserInfoVo> getUserInfo() {
         UserJwtVo jwtUser = (UserJwtVo) SecurityHelper.getCurrentUser();
-        UserInfoResponse userInfoResponse = BeanUtil.copyProperties(jwtUser, UserInfoResponse.class);
-        return ResponseEntity.ok(userInfoResponse);
+        UserInfoVo userInfoVo = BeanUtil.copyProperties(jwtUser, UserInfoVo.class);
+        return ResponseEntity.ok(userInfoVo);
     }
 
     @ApiOperation("获取验证码")

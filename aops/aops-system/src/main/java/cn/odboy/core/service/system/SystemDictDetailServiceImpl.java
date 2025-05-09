@@ -4,14 +4,14 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
+import cn.odboy.core.dal.dataobject.system.DictDO;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.dal.dataobject.system.Dict;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.dal.mysql.system.DictMapper;
-import cn.odboy.core.service.system.dto.CreateDictDetailRequest;
+import cn.odboy.core.service.system.dto.CreateDictDetailArgs;
 import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.core.service.system.dto.QueryDictDetailRequest;
+import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
     private final RedisHelper redisHelper;
     private final DictDetailMapper dictDetailMapper;
     @Override
-    public PageResult<DictDetail> describeDictDetailPage(QueryDictDetailRequest criteria, Page<Object> page) {
-        return PageUtil.toPage(dictDetailMapper.queryDictDetailPageByArgs(criteria, page));
+    public PageResult<DictDetail> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page) {
+        return PageUtil.toPage(dictDetailMapper.queryDictDetailPageByArgs(args, page));
     }
     @Override
     public List<DictDetail> describeDictDetailListByName(String name) {
@@ -43,9 +43,9 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDictDetail(CreateDictDetailRequest resources) {
-        DictDetail dictDetail = BeanUtil.copyProperties(resources, DictDetail.class);
-        dictDetail.setDictId(resources.getDict().getId());
+    public void saveDictDetail(CreateDictDetailArgs args) {
+        DictDetail dictDetail = BeanUtil.copyProperties(args, DictDetail.class);
+        dictDetail.setDictId(args.getDictDO().getId());
         save(dictDetail);
         // 清理缓存
         delCaches(dictDetail);
@@ -74,7 +74,7 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
     }
 
     public void delCaches(DictDetail dictDetail) {
-        Dict dict = dictMapper.selectById(dictDetail.getDictId());
-        redisHelper.del(RedisKeyConst.DICT_NAME + dict.getName());
+        DictDO dictDO = dictMapper.selectById(dictDetail.getDictId());
+        redisHelper.del(RedisKeyConst.DICT_NAME + dictDO.getName());
     }
 }

@@ -37,7 +37,7 @@ public class QuartzConfig {
                 // 调用父类的方法，把Job注入到spring中
                 Object jobInstance = super.createJobInstance(bundle);
                 capableBeanFactory.autowireBean(jobInstance);
-                log.debug("Job instance created and autowired: {}", jobInstance.getClass().getName());
+                log.debug("JobDO instance created and autowired: {}", jobInstance.getClass().getName());
                 return jobInstance;
             } catch (Exception e) {
                 log.error("Error creating job instance for bundle: {}", bundle, e);

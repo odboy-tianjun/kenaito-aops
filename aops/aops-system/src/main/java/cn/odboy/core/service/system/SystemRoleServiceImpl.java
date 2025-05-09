@@ -7,21 +7,21 @@ import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.common.util.StringUtil;
-import cn.odboy.core.dal.dataobject.system.Menu;
+import cn.odboy.core.dal.dataobject.system.MenuDO;
+import cn.odboy.core.dal.dataobject.system.RoleDO;
+import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.dal.dataobject.system.Role;
-import cn.odboy.core.dal.dataobject.system.User;
 import cn.odboy.core.dal.mysql.system.RoleDeptMapper;
 import cn.odboy.core.dal.mysql.system.RoleMapper;
 import cn.odboy.core.dal.mysql.system.RoleMenuMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
-import cn.odboy.core.service.system.dto.CreateRoleRequest;
+import cn.odboy.core.service.system.dto.CreateRoleArgs;
 import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
-import cn.odboy.core.service.system.dto.QueryRoleRequest;
-import cn.odboy.core.service.system.dto.RoleCodeVo;
+import cn.odboy.core.service.system.dto.QueryRoleArgs;
+import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements SystemRoleService {
+public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements SystemRoleService {
     private final RoleMapper roleMapper;
     private final RoleDeptMapper roleDeptMapper;
     private final RoleMenuMapper roleMenuMapper;
@@ -50,72 +50,72 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> impleme
     private final RedisHelper redisHelper;
 
     @Override
-    public List<Role> describeRoleList() {
+    public List<RoleDO> describeRoleList() {
         return roleMapper.queryRoleList();
     }
 
     @Override
-    public List<Role> describeRoleList(QueryRoleRequest criteria) {
-        return roleMapper.queryRoleListByArgs(criteria);
+    public List<RoleDO> describeRoleList(QueryRoleArgs args) {
+        return roleMapper.queryRoleListByArgs(args);
     }
 
     @Override
-    public PageResult<Role> describeRolePage(QueryRoleRequest criteria, Page<Object> page) {
-        criteria.setOffset(page.offset());
-        List<Role> roles = roleMapper.queryRoleListByArgs(criteria);
-        Long total = roleMapper.getRoleCountByArgs(criteria);
-        return PageUtil.toPage(roles, total);
+    public PageResult<RoleDO> describeRolePage(QueryRoleArgs args, Page<Object> page) {
+        args.setOffset(page.offset());
+        List<RoleDO> roleDOS = roleMapper.queryRoleListByArgs(args);
+        Long total = roleMapper.getRoleCountByArgs(args);
+        return PageUtil.toPage(roleDOS, total);
     }
 
     @Override
-    public Role describeRoleById(long id) {
+    public RoleDO describeRoleById(long id) {
         String key = RedisKeyConst.ROLE_ID + id;
-        Role role = redisHelper.get(key, Role.class);
-        if (role == null) {
-            role = roleMapper.selectById(id);
-            redisHelper.set(key, role, 1, TimeUnit.DAYS);
+        RoleDO roleDO = redisHelper.get(key, RoleDO.class);
+        if (roleDO == null) {
+            roleDO = roleMapper.selectById(id);
+            redisHelper.set(key, roleDO, 1, TimeUnit.DAYS);
         }
-        return role;
+        return roleDO;
     }
 
     @Override
-    public List<Role> describeRoleListByUsersId(Long userId) {
+    public List<RoleDO> describeRoleListByUsersId(Long userId) {
         String key = RedisKeyConst.ROLE_USER + userId;
-        List<Role> roles = redisHelper.getList(key, Role.class);
-        if (CollUtil.isEmpty(roles)) {
-            roles = roleMapper.queryRoleListByUserId(userId);
-            redisHelper.set(key, roles, 1, TimeUnit.DAYS);
+        List<RoleDO> roleDOS = redisHelper.getList(key, RoleDO.class);
+        if (CollUtil.isEmpty(roleDOS)) {
+            roleDOS = roleMapper.queryRoleListByUserId(userId);
+            redisHelper.set(key, roleDOS, 1, TimeUnit.DAYS);
         }
-        return roles;
+        return roleDOS;
     }
 
     @Override
-    public Integer describeDeptLevelByRoles(Set<Role> roles) {
-        if (CollUtil.isEmpty(roles)) {
+    public Integer describeDeptLevelByRoles(Set<RoleDO> roleDOS) {
+        if (CollUtil.isEmpty(roleDOS)) {
             return Integer.MAX_VALUE;
         }
-        Set<Role> roleSet = new HashSet<>();
-        for (Role role : roles) {
-            roleSet.add(describeRoleById(role.getId()));
+        Set<RoleDO> roleDOSet = new HashSet<>();
+        for (RoleDO roleDO : roleDOS) {
+            roleDOSet.add(describeRoleById(roleDO.getId()));
         }
-        return Collections.min(roleSet.stream().map(Role::getLevel).collect(Collectors.toList()));
+        return Collections.min(roleDOSet.stream().map(RoleDO::getLevel).collect(Collectors.toList()));
     }
 
     @Override
-    public List<RoleCodeVo> buildUserRolePermissions(User user) {
-        String key = RedisKeyConst.ROLE_AUTH + user.getId();
+    public List<RoleCodeVo> buildUserRolePermissions(UserDO userDO) {
+        String key = RedisKeyConst.ROLE_AUTH + userDO.getId();
         List<RoleCodeVo> authorityList = redisHelper.getList(key, RoleCodeVo.class);
         if (CollUtil.isEmpty(authorityList)) {
             Set<String> permissions = new HashSet<>();
             // 如果是管理员直接返回
-            if (user.getIsAdmin()) {
+            if (userDO.getIsAdmin()) {
                 permissions.add("admin");
                 return permissions.stream().map(RoleCodeVo::new)
                         .collect(Collectors.toList());
             }
-            List<Role> roles = roleMapper.queryRoleListByUserId(user.getId());
-            permissions = roles.stream().flatMap(role -> role.getMenus().stream())
-                    .map(Menu::getPermission)
+            List<RoleDO> roleDOS = roleMapper.queryRoleListByUserId(userDO.getId());
+            permissions = roleDOS.stream().flatMap(role -> role.getMenuDOS().stream())
+                    .map(MenuDO::getPermission)
                     .filter(StringUtil::isNotBlank).collect(Collectors.toSet());
             authorityList = permissions.stream().map(RoleCodeVo::new)
                     .collect(Collectors.toList());
@@ -132,58 +132,58 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> impleme
     }
 
     @Override
-    public List<Role> describeRoleListByMenuId(Long menuId) {
+    public List<RoleDO> describeRoleListByMenuId(Long menuId) {
         return roleMapper.queryRoleListByMenuId(menuId);
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveRole(CreateRoleRequest resources) {
-        if (roleMapper.getRoleByName(resources.getName()) != null) {
-            throw new EntityExistException(Role.class, "name", resources.getName());
+    public void saveRole(CreateRoleArgs args) {
+        if (roleMapper.getRoleByName(args.getName()) != null) {
+            throw new EntityExistException(RoleDO.class, "name", args.getName());
         }
-        save(BeanUtil.copyProperties(resources, Role.class));
+        save(BeanUtil.copyProperties(args, RoleDO.class));
         // 判断是否有部门数据，若有，则需创建关联
-        if (CollectionUtil.isNotEmpty(resources.getDepts())) {
-            roleDeptMapper.insertBatchWithRoleId(resources.getDepts(), resources.getId());
+        if (CollectionUtil.isNotEmpty(args.getDeptDOS())) {
+            roleDeptMapper.insertBatchWithRoleId(args.getDeptDOS(), args.getId());
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyRoleById(Role resources) {
-        Role role = getById(resources.getId());
-        Role role1 = roleMapper.getRoleByName(resources.getName());
-        if (role1 != null && !role1.getId().equals(role.getId())) {
-            throw new EntityExistException(Role.class, "name", resources.getName());
+    public void modifyRoleById(RoleDO resources) {
+        RoleDO roleDO = getById(resources.getId());
+        RoleDO roleDO1 = roleMapper.getRoleByName(resources.getName());
+        if (roleDO1 != null && !roleDO1.getId().equals(roleDO.getId())) {
+            throw new EntityExistException(RoleDO.class, "name", resources.getName());
         }
-        role.setName(resources.getName());
-        role.setDescription(resources.getDescription());
-        role.setDataScope(resources.getDataScope());
-        role.setDepts(resources.getDepts());
-        role.setLevel(resources.getLevel());
+        roleDO.setName(resources.getName());
+        roleDO.setDescription(resources.getDescription());
+        roleDO.setDataScope(resources.getDataScope());
+        roleDO.setDeptDOS(resources.getDeptDOS());
+        roleDO.setLevel(resources.getLevel());
         // 更新
-        saveOrUpdate(role);
+        saveOrUpdate(roleDO);
         // 删除关联部门数据
         roleDeptMapper.deleteByRoleId(resources.getId());
         // 判断是否有部门数据，若有，则需更新关联
-        if (CollectionUtil.isNotEmpty(resources.getDepts())) {
-            roleDeptMapper.insertBatchWithRoleId(resources.getDepts(), resources.getId());
+        if (CollectionUtil.isNotEmpty(resources.getDeptDOS())) {
+            roleDeptMapper.insertBatchWithRoleId(resources.getDeptDOS(), resources.getId());
         }
         // 更新相关缓存
-        delCaches(role.getId(), null);
+        delCaches(roleDO.getId(), null);
     }
 
     @Override
-    public void modifyBindMenuById(Role role) {
-        List<User> users = userMapper.queryUserListByRoleId(role.getId());
+    public void modifyBindMenuById(RoleDO roleDO) {
+        List<UserDO> userDOS = userMapper.queryUserListByRoleId(roleDO.getId());
         // 更新菜单
-        roleMenuMapper.deleteByRoleId(role.getId());
+        roleMenuMapper.deleteByRoleId(roleDO.getId());
         // 判断是否为空
-        if (CollUtil.isNotEmpty(role.getMenus())) {
-            roleMenuMapper.insertBatchWithRoleId(role.getMenus(), role.getId());
+        if (CollUtil.isNotEmpty(roleDO.getMenuDOS())) {
+            roleMenuMapper.insertBatchWithRoleId(roleDO.getMenuDOS(), roleDO.getId());
         }
         // 更新缓存
-        delCaches(role.getId(), users);
+        delCaches(roleDO.getId(), userDOS);
     }
 
     @Override
@@ -200,14 +200,14 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> impleme
     }
 
     @Override
-    public void downloadRoleExcel(List<Role> roles, HttpServletResponse response) throws IOException {
+    public void downloadRoleExcel(List<RoleDO> roleDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (Role role : roles) {
+        for (RoleDO roleDO : roleDOS) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("角色名称", role.getName());
-            map.put("角色级别", role.getLevel());
-            map.put("描述", role.getDescription());
-            map.put("创建日期", role.getCreateTime());
+            map.put("角色名称", roleDO.getName());
+            map.put("角色级别", roleDO.getLevel());
+            map.put("描述", roleDO.getDescription());
+            map.put("创建日期", roleDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
@@ -218,11 +218,11 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, Role> impleme
      *
      * @param id /
      */
-    public void delCaches(Long id, List<User> users) {
-        users = CollectionUtil.isEmpty(users) ? userMapper.queryUserListByRoleId(id) : users;
-        if (CollectionUtil.isNotEmpty(users)) {
-            users.forEach(item -> systemUserJwtInfoDAO.cleanUserJwtModelCacheByUsername(item.getUsername()));
-            Set<Long> userIds = users.stream().map(User::getId).collect(Collectors.toSet());
+    public void delCaches(Long id, List<UserDO> userDOS) {
+        userDOS = CollectionUtil.isEmpty(userDOS) ? userMapper.queryUserListByRoleId(id) : userDOS;
+        if (CollectionUtil.isNotEmpty(userDOS)) {
+            userDOS.forEach(item -> systemUserJwtInfoDAO.cleanUserJwtModelCacheByUsername(item.getUsername()));
+            Set<Long> userIds = userDOS.stream().map(UserDO::getId).collect(Collectors.toSet());
             redisHelper.delByKeys(RedisKeyConst.DATA_USER, userIds);
             redisHelper.delByKeys(RedisKeyConst.MENU_USER, userIds);
             redisHelper.delByKeys(RedisKeyConst.ROLE_AUTH, userIds);

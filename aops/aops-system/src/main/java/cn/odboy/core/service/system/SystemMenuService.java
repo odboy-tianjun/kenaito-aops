@@ -1,8 +1,8 @@
 package cn.odboy.core.service.system;
 
-import cn.odboy.core.controller.system.vo.MenuResponse;
-import cn.odboy.core.dal.dataobject.system.Menu;
-import cn.odboy.core.service.system.dto.QueryMenuRequest;
+import cn.odboy.core.controller.system.vo.MenuVo;
+import cn.odboy.core.dal.dataobject.system.MenuDO;
+import cn.odboy.core.service.system.dto.QueryMenuArgs;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -10,17 +10,17 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface SystemMenuService extends IService<Menu> {
+public interface SystemMenuService extends IService<MenuDO> {
 
     /**
      * 查询全部数据
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param isQuery  /
      * @return /
      * @throws Exception /
      */
-    List<Menu> describeMenuList(QueryMenuRequest criteria, Boolean isQuery) throws Exception;
+    List<MenuDO> describeMenuList(QueryMenuArgs args, Boolean isQuery) throws Exception;
 
     /**
      * 根据ID查询
@@ -28,47 +28,47 @@ public interface SystemMenuService extends IService<Menu> {
      * @param id /
      * @return /
      */
-    Menu describeMenuById(long id);
+    MenuDO describeMenuById(long id);
     /**
      * 获取所有子节点，包含自身ID
      *
-     * @param menuList /
-     * @param menuSet  /
+     * @param menuDOList /
+     * @param menuDOSet  /
      * @return /
      */
-    Set<Menu> describeChildMenuSet(List<Menu> menuList, Set<Menu> menuSet);
+    Set<MenuDO> describeChildMenuSet(List<MenuDO> menuDOList, Set<MenuDO> menuDOSet);
 
     /**
      * 构建菜单树
      *
-     * @param menus 原始数据
+     * @param menuDOS 原始数据
      * @return /
      */
-    List<Menu> buildMenuTree(List<Menu> menus);
+    List<MenuDO> buildMenuTree(List<MenuDO> menuDOS);
 
     /**
      * 构建菜单树
      *
-     * @param menus /
+     * @param menuDOS /
      * @return /
      */
-    List<MenuResponse> buildMenuResponse(List<Menu> menus);
+    List<MenuVo> buildMenuResponse(List<MenuDO> menuDOS);
     /**
      * 懒加载菜单数据
      *
      * @param pid /
      * @return /
      */
-    List<Menu> describeMenuListByPid(Long pid);
+    List<MenuDO> describeMenuListByPid(Long pid);
 
     /**
      * 根据ID获取同级与上级数据
      *
-     * @param menu    /
+     * @param menuDO    /
      * @param objects /
      * @return /
      */
-    List<Menu> describeSuperiorMenuList(Menu menu, List<Menu> objects);
+    List<MenuDO> describeSuperiorMenuList(MenuDO menuDO, List<MenuDO> objects);
 
     /**
      * 根据当前用户获取菜单
@@ -76,37 +76,37 @@ public interface SystemMenuService extends IService<Menu> {
      * @param currentUserId /
      * @return /
      */
-    List<Menu> describeMenuListByUserId(Long currentUserId);
+    List<MenuDO> describeMenuListByUserId(Long currentUserId);
     /**
      * 创建
      *
      * @param resources /
      */
-    void saveMenu(Menu resources);
+    void saveMenu(MenuDO resources);
 
     /**
      * 编辑
      *
      * @param resources /
      */
-    void modifyMenuById(Menu resources);
+    void modifyMenuById(MenuDO resources);
 
 
     /**
      * 删除
      *
-     * @param menuSet /
+     * @param menuDOSet /
      */
-    void removeMenuByIds(Set<Menu> menuSet);
+    void removeMenuByIds(Set<MenuDO> menuDOSet);
 
     /**
      * 导出
      *
-     * @param menus    待导出的数据
+     * @param menuDOS    待导出的数据
      * @param response /
      * @throws IOException /
      */
-    void downloadMenuExcel(List<Menu> menus, HttpServletResponse response) throws IOException;
+    void downloadMenuExcel(List<MenuDO> menuDOS, HttpServletResponse response) throws IOException;
 
 
 }

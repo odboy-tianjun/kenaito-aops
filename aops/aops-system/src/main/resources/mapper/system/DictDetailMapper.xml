@@ -11,7 +11,7 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <!-- 一对一关联 -->
-        <association property="dict" javaType="cn.odboy.core.dal.dataobject.system.Dict">
+        <association property="dictDO" javaType="cn.odboy.core.dal.dataobject.system.DictDO">
             <id column="id" property="id" jdbcType="BIGINT"/>
             <result column="name" property="name" jdbcType="VARCHAR"/>
         </association>
@@ -33,11 +33,11 @@
         d.id as dict_id, d.name
         from system_dict_detail dd, system_dict d
         where dd.dict_id = d.id
-        <if test="criteria.dictName != null and criteria.dictName != ''">
-            and d.name = #{criteria.dictName}
+        <if test="args.dictName != null and args.dictName != ''">
+            and d.name = #{args.dictName}
         </if>
-        <if test="criteria.label != null and criteria.label != ''">
-            and dd.label = #{criteria.label}
+        <if test="args.label != null and args.label != ''">
+            and dd.label = #{args.label}
         </if>
         order by dd.dict_sort, dd.dict_id desc
     </select>

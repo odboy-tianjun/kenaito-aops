@@ -26,7 +26,7 @@ public class DictDetail extends MyEntity {
 
     @TableField(exist = false)
     @ApiModelProperty(value = "字典")
-    private Dict dict;
+    private DictDO dictDO;
 
     @ApiModelProperty(value = "字典标签")
     private String label;

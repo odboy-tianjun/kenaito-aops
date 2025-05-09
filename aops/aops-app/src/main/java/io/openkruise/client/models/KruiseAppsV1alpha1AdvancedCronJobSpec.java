@@ -31,7 +31,7 @@
 //@Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2023-07-21T15:55:09.049+08:00")
 //public class KruiseAppsV1alpha1AdvancedCronJobSpec {
 //  /**
-//   * Specifies how to treat concurrent executions of a Job. Valid values are: - \&quot;Allow\&quot; (default): allows CronJobs to run concurrently; - \&quot;Forbid\&quot;: forbids concurrent runs, skipping next run if previous run hasn&#39;t finished yet; - \&quot;Replace\&quot;: cancels currently running job and replaces it with a new one
+//   * Specifies how to treat concurrent executions of a JobDO. Valid values are: - \&quot;Allow\&quot; (default): allows CronJobs to run concurrently; - \&quot;Forbid\&quot;: forbids concurrent runs, skipping next run if previous run hasn&#39;t finished yet; - \&quot;Replace\&quot;: cancels currently running job and replaces it with a new one
 //   */
 //  @JsonAdapter(ConcurrencyPolicyEnum.Adapter.class)
 //  public enum ConcurrencyPolicyEnum {
@@ -109,10 +109,10 @@
 //  }
 //
 //   /**
-//   * Specifies how to treat concurrent executions of a Job. Valid values are: - \&quot;Allow\&quot; (default): allows CronJobs to run concurrently; - \&quot;Forbid\&quot;: forbids concurrent runs, skipping next run if previous run hasn&#39;t finished yet; - \&quot;Replace\&quot;: cancels currently running job and replaces it with a new one
+//   * Specifies how to treat concurrent executions of a JobDO. Valid values are: - \&quot;Allow\&quot; (default): allows CronJobs to run concurrently; - \&quot;Forbid\&quot;: forbids concurrent runs, skipping next run if previous run hasn&#39;t finished yet; - \&quot;Replace\&quot;: cancels currently running job and replaces it with a new one
 //   * @return concurrencyPolicy
 //  **/
-//  @ApiModelProperty(value = "Specifies how to treat concurrent executions of a Job. Valid values are: - \"Allow\" (default): allows CronJobs to run concurrently; - \"Forbid\": forbids concurrent runs, skipping next run if previous run hasn't finished yet; - \"Replace\": cancels currently running job and replaces it with a new one")
+//  @ApiModelProperty(value = "Specifies how to treat concurrent executions of a JobDO. Valid values are: - \"Allow\" (default): allows CronJobs to run concurrently; - \"Forbid\": forbids concurrent runs, skipping next run if previous run hasn't finished yet; - \"Replace\": cancels currently running job and replaces it with a new one")
 //  public ConcurrencyPolicyEnum getConcurrencyPolicy() {
 //    return concurrencyPolicy;
 //  }

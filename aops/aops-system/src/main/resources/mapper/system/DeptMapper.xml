@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.odboy.core.dal.mysql.system.DeptMapper">
-    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.Dept">
+    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.DeptDO">
         <id column="dept_id" property="id"/>
         <result column="dept_sort" property="deptSort"/>
         <result column="name" property="name"/>
@@ -28,26 +28,26 @@
         FROM
         system_dept
         <where>
-            <if test="criteria.ids != null and criteria.ids.size() > 0">
+            <if test="args.ids != null and args.ids.size() > 0">
                 AND dept_id in
-                <foreach collection="criteria.ids" item="id" open="(" separator="," close=")">
+                <foreach collection="args.ids" item="id" open="(" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
-            <if test="criteria.name != null and criteria.name != ''">
-                AND `name` LIKE concat('%', #{criteria.name}, '%')
+            <if test="args.name != null and args.name != ''">
+                AND `name` LIKE concat('%', #{args.name}, '%')
             </if>
-            <if test="criteria.enabled != null">
-                AND enabled = #{criteria.enabled}
+            <if test="args.enabled != null">
+                AND enabled = #{args.enabled}
             </if>
-            <if test="criteria.pid != null">
-                AND pid = #{criteria.pid}
+            <if test="args.pid != null">
+                AND pid = #{args.pid}
             </if>
-            <if test="criteria.pidIsNull != null">
+            <if test="args.pidIsNull != null">
                 AND pid IS NULL
             </if>
-            <if test="criteria.createTime != null and criteria.createTime.size() != 0">
-                AND create_time BETWEEN #{criteria.createTime[0]} AND #{criteria.createTime[1]}
+            <if test="args.createTime != null and args.createTime.size() != 0">
+                AND create_time BETWEEN #{args.createTime[0]} AND #{args.createTime[1]}
             </if>
         </where>
         ORDER BY dept_sort
@@ -85,7 +85,7 @@
         from system_dept
         where pid is null
     </select>
-    <select id="queryDeptSetByRoleId" resultType="cn.odboy.core.dal.dataobject.system.Dept">
+    <select id="queryDeptSetByRoleId" resultType="cn.odboy.core.dal.dataobject.system.DeptDO">
         SELECT d.dept_id AS id,
                d.NAME,
                d.pid,

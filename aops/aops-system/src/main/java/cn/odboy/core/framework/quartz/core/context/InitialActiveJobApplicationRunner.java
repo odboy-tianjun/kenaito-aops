@@ -1,6 +1,6 @@
 package cn.odboy.core.framework.quartz.core.context;
 
-import cn.odboy.core.dal.dataobject.job.QuartzJob;
+import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
 import cn.odboy.core.dal.mysql.job.QuartzJobMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,8 @@ public class InitialActiveJobApplicationRunner implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments applicationArguments) {
-        List<QuartzJob> quartzJobs = quartzJobMapper.queryActiveQuartzJobList();
-        quartzJobs.forEach(quartzManage::addJob);
+        List<QuartzJobDO> quartzJobDOS = quartzJobMapper.queryActiveQuartzJobList();
+        quartzJobDOS.forEach(quartzManage::addJob);
         log.info("Timing task injection complete");
     }
 }

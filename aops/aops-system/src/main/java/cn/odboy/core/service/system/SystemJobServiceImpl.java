@@ -4,15 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
+import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.service.system.dto.CreateJobRequest;
-import cn.odboy.core.dal.dataobject.system.Job;
+import cn.odboy.core.service.system.dto.CreateJobArgs;
 import cn.odboy.core.dal.mysql.system.JobMapper;
 import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
-import cn.odboy.core.service.system.dto.QueryJobRequest;
+import cn.odboy.core.service.system.dto.QueryJobArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -29,29 +29,29 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class SystemJobServiceImpl extends ServiceImpl<JobMapper, Job> implements SystemJobService {
+public class SystemJobServiceImpl extends ServiceImpl<JobMapper, JobDO> implements SystemJobService {
     private final JobMapper jobMapper;
     private final RedisHelper redisHelper;
     private final UserMapper userMapper;
     @Override
-    public PageResult<Job> describeJobPage(QueryJobRequest criteria, Page<Object> page) {
-        return PageUtil.toPage(jobMapper.queryJobPageByArgs(criteria, page));
+    public PageResult<JobDO> describeJobPage(QueryJobArgs args, Page<Object> page) {
+        return PageUtil.toPage(jobMapper.queryJobPageByArgs(args, page));
     }
 
     @Override
-    public List<Job> describeJobList(QueryJobRequest criteria) {
-        return jobMapper.queryJobPageByArgs(criteria, PageUtil.getCount(jobMapper)).getRecords();
+    public List<JobDO> describeJobList(QueryJobArgs args) {
+        return jobMapper.queryJobPageByArgs(args, PageUtil.getCount(jobMapper)).getRecords();
     }
 
     @Override
-    public Job describeJobById(Long id) {
+    public JobDO describeJobById(Long id) {
         String key = RedisKeyConst.JOB_ID + id;
-        Job job = redisHelper.get(key, Job.class);
-        if (job == null) {
-            job = jobMapper.selectById(id);
-            redisHelper.set(key, job, 1, TimeUnit.DAYS);
+        JobDO jobDO = redisHelper.get(key, JobDO.class);
+        if (jobDO == null) {
+            jobDO = jobMapper.selectById(id);
+            redisHelper.set(key, jobDO, 1, TimeUnit.DAYS);
         }
-        return job;
+        return jobDO;
     }
 
 
@@ -65,23 +65,23 @@ public class SystemJobServiceImpl extends ServiceImpl<JobMapper, Job> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveJob(CreateJobRequest resources) {
-        Job job = jobMapper.getJobByName(resources.getName());
-        if (job != null) {
-            throw new EntityExistException(Job.class, "name", resources.getName());
+    public void saveJob(CreateJobArgs args) {
+        JobDO jobDO = jobMapper.getJobByName(args.getName());
+        if (jobDO != null) {
+            throw new EntityExistException(JobDO.class, "name", args.getName());
         }
-        save(BeanUtil.copyProperties(resources, Job.class));
+        save(BeanUtil.copyProperties(args, JobDO.class));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyJobById(Job resources) {
-        Job job = getById(resources.getId());
-        Job old = jobMapper.getJobByName(resources.getName());
+    public void modifyJobById(JobDO resources) {
+        JobDO jobDO = getById(resources.getId());
+        JobDO old = jobMapper.getJobByName(resources.getName());
         if (old != null && !old.getId().equals(resources.getId())) {
-            throw new EntityExistException(Job.class, "name", resources.getName());
+            throw new EntityExistException(JobDO.class, "name", resources.getName());
         }
-        resources.setId(job.getId());
+        resources.setId(jobDO.getId());
         saveOrUpdate(resources);
         // 删除缓存
         delCaches(resources.getId());
@@ -96,13 +96,13 @@ public class SystemJobServiceImpl extends ServiceImpl<JobMapper, Job> implements
     }
 
     @Override
-    public void downloadJobExcel(List<Job> jobs, HttpServletResponse response) throws IOException {
+    public void downloadJobExcel(List<JobDO> jobDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (Job job : jobs) {
+        for (JobDO jobDO : jobDOS) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("岗位名称", job.getName());
-            map.put("岗位状态", job.getEnabled() ? "启用" : "停用");
-            map.put("创建日期", job.getCreateTime());
+            map.put("岗位名称", jobDO.getName());
+            map.put("岗位状态", jobDO.getEnabled() ? "启用" : "停用");
+            map.put("创建日期", jobDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);

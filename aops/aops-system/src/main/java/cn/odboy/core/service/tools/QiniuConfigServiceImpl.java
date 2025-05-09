@@ -1,7 +1,7 @@
 package cn.odboy.core.service.tools;
 
 import cn.odboy.core.constant.TransferProtocolConst;
-import cn.odboy.core.dal.dataobject.tools.QiniuConfig;
+import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
 import cn.odboy.core.dal.mysql.tools.QiniuConfigMapper;
 import cn.odboy.common.exception.BadRequestException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,31 +16,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "qiNiu")
-public class QiniuConfigServiceImpl extends ServiceImpl<QiniuConfigMapper, QiniuConfig> implements QiniuConfigService {
+public class QiniuConfigServiceImpl extends ServiceImpl<QiniuConfigMapper, QiniuConfigDO> implements QiniuConfigService {
     @Override
     @Cacheable(key = "'config'")
-    public QiniuConfig describeQiniuConfig() {
-        QiniuConfig qiniuConfig = getById(1L);
-        return qiniuConfig == null ? new QiniuConfig() : qiniuConfig;
+    public QiniuConfigDO describeQiniuConfig() {
+        QiniuConfigDO qiniuConfigDO = getById(1L);
+        return qiniuConfigDO == null ? new QiniuConfigDO() : qiniuConfigDO;
     }
 
     @Override
     @CacheEvict(key = "'config'")
     @Transactional(rollbackFor = Exception.class)
-    public void saveQiniuConfig(QiniuConfig qiniuConfig) {
-        qiniuConfig.setId(1L);
-        if (!(qiniuConfig.getHost().toLowerCase().startsWith(TransferProtocolConst.PREFIX_HTTP) || qiniuConfig.getHost().toLowerCase().startsWith(TransferProtocolConst.PREFIX_HTTPS))) {
+    public void saveQiniuConfig(QiniuConfigDO qiniuConfigDO) {
+        qiniuConfigDO.setId(1L);
+        if (!(qiniuConfigDO.getHost().toLowerCase().startsWith(TransferProtocolConst.PREFIX_HTTP) || qiniuConfigDO.getHost().toLowerCase().startsWith(TransferProtocolConst.PREFIX_HTTPS))) {
             throw new BadRequestException(TransferProtocolConst.PREFIX_HTTPS_BAD_REQUEST);
         }
-        saveOrUpdate(qiniuConfig);
+        saveOrUpdate(qiniuConfigDO);
     }
 
     @Override
     @CacheEvict(key = "'config'")
     @Transactional(rollbackFor = Exception.class)
     public void modifyQiniuConfigType(String type) {
-        QiniuConfig qiniuConfig = getById(1L);
-        qiniuConfig.setType(type);
-        saveOrUpdate(qiniuConfig);
+        QiniuConfigDO qiniuConfigDO = getById(1L);
+        qiniuConfigDO.setType(type);
+        saveOrUpdate(qiniuConfigDO);
     }
 }

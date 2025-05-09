@@ -4,12 +4,12 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.framework.system.config.AppProperties;
-import cn.odboy.core.dal.dataobject.tools.LocalStorage;
+import cn.odboy.core.dal.dataobject.tools.LocalStorageDO;
 import cn.odboy.core.dal.mysql.tools.LocalStorageMapper;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.StringUtil;
-import cn.odboy.core.service.tools.dto.QueryLocalStorageRequest;
+import cn.odboy.core.service.tools.dto.QueryLocalStorageArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,21 +27,21 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class LocalStorageServiceImpl extends ServiceImpl<LocalStorageMapper, LocalStorage> implements LocalStorageService {
+public class LocalStorageServiceImpl extends ServiceImpl<LocalStorageMapper, LocalStorageDO> implements LocalStorageService {
     private final LocalStorageMapper localStorageMapper;
     private final AppProperties properties;
     @Override
-    public PageResult<LocalStorage> describeLocalStoragePage(QueryLocalStorageRequest criteria, Page<Object> page) {
-        return PageUtil.toPage(localStorageMapper.queryLocalStoragePageByArgs(criteria, page));
+    public PageResult<LocalStorageDO> describeLocalStoragePage(QueryLocalStorageArgs args, Page<Object> page) {
+        return PageUtil.toPage(localStorageMapper.queryLocalStoragePageByArgs(args, page));
     }
 
     @Override
-    public List<LocalStorage> describeLocalStorageList(QueryLocalStorageRequest criteria) {
-        return localStorageMapper.queryLocalStoragePageByArgs(criteria, PageUtil.getCount(localStorageMapper)).getRecords();
+    public List<LocalStorageDO> describeLocalStorageList(QueryLocalStorageArgs args) {
+        return localStorageMapper.queryLocalStoragePageByArgs(args, PageUtil.getCount(localStorageMapper)).getRecords();
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public LocalStorage uploadFile(String name, MultipartFile multipartFile) {
+    public LocalStorageDO uploadFile(String name, MultipartFile multipartFile) {
         long size = multipartFile.getSize();
         FileUtil.checkSize(properties.getFile().getFileMaxSize(), size);
         String suffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
@@ -53,7 +53,7 @@ public class LocalStorageServiceImpl extends ServiceImpl<LocalStorageMapper, Loc
         try {
             String formatSize = FileUtil.getSize(size);
             name = StringUtil.isBlank(name) ? FileUtil.getPrefix(multipartFile.getOriginalFilename()) : name;
-            LocalStorage localStorage = new LocalStorage(
+            LocalStorageDO localStorageDO = new LocalStorageDO(
                     file.getName(),
                     name,
                     suffix,
@@ -61,8 +61,8 @@ public class LocalStorageServiceImpl extends ServiceImpl<LocalStorageMapper, Loc
                     type,
                     formatSize
             );
-            save(localStorage);
-            return localStorage;
+            save(localStorageDO);
+            return localStorageDO;
         } catch (Exception e) {
             FileUtil.del(file);
             throw e;
@@ -71,33 +71,33 @@ public class LocalStorageServiceImpl extends ServiceImpl<LocalStorageMapper, Loc
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyLocalStorageById(LocalStorage resources) {
-        LocalStorage localStorage = getById(resources.getId());
-        localStorage.copy(resources);
-        saveOrUpdate(localStorage);
+    public void modifyLocalStorageById(LocalStorageDO resources) {
+        LocalStorageDO localStorageDO = getById(resources.getId());
+        localStorageDO.copy(resources);
+        saveOrUpdate(localStorageDO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeFileByIds(Long[] ids) {
         for (Long id : ids) {
-            LocalStorage storage = getById(id);
+            LocalStorageDO storage = getById(id);
             FileUtil.del(storage.getPath());
             removeById(storage);
         }
     }
 
     @Override
-    public void downloadExcel(List<LocalStorage> queryAll, HttpServletResponse response) throws IOException {
+    public void downloadExcel(List<LocalStorageDO> queryAll, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (LocalStorage localStorage : queryAll) {
+        for (LocalStorageDO localStorageDO : queryAll) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("文件名", localStorage.getRealName());
-            map.put("备注名", localStorage.getName());
-            map.put("文件类型", localStorage.getType());
-            map.put("文件大小", localStorage.getSize());
-            map.put("创建者", localStorage.getCreateBy());
-            map.put("创建日期", localStorage.getCreateTime());
+            map.put("文件名", localStorageDO.getRealName());
+            map.put("备注名", localStorageDO.getName());
+            map.put("文件类型", localStorageDO.getType());
+            map.put("文件大小", localStorageDO.getSize());
+            map.put("创建者", localStorageDO.getCreateBy());
+            map.put("创建日期", localStorageDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);

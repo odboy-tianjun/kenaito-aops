@@ -1,7 +1,7 @@
 package cn.odboy.core.controller.tools;
 
-import cn.odboy.core.service.tools.dto.SendEmailRequest;
-import cn.odboy.core.dal.dataobject.tools.EmailConfig;
+import cn.odboy.core.dal.dataobject.tools.EmailConfigDO;
+import cn.odboy.core.service.tools.dto.SendEmailArgs;
 import cn.odboy.core.service.tools.EmailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,21 +26,21 @@ public class EmailController {
 
     @ApiOperation("查询配置")
     @PostMapping(value = "/describeEmailConfig")
-    public ResponseEntity<EmailConfig> describeEmailConfig() {
+    public ResponseEntity<EmailConfigDO> describeEmailConfig() {
         return new ResponseEntity<>(emailService.describeEmailConfig(), HttpStatus.OK);
     }
 
     @ApiOperation("配置邮件")
     @PostMapping(value = "/modifyEmailConfig")
-    public ResponseEntity<Object> modifyEmailConfig(@Validated @RequestBody EmailConfig emailConfig) throws Exception {
-        emailService.modifyEmailConfigOnPassChange(emailConfig);
+    public ResponseEntity<Object> modifyEmailConfig(@Validated @RequestBody EmailConfigDO emailConfigDO) throws Exception {
+        emailService.modifyEmailConfigOnPassChange(emailConfigDO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation("发送邮件")
     @PostMapping(value = "/sendEmail")
-    public ResponseEntity<Object> sendEmail(@Validated @RequestBody SendEmailRequest sendEmailRequest) {
-        emailService.sendEmail(sendEmailRequest);
+    public ResponseEntity<Object> sendEmail(@Validated @RequestBody SendEmailArgs args) {
+        emailService.sendEmail(args);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

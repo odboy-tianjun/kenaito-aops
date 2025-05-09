@@ -1,7 +1,7 @@
 package cn.odboy.core.service.system;
 
 
-import cn.odboy.core.dal.dataobject.system.User;
+import cn.odboy.core.dal.dataobject.system.UserDO;
 import java.util.List;
 
 /**
@@ -12,8 +12,8 @@ public interface SystemDataService {
     /**
      * 获取数据权限
      *
-     * @param user /
+     * @param userDO /
      * @return /
      */
-    List<Long> describeDeptIdListByUserIdWithDeptId(User user);
+    List<Long> describeDeptIdListByUserIdWithDeptId(UserDO userDO);
 }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.odboy.core.dal.mysql.system.DictMapper">
-    <select id="queryDictPageByArgs" resultType="cn.odboy.core.dal.dataobject.system.Dict">
+    <select id="queryDictPageByArgs" resultType="cn.odboy.core.dal.dataobject.system.DictDO">
         SELECT
         *
         from system_dict d
         <where>
-            <if test="criteria.blurry != null and criteria.blurry != ''">
+            <if test="args.blurry != null and args.blurry != ''">
                 and (
-                d.name like concat('%', #{criteria.blurry}, '%')
-                or d.description like concat('%', #{criteria.blurry}, '%')
+                d.name like concat('%', #{args.blurry}, '%')
+                or d.description like concat('%', #{args.blurry}, '%')
                 )
             </if>
         </where>

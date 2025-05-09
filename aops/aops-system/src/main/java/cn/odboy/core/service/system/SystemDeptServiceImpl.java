@@ -11,15 +11,15 @@ import cn.odboy.common.util.ClassUtil;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.StringUtil;
 import cn.odboy.core.constant.DataScopeEnum;
-import cn.odboy.core.dal.dataobject.system.Dept;
-import cn.odboy.core.dal.dataobject.system.User;
+import cn.odboy.core.dal.dataobject.system.DeptDO;
+import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.dal.mysql.system.DeptMapper;
 import cn.odboy.core.dal.mysql.system.RoleMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
-import cn.odboy.core.service.system.dto.CreateDeptRequest;
-import cn.odboy.core.service.system.dto.QueryDeptRequest;
+import cn.odboy.core.service.system.dto.CreateDeptArgs;
+import cn.odboy.core.service.system.dto.QueryDeptArgs;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements SystemDeptService {
+public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, DeptDO> implements SystemDeptService {
     private final DeptMapper deptMapper;
     private final UserMapper userMapper;
     private final RedisHelper redisHelper;
@@ -47,27 +47,27 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
     /**
      * 筛选出 list 中没有父部门（即 pid 不在其他部门 id 列表中的部门）的部门列表
      */
-    private List<Dept> deduplication(List<Dept> list) {
-        List<Dept> deptList = new ArrayList<>();
+    private List<DeptDO> deduplication(List<DeptDO> list) {
+        List<DeptDO> deptDOList = new ArrayList<>();
         // 使用 Set 存储所有部门的 id
-        Set<Long> idSet = list.stream().map(Dept::getId).collect(Collectors.toSet());
+        Set<Long> idSet = list.stream().map(DeptDO::getId).collect(Collectors.toSet());
         // 遍历部门列表，筛选出没有父部门的部门
-        for (Dept dept : list) {
-            if (!idSet.contains(dept.getPid())) {
-                deptList.add(dept);
+        for (DeptDO deptDO : list) {
+            if (!idSet.contains(deptDO.getPid())) {
+                deptDOList.add(deptDO);
             }
         }
-        return deptList;
+        return deptDOList;
     }
 
     @Override
-    public List<Dept> describeDeptList(QueryDeptRequest criteria, Boolean isQuery) throws Exception {
+    public List<DeptDO> describeDeptList(QueryDeptArgs args, Boolean isQuery) throws Exception {
         String dataScopeType = SecurityHelper.getDataScopeType();
         if (isQuery) {
             if (dataScopeType.equals(DataScopeEnum.ALL.getValue())) {
-                criteria.setPidIsNull(true);
+                args.setPidIsNull(true);
             }
-            List<Field> fields = ClassUtil.getAllFields(criteria.getClass(), new ArrayList<>());
+            List<Field> fields = ClassUtil.getAllFields(args.getClass(), new ArrayList<>());
             List<String> fieldNames = new ArrayList<>() {{
                 add("pidIsNull");
                 add("enabled");
@@ -75,19 +75,19 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
             for (Field field : fields) {
                 // 设置对象的访问权限，保证对private的属性的访问
                 field.setAccessible(true);
-                Object val = field.get(criteria);
+                Object val = field.get(args);
                 if (fieldNames.contains(field.getName())) {
                     continue;
                 }
                 if (ObjectUtil.isNotNull(val)) {
-                    criteria.setPidIsNull(null);
+                    args.setPidIsNull(null);
                     break;
                 }
             }
         }
         // 数据权限
-        criteria.setIds(SecurityHelper.getCurrentUserDataScope());
-        List<Dept> list = deptMapper.queryDeptListByArgs(criteria);
+        args.setIds(SecurityHelper.getCurrentUserDataScope());
+        List<DeptDO> list = deptMapper.queryDeptListByArgs(args);
         // 如果为空，就代表为自定义权限或者本级权限，就需要去重，不理解可以注释掉，看查询结果
         if (StringUtil.isBlank(dataScopeType)) {
             return deduplication(list);
@@ -96,46 +96,46 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
     }
 
     @Override
-    public Dept describeDeptById(Long id) {
+    public DeptDO describeDeptById(Long id) {
         String key = RedisKeyConst.DEPT_ID + id;
-        Dept dept = redisHelper.get(key, Dept.class);
-        if (dept == null) {
-            dept = deptMapper.selectById(id);
-            redisHelper.set(key, dept, 1, TimeUnit.DAYS);
+        DeptDO deptDO = redisHelper.get(key, DeptDO.class);
+        if (deptDO == null) {
+            deptDO = deptMapper.selectById(id);
+            redisHelper.set(key, deptDO, 1, TimeUnit.DAYS);
         }
-        return dept;
+        return deptDO;
     }
 
     @Override
-    public List<Dept> describeDeptListByPid(long pid) {
+    public List<DeptDO> describeDeptListByPid(long pid) {
         return deptMapper.queryDeptListByPid(pid);
     }
 
     @Override
-    public Set<Dept> describeDeptByRoleId(Long id) {
+    public Set<DeptDO> describeDeptByRoleId(Long id) {
         return deptMapper.queryDeptSetByRoleId(id);
     }
 
     @Override
-    public Set<Dept> describeRelationDeptSet(List<Dept> menuList, Set<Dept> deptSet) {
-        for (Dept dept : menuList) {
-            deptSet.add(dept);
-            List<Dept> deptList = deptMapper.queryDeptListByPid(dept.getId());
-            if (CollUtil.isNotEmpty(deptList)) {
-                describeRelationDeptSet(deptList, deptSet);
+    public Set<DeptDO> describeRelationDeptSet(List<DeptDO> menuList, Set<DeptDO> deptDOSet) {
+        for (DeptDO deptDO : menuList) {
+            deptDOSet.add(deptDO);
+            List<DeptDO> deptDOList = deptMapper.queryDeptListByPid(deptDO.getId());
+            if (CollUtil.isNotEmpty(deptDOList)) {
+                describeRelationDeptSet(deptDOList, deptDOSet);
             }
         }
-        return deptSet;
+        return deptDOSet;
     }
 
     @Override
-    public List<Long> describeChildDeptIdListByDeptIds(List<Dept> deptList) {
+    public List<Long> describeChildDeptIdListByDeptIds(List<DeptDO> deptDOList) {
         List<Long> list = new ArrayList<>();
-        deptList.forEach(dept -> {
+        deptDOList.forEach(dept -> {
                     if (dept != null && dept.getEnabled()) {
-                        List<Dept> deptList1 = deptMapper.queryDeptListByPid(dept.getId());
-                        if (CollUtil.isNotEmpty(deptList1)) {
-                            list.addAll(describeChildDeptIdListByDeptIds(deptList1));
+                        List<DeptDO> deptDOList1 = deptMapper.queryDeptListByPid(dept.getId());
+                        if (CollUtil.isNotEmpty(deptDOList1)) {
+                            list.addAll(describeChildDeptIdListByDeptIds(deptDOList1));
                         }
                         list.add(dept.getId());
                     }
@@ -145,53 +145,53 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
     }
 
     @Override
-    public List<Dept> describeSuperiorDeptListByPid(Dept dept, List<Dept> deptList) {
-        if (dept.getPid() == null) {
-            deptList.addAll(deptMapper.queryDeptListByPidIsNull());
-            return deptList;
+    public List<DeptDO> describeSuperiorDeptListByPid(DeptDO deptDO, List<DeptDO> deptDOList) {
+        if (deptDO.getPid() == null) {
+            deptDOList.addAll(deptMapper.queryDeptListByPidIsNull());
+            return deptDOList;
         }
-        deptList.addAll(deptMapper.queryDeptListByPid(dept.getPid()));
-        return describeSuperiorDeptListByPid(describeDeptById(dept.getPid()), deptList);
+        deptDOList.addAll(deptMapper.queryDeptListByPid(deptDO.getPid()));
+        return describeSuperiorDeptListByPid(describeDeptById(deptDO.getPid()), deptDOList);
     }
 
     @Override
-    public BaseResult<Object> buildDeptTree(List<Dept> deptList) {
-        Set<Dept> trees = new LinkedHashSet<>();
-        Set<Dept> deptSet = new LinkedHashSet<>();
-        List<String> deptNames = deptList.stream().map(Dept::getName).collect(Collectors.toList());
+    public BaseResult<Object> buildDeptTree(List<DeptDO> deptDOList) {
+        Set<DeptDO> trees = new LinkedHashSet<>();
+        Set<DeptDO> deptDOSet = new LinkedHashSet<>();
+        List<String> deptNames = deptDOList.stream().map(DeptDO::getName).collect(Collectors.toList());
         boolean isChild;
-        for (Dept dept : deptList) {
+        for (DeptDO deptDO : deptDOList) {
             isChild = false;
-            if (dept.getPid() == null) {
-                trees.add(dept);
+            if (deptDO.getPid() == null) {
+                trees.add(deptDO);
             }
-            for (Dept it : deptList) {
-                if (it.getPid() != null && dept.getId().equals(it.getPid())) {
+            for (DeptDO it : deptDOList) {
+                if (it.getPid() != null && deptDO.getId().equals(it.getPid())) {
                     isChild = true;
-                    if (dept.getChildren() == null) {
-                        dept.setChildren(new ArrayList<>());
+                    if (deptDO.getChildren() == null) {
+                        deptDO.setChildren(new ArrayList<>());
                     }
-                    dept.getChildren().add(it);
+                    deptDO.getChildren().add(it);
                 }
             }
             if (isChild) {
-                deptSet.add(dept);
-            } else if (dept.getPid() != null && !deptNames.contains(describeDeptById(dept.getPid()).getName())) {
-                deptSet.add(dept);
+                deptDOSet.add(deptDO);
+            } else if (deptDO.getPid() != null && !deptNames.contains(describeDeptById(deptDO.getPid()).getName())) {
+                deptDOSet.add(deptDO);
             }
         }
         if (CollectionUtil.isEmpty(trees)) {
-            trees = deptSet;
+            trees = deptDOSet;
         }
         BaseResult<Object> baseResult = new BaseResult<>();
-        baseResult.setContent(CollectionUtil.isEmpty(trees) ? deptSet : trees);
-        baseResult.setTotalElements(deptSet.size());
+        baseResult.setContent(CollectionUtil.isEmpty(trees) ? deptDOSet : trees);
+        baseResult.setTotalElements(deptDOSet.size());
         return baseResult;
     }
 
     @Override
-    public void verifyBindRelationByIds(Set<Dept> deptSet) {
-        Set<Long> deptIds = deptSet.stream().map(Dept::getId).collect(Collectors.toSet());
+    public void verifyBindRelationByIds(Set<DeptDO> deptDOSet) {
+        Set<Long> deptIds = deptDOSet.stream().map(DeptDO::getId).collect(Collectors.toSet());
         if (userMapper.getUserCountByDeptIds(deptIds) > 0) {
             throw new BadRequestException("所选部门存在用户关联，请解除后再试！");
         }
@@ -201,39 +201,39 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
     }
 
     @Override
-    public void traverseDeptByIdWithPids(Set<Long> ids, Set<Dept> depts) {
+    public void traverseDeptByIdWithPids(Set<Long> ids, Set<DeptDO> deptDOS) {
         for (Long id : ids) {
             // 根部门
-            depts.add(describeDeptById(id));
+            deptDOS.add(describeDeptById(id));
             // 子部门
-            List<Dept> deptList = describeDeptListByPid(id);
-            if (CollectionUtil.isNotEmpty(deptList)) {
-                depts = describeRelationDeptSet(deptList, depts);
+            List<DeptDO> deptDOList = describeDeptListByPid(id);
+            if (CollectionUtil.isNotEmpty(deptDOList)) {
+                deptDOS = describeRelationDeptSet(deptDOList, deptDOS);
             }
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDept(CreateDeptRequest resources) {
-        save(BeanUtil.copyProperties(resources, Dept.class));
+    public void saveDept(CreateDeptArgs args) {
+        save(BeanUtil.copyProperties(args, DeptDO.class));
         // 清理缓存
-        updateSubCnt(resources.getPid());
+        updateSubCnt(args.getPid());
         // 清理自定义角色权限的DataScope缓存
-        delCaches(resources.getPid());
+        delCaches(args.getPid());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyDept(Dept resources) {
+    public void modifyDept(DeptDO resources) {
         // 旧的部门
         Long oldPid = describeDeptById(resources.getId()).getPid();
         Long newPid = resources.getPid();
         if (resources.getPid() != null && resources.getId().equals(resources.getPid())) {
             throw new BadRequestException("上级不能为自己");
         }
-        Dept dept = getById(resources.getId());
-        resources.setId(dept.getId());
+        DeptDO deptDO = getById(resources.getId());
+        resources.setId(deptDO.getId());
         saveOrUpdate(resources);
         // 更新父节点中子节点数目
         updateSubCnt(oldPid);
@@ -244,23 +244,23 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeDeptByIds(Set<Dept> deptSet) {
-        for (Dept dept : deptSet) {
+    public void removeDeptByIds(Set<DeptDO> deptDOSet) {
+        for (DeptDO deptDO : deptDOSet) {
             // 清理缓存
-            delCaches(dept.getId());
-            deptMapper.deleteById(dept.getId());
-            updateSubCnt(dept.getPid());
+            delCaches(deptDO.getId());
+            deptMapper.deleteById(deptDO.getId());
+            updateSubCnt(deptDO.getPid());
         }
     }
 
     @Override
-    public void downloadDeptExcel(List<Dept> deptList, HttpServletResponse response) throws IOException {
+    public void downloadDeptExcel(List<DeptDO> deptDOList, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (Dept dept : deptList) {
+        for (DeptDO deptDO : deptDOList) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("部门名称", dept.getName());
-            map.put("部门状态", dept.getEnabled() ? "启用" : "停用");
-            map.put("创建日期", dept.getCreateTime());
+            map.put("部门名称", deptDO.getName());
+            map.put("部门状态", deptDO.getEnabled() ? "启用" : "停用");
+            map.put("创建日期", deptDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
@@ -281,9 +281,9 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, Dept> impleme
      * @param id /
      */
     public void delCaches(Long id) {
-        List<User> users = userMapper.queryUserListByDeptId(id);
+        List<UserDO> userDOS = userMapper.queryUserListByDeptId(id);
         // 删除数据权限
-        redisHelper.delByKeys(RedisKeyConst.DATA_USER, users.stream().map(User::getId).collect(Collectors.toSet()));
+        redisHelper.delByKeys(RedisKeyConst.DATA_USER, userDOS.stream().map(UserDO::getId).collect(Collectors.toSet()));
         redisHelper.del(RedisKeyConst.DEPT_ID + id);
     }
 }

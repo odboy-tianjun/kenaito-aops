@@ -2,10 +2,10 @@ package cn.odboy.core.controller.job;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.context.SpringBeanHolder;
-import cn.odboy.core.service.system.dto.QueryQuartzJobRequest;
-import cn.odboy.core.service.system.dto.UpdateQuartzJobRequest;
-import cn.odboy.core.dal.dataobject.job.QuartzJob;
-import cn.odboy.core.dal.dataobject.job.QuartzLog;
+import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
+import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
+import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
+import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
 import cn.odboy.core.service.system.SystemQuartzJobService;
 import cn.odboy.common.exception.BadRequestException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,37 +42,37 @@ public class QuartzJobController {
     @ApiOperation("查询定时任务")
     @GetMapping
     @PreAuthorize("@el.check('timing:list')")
-    public ResponseEntity<PageResult<QuartzJob>> queryQuartzJob(QueryQuartzJobRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(systemQuartzJobService.describeQuartzJobPage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<QuartzJobDO>> queryQuartzJob(QueryQuartzJobArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(systemQuartzJobService.describeQuartzJobPage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("导出任务数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('timing:list')")
-    public void exportQuartzJob(HttpServletResponse response, QueryQuartzJobRequest criteria) throws IOException {
-        systemQuartzJobService.downloadQuartzJobExcel(systemQuartzJobService.describeQuartzJobList(criteria), response);
+    public void exportQuartzJob(HttpServletResponse response, QueryQuartzJobArgs args) throws IOException {
+        systemQuartzJobService.downloadQuartzJobExcel(systemQuartzJobService.describeQuartzJobList(args), response);
     }
 
     @ApiOperation("导出日志数据")
     @GetMapping(value = "/logs/download")
     @PreAuthorize("@el.check('timing:list')")
-    public void exportQuartzJobLog(HttpServletResponse response, QueryQuartzJobRequest criteria) throws IOException {
-        systemQuartzJobService.downloadQuartzLogExcel(systemQuartzJobService.describeQuartzLogList(criteria), response);
+    public void exportQuartzJobLog(HttpServletResponse response, QueryQuartzJobArgs args) throws IOException {
+        systemQuartzJobService.downloadQuartzLogExcel(systemQuartzJobService.describeQuartzLogList(args), response);
     }
 
     @ApiOperation("查询任务执行日志")
     @GetMapping(value = "/logs")
     @PreAuthorize("@el.check('timing:list')")
-    public ResponseEntity<PageResult<QuartzLog>> queryQuartzJobLog(QueryQuartzJobRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(systemQuartzJobService.describeQuartzLogPage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<QuartzLogDO>> queryQuartzJobLog(QueryQuartzJobArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(systemQuartzJobService.describeQuartzLogPage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("新增定时任务")
     @PostMapping
     @PreAuthorize("@el.check('timing:add')")
-    public ResponseEntity<Object> createQuartzJob(@Validated @RequestBody QuartzJob resources) {
+    public ResponseEntity<Object> createQuartzJob(@Validated @RequestBody QuartzJobDO resources) {
         if (resources.getId() != null) {
             throw new BadRequestException("A new " + ENTITY_NAME + " cannot already have an ID");
         }
@@ -85,10 +85,10 @@ public class QuartzJobController {
     @ApiOperation("修改定时任务")
     @PutMapping
     @PreAuthorize("@el.check('timing:edit')")
-    public ResponseEntity<Object> updateQuartzJob(@Validated(QuartzJob.Update.class) @RequestBody UpdateQuartzJobRequest resources) {
+    public ResponseEntity<Object> updateQuartzJob(@Validated(QuartzJobDO.Update.class) @RequestBody UpdateQuartzJobArgs args) {
         // 验证Bean是不是合法的，合法的定时任务 Bean 需要用 @Service 定义
-        checkBean(resources.getBeanName());
-        systemQuartzJobService.modifyQuartzJobResumeCron(resources);
+        checkBean(args.getBeanName());
+        systemQuartzJobService.modifyQuartzJobResumeCron(args);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

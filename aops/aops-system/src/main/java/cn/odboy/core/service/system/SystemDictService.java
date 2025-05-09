@@ -1,9 +1,9 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.system.dto.CreateDictRequest;
-import cn.odboy.core.dal.dataobject.system.Dict;
-import cn.odboy.core.service.system.dto.QueryDictRequest;
+import cn.odboy.core.dal.dataobject.system.DictDO;
+import cn.odboy.core.service.system.dto.CreateDictArgs;
+import cn.odboy.core.service.system.dto.QueryDictArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -12,36 +12,36 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface SystemDictService extends IService<Dict> {
+public interface SystemDictService extends IService<DictDO> {
     /**
      * 分页查询
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<Dict> describeDictPage(QueryDictRequest criteria, Page<Object> page);
+    PageResult<DictDO> describeDictPage(QueryDictArgs args, Page<Object> page);
 
     /**
      * 查询全部数据
      *
-     * @param criteria /
+     * @param args /
      * @return /
      */
-    List<Dict> describeDictList(QueryDictRequest criteria);
+    List<DictDO> describeDictList(QueryDictArgs args);
     /**
      * 创建
      *
-     * @param resources /
+     * @param args /
      */
-    void saveDict(CreateDictRequest resources);
+    void saveDict(CreateDictArgs args);
 
     /**
      * 编辑
      *
      * @param resources /
      */
-    void modifyDictById(Dict resources);
+    void modifyDictById(DictDO resources);
 
     /**
      * 删除
@@ -57,5 +57,5 @@ public interface SystemDictService extends IService<Dict> {
      * @param response /
      * @throws IOException /
      */
-    void downloadDictExcel(List<Dict> queryAll, HttpServletResponse response) throws IOException;
+    void downloadDictExcel(List<DictDO> queryAll, HttpServletResponse response) throws IOException;
 }

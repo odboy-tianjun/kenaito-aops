@@ -1,9 +1,9 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.system.dto.CreateJobRequest;
-import cn.odboy.core.dal.dataobject.system.Job;
-import cn.odboy.core.service.system.dto.QueryJobRequest;
+import cn.odboy.core.dal.dataobject.system.JobDO;
+import cn.odboy.core.service.system.dto.CreateJobArgs;
+import cn.odboy.core.service.system.dto.QueryJobArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -12,23 +12,23 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface SystemJobService extends IService<Job> {
+public interface SystemJobService extends IService<JobDO> {
     /**
      * 分页查询
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<Job> describeJobPage(QueryJobRequest criteria, Page<Object> page);
+    PageResult<JobDO> describeJobPage(QueryJobArgs args, Page<Object> page);
 
     /**
      * 查询全部数据
      *
-     * @param criteria /
+     * @param args /
      * @return /
      */
-    List<Job> describeJobList(QueryJobRequest criteria);
+    List<JobDO> describeJobList(QueryJobArgs args);
 
 
     /**
@@ -44,20 +44,20 @@ public interface SystemJobService extends IService<Job> {
      * @param id /
      * @return /
      */
-    Job describeJobById(Long id);
+    JobDO describeJobById(Long id);
     /**
      * 创建
      *
-     * @param resources /
+     * @param args /
      */
-    void saveJob(CreateJobRequest resources);
+    void saveJob(CreateJobArgs args);
 
     /**
      * 编辑
      *
      * @param resources /
      */
-    void modifyJobById(Job resources);
+    void modifyJobById(JobDO resources);
 
     /**
      * 删除
@@ -69,10 +69,10 @@ public interface SystemJobService extends IService<Job> {
     /**
      * 导出数据
      *
-     * @param jobs     待导出的数据
+     * @param jobDOS     待导出的数据
      * @param response /
      * @throws IOException /
      */
-    void downloadJobExcel(List<Job> jobs, HttpServletResponse response) throws IOException;
+    void downloadJobExcel(List<JobDO> jobDOS, HttpServletResponse response) throws IOException;
 
 }

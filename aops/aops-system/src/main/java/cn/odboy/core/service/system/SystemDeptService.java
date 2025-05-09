@@ -1,25 +1,25 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.BaseResult;
-import cn.odboy.core.service.system.dto.CreateDeptRequest;
-import cn.odboy.core.dal.dataobject.system.Dept;
-import cn.odboy.core.service.system.dto.QueryDeptRequest;
+import cn.odboy.core.dal.dataobject.system.DeptDO;
+import cn.odboy.core.service.system.dto.CreateDeptArgs;
+import cn.odboy.core.service.system.dto.QueryDeptArgs;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public interface SystemDeptService extends IService<Dept> {
+public interface SystemDeptService extends IService<DeptDO> {
     /**
      * 查询所有数据
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param isQuery  /
      * @return /
      * @throws Exception /
      */
-    List<Dept> describeDeptList(QueryDeptRequest criteria, Boolean isQuery) throws Exception;
+    List<DeptDO> describeDeptList(QueryDeptArgs args, Boolean isQuery) throws Exception;
 
     /**
      * 根据ID查询
@@ -27,14 +27,14 @@ public interface SystemDeptService extends IService<Dept> {
      * @param id /
      * @return /
      */
-    Dept describeDeptById(Long id);
+    DeptDO describeDeptById(Long id);
     /**
      * 根据PID查询
      *
      * @param pid /
      * @return /
      */
-    List<Dept> describeDeptListByPid(long pid);
+    List<DeptDO> describeDeptListByPid(long pid);
 
     /**
      * 根据角色ID查询
@@ -42,82 +42,82 @@ public interface SystemDeptService extends IService<Dept> {
      * @param id /
      * @return /
      */
-    Set<Dept> describeDeptByRoleId(Long id);
+    Set<DeptDO> describeDeptByRoleId(Long id);
     /**
      * 获取部门下所有关联的部门
      *
-     * @param deptList /
-     * @param depts    /
+     * @param deptDOList /
+     * @param deptDOS    /
      * @return /
      */
-    Set<Dept> describeRelationDeptSet(List<Dept> deptList, Set<Dept> depts);
+    Set<DeptDO> describeRelationDeptSet(List<DeptDO> deptDOList, Set<DeptDO> deptDOS);
 
     /**
      * 根据ID获取同级与上级数据
      *
-     * @param dept  /
-     * @param depts /
+     * @param deptDO  /
+     * @param deptDOS /
      * @return /
      */
-    List<Dept> describeSuperiorDeptListByPid(Dept dept, List<Dept> depts);
+    List<DeptDO> describeSuperiorDeptListByPid(DeptDO deptDO, List<DeptDO> deptDOS);
 
     /**
      * 构建树形数据
      *
-     * @param depts /
+     * @param deptDOS /
      * @return /
      */
-    BaseResult<Object> buildDeptTree(List<Dept> depts);
+    BaseResult<Object> buildDeptTree(List<DeptDO> deptDOS);
 
     /**
      * 获取
      *
-     * @param deptList 、
+     * @param deptDOList 、
      * @return 、
      */
-    List<Long> describeChildDeptIdListByDeptIds(List<Dept> deptList);
+    List<Long> describeChildDeptIdListByDeptIds(List<DeptDO> deptDOList);
 
     /**
      * 验证是否被角色或用户关联
      *
-     * @param depts /
+     * @param deptDOS /
      */
-    void verifyBindRelationByIds(Set<Dept> depts);
+    void verifyBindRelationByIds(Set<DeptDO> deptDOS);
 
     /**
      * 遍历所有部门和子部门
      *
      * @param ids   /
-     * @param depts /
+     * @param deptDOS /
      */
-    void traverseDeptByIdWithPids(Set<Long> ids, Set<Dept> depts);
+    void traverseDeptByIdWithPids(Set<Long> ids, Set<DeptDO> deptDOS);
     /**
      * 创建
      *
-     * @param resources /
+     * @param args /
      */
-    void saveDept(CreateDeptRequest resources);
+    void saveDept(CreateDeptArgs args);
 
     /**
      * 编辑
      *
      * @param resources /
      */
-    void modifyDept(Dept resources);
+    void modifyDept(DeptDO resources);
 
     /**
      * 删除
      *
-     * @param depts /
+     * @param deptDOS /
      */
-    void removeDeptByIds(Set<Dept> depts);
+    void removeDeptByIds(Set<DeptDO> deptDOS);
 
     /**
      * 导出数据
      *
-     * @param depts    待导出的数据
+     * @param deptDOS    待导出的数据
      * @param response /
      * @throws IOException /
      */
-    void downloadDeptExcel(List<Dept> depts, HttpServletResponse response) throws IOException;
+    void downloadDeptExcel(List<DeptDO> deptDOS, HttpServletResponse response) throws IOException;
 }

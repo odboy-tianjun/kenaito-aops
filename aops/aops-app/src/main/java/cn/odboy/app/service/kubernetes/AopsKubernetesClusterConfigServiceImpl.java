@@ -15,9 +15,9 @@
  */
 package cn.odboy.app.service.kubernetes;
 
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfig;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterConfigMapper;
-import cn.odboy.app.framework.kubernetes.constant.KubernetesResourceHealthStatusEnum;
+import cn.odboy.app.framework.kubernetes.core.constant.KubernetesResourceHealthStatusEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,23 +38,23 @@ public class AopsKubernetesClusterConfigServiceImpl implements AopsKubernetesClu
     private final AopsKubernetesClusterConfigMapper aopsKubernetesClusterConfigMapper;
 
     @Override
-    public List<AopsKubernetesClusterConfig> describeKubernetesClusterConfig() {
+    public List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfig() {
         return aopsKubernetesClusterConfigMapper.selectList(null);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void modifyStatusById(Long id, KubernetesResourceHealthStatusEnum healthStatusEnum) {
-        AopsKubernetesClusterConfig record = new AopsKubernetesClusterConfig();
+        AopsKubernetesClusterConfigDO record = new AopsKubernetesClusterConfigDO();
         record.setId(id);
         record.setStatus(healthStatusEnum.getCode());
         aopsKubernetesClusterConfigMapper.updateById(record);
     }
 
     @Override
-    public List<AopsKubernetesClusterConfig> describeKubernetesClusterConfigWithHealth() {
-        return aopsKubernetesClusterConfigMapper.selectList(new LambdaQueryWrapper<AopsKubernetesClusterConfig>()
-                .eq(AopsKubernetesClusterConfig::getStatus, KubernetesResourceHealthStatusEnum.HEALTH.getCode())
+    public List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigWithHealth() {
+        return aopsKubernetesClusterConfigMapper.selectList(new LambdaQueryWrapper<AopsKubernetesClusterConfigDO>()
+                .eq(AopsKubernetesClusterConfigDO::getStatus, KubernetesResourceHealthStatusEnum.HEALTH.getCode())
         );
     }
 }

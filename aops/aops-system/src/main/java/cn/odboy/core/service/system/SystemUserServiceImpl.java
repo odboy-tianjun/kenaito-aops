@@ -2,14 +2,14 @@ package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
+import cn.odboy.core.dal.dataobject.system.RoleDO;
+import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
 import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.dal.dataobject.system.Job;
-import cn.odboy.core.dal.dataobject.system.Role;
-import cn.odboy.core.dal.dataobject.system.User;
+import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.dal.mysql.system.UserJobMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.mysql.system.UserRoleMapper;
@@ -18,7 +18,7 @@ import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.StringUtil;
-import cn.odboy.core.service.system.dto.QueryUserRequest;
+import cn.odboy.core.service.system.dto.QueryUserArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> implements SystemUserService {
+public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements SystemUserService {
     private final UserMapper userMapper;
     private final UserJobMapper userJobMapper;
     private final UserRoleMapper userRoleMapper;
@@ -52,120 +52,120 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
 
     @Override
-    public PageResult<User> describeUserPage(QueryUserRequest criteria, Page<Object> page) {
-        criteria.setOffset(page.offset());
-        List<User> users = userMapper.queryUserPageByArgs(criteria, PageUtil.getCount(userMapper)).getRecords();
-        Long total = userMapper.getUserCountByArgs(criteria);
-        return PageUtil.toPage(users, total);
+    public PageResult<UserDO> describeUserPage(QueryUserArgs args, Page<Object> page) {
+        args.setOffset(page.offset());
+        List<UserDO> userDOS = userMapper.queryUserPageByArgs(args, PageUtil.getCount(userMapper)).getRecords();
+        Long total = userMapper.getUserCountByArgs(args);
+        return PageUtil.toPage(userDOS, total);
     }
 
     @Override
-    public List<User> describeUserList(QueryUserRequest criteria) {
-        return userMapper.queryUserPageByArgs(criteria, PageUtil.getCount(userMapper)).getRecords();
+    public List<UserDO> describeUserList(QueryUserArgs args) {
+        return userMapper.queryUserPageByArgs(args, PageUtil.getCount(userMapper)).getRecords();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User describeUserById(long id) {
+    public UserDO describeUserById(long id) {
         String key = RedisKeyConst.USER_ID + id;
-        User user = redisHelper.get(key, User.class);
-        if (user == null) {
-            user = userMapper.selectById(id);
-            redisHelper.set(key, user, 1, TimeUnit.DAYS);
+        UserDO userDO = redisHelper.get(key, UserDO.class);
+        if (userDO == null) {
+            userDO = userMapper.selectById(id);
+            redisHelper.set(key, userDO, 1, TimeUnit.DAYS);
         }
-        return user;
+        return userDO;
     }
 
     @Override
-    public User describeUserByUsername(String username) {
+    public UserDO describeUserByUsername(String username) {
         return userMapper.getUserByUsername(username);
     }
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveUser(User resources) {
-        resources.setDeptId(resources.getDept().getId());
+    public void saveUser(UserDO resources) {
+        resources.setDeptId(resources.getDeptDO().getId());
         if (userMapper.getUserByUsername(resources.getUsername()) != null) {
-            throw new EntityExistException(User.class, "username", resources.getUsername());
+            throw new EntityExistException(UserDO.class, "username", resources.getUsername());
         }
         if (userMapper.getUserByEmail(resources.getEmail()) != null) {
-            throw new EntityExistException(User.class, "email", resources.getEmail());
+            throw new EntityExistException(UserDO.class, "email", resources.getEmail());
         }
         if (userMapper.getUserByPhone(resources.getPhone()) != null) {
-            throw new EntityExistException(User.class, "phone", resources.getPhone());
+            throw new EntityExistException(UserDO.class, "phone", resources.getPhone());
         }
         save(resources);
         // 保存用户岗位
-        userJobMapper.insertBatchWithUserId(resources.getJobs(), resources.getId());
+        userJobMapper.insertBatchWithUserId(resources.getJobDOS(), resources.getId());
         // 保存用户角色
-        userRoleMapper.insertBatchWithUserId(resources.getRoles(), resources.getId());
+        userRoleMapper.insertBatchWithUserId(resources.getRoleDOS(), resources.getId());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyUserById(User resources) {
-        User user = getById(resources.getId());
-        User user1 = userMapper.getUserByUsername(resources.getUsername());
-        User user2 = userMapper.getUserByEmail(resources.getEmail());
-        User user3 = userMapper.getUserByPhone(resources.getPhone());
-        if (user1 != null && !user.getId().equals(user1.getId())) {
-            throw new EntityExistException(User.class, "username", resources.getUsername());
+    public void modifyUserById(UserDO resources) {
+        UserDO userDO = getById(resources.getId());
+        UserDO userDO1 = userMapper.getUserByUsername(resources.getUsername());
+        UserDO userDO2 = userMapper.getUserByEmail(resources.getEmail());
+        UserDO userDO3 = userMapper.getUserByPhone(resources.getPhone());
+        if (userDO1 != null && !userDO.getId().equals(userDO1.getId())) {
+            throw new EntityExistException(UserDO.class, "username", resources.getUsername());
         }
-        if (user2 != null && !user.getId().equals(user2.getId())) {
-            throw new EntityExistException(User.class, "email", resources.getEmail());
+        if (userDO2 != null && !userDO.getId().equals(userDO2.getId())) {
+            throw new EntityExistException(UserDO.class, "email", resources.getEmail());
         }
-        if (user3 != null && !user.getId().equals(user3.getId())) {
-            throw new EntityExistException(User.class, "phone", resources.getPhone());
+        if (userDO3 != null && !userDO.getId().equals(userDO3.getId())) {
+            throw new EntityExistException(UserDO.class, "phone", resources.getPhone());
         }
         // 如果用户的角色改变
-        if (!resources.getRoles().equals(user.getRoles())) {
+        if (!resources.getRoleDOS().equals(userDO.getRoleDOS())) {
             redisHelper.del(RedisKeyConst.DATA_USER + resources.getId());
             redisHelper.del(RedisKeyConst.MENU_USER + resources.getId());
             redisHelper.del(RedisKeyConst.ROLE_AUTH + resources.getId());
             redisHelper.del(RedisKeyConst.ROLE_USER + resources.getId());
         }
         // 修改部门会影响 数据权限
-        if (!Objects.equals(resources.getDept(), user.getDept())) {
+        if (!Objects.equals(resources.getDeptDO(), userDO.getDeptDO())) {
             redisHelper.del(RedisKeyConst.DATA_USER + resources.getId());
         }
         // 如果用户被禁用，则清除用户登录信息
         if (!resources.getEnabled()) {
             systemUserOnlineInfoDAO.kickOutByUsername(resources.getUsername());
         }
-        user.setDeptId(resources.getDept().getId());
-        user.setUsername(resources.getUsername());
-        user.setEmail(resources.getEmail());
-        user.setEnabled(resources.getEnabled());
-        user.setRoles(resources.getRoles());
-        user.setDept(resources.getDept());
-        user.setJobs(resources.getJobs());
-        user.setPhone(resources.getPhone());
-        user.setNickName(resources.getNickName());
-        user.setGender(resources.getGender());
-        saveOrUpdate(user);
+        userDO.setDeptId(resources.getDeptDO().getId());
+        userDO.setUsername(resources.getUsername());
+        userDO.setEmail(resources.getEmail());
+        userDO.setEnabled(resources.getEnabled());
+        userDO.setRoleDOS(resources.getRoleDOS());
+        userDO.setDeptDO(resources.getDeptDO());
+        userDO.setJobDOS(resources.getJobDOS());
+        userDO.setPhone(resources.getPhone());
+        userDO.setNickName(resources.getNickName());
+        userDO.setGender(resources.getGender());
+        saveOrUpdate(userDO);
         // 清除缓存
-        delCaches(user.getId(), user.getUsername());
+        delCaches(userDO.getId(), userDO.getUsername());
         // 更新用户岗位
         userJobMapper.deleteByUserId(resources.getId());
-        userJobMapper.insertBatchWithUserId(resources.getJobs(), resources.getId());
+        userJobMapper.insertBatchWithUserId(resources.getJobDOS(), resources.getId());
         // 更新用户角色
         userRoleMapper.deleteByUserId(resources.getId());
-        userRoleMapper.insertBatchWithUserId(resources.getRoles(), resources.getId());
+        userRoleMapper.insertBatchWithUserId(resources.getRoleDOS(), resources.getId());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyUserCenterInfoById(User resources) {
-        User user = getById(resources.getId());
-        User user1 = userMapper.getUserByPhone(resources.getPhone());
-        if (user1 != null && !user.getId().equals(user1.getId())) {
-            throw new EntityExistException(User.class, "phone", resources.getPhone());
+    public void modifyUserCenterInfoById(UserDO resources) {
+        UserDO userDO = getById(resources.getId());
+        UserDO userDO1 = userMapper.getUserByPhone(resources.getPhone());
+        if (userDO1 != null && !userDO.getId().equals(userDO1.getId())) {
+            throw new EntityExistException(UserDO.class, "phone", resources.getPhone());
         }
-        user.setNickName(resources.getNickName());
-        user.setPhone(resources.getPhone());
-        user.setGender(resources.getGender());
-        saveOrUpdate(user);
+        userDO.setNickName(resources.getNickName());
+        userDO.setPhone(resources.getPhone());
+        userDO.setGender(resources.getGender());
+        saveOrUpdate(userDO);
         // 清理缓存
-        delCaches(user.getId(), user.getUsername());
+        delCaches(userDO.getId(), userDO.getUsername());
     }
 
     @Override
@@ -173,8 +173,8 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     public void removeUserByIds(Set<Long> ids) {
         for (Long id : ids) {
             // 清理缓存
-            User user = getById(id);
-            delCaches(user.getId(), user.getUsername());
+            UserDO userDO = getById(id);
+            delCaches(userDO.getId(), userDO.getUsername());
         }
         userMapper.deleteByIds(ids);
         // 删除用户岗位
@@ -193,9 +193,9 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resetUserPasswordByIds(Set<Long> ids, String password) {
-        List<User> users = userMapper.selectByIds(ids);
+        List<UserDO> userDOS = userMapper.selectByIds(ids);
         // 清除缓存
-        users.forEach(user -> {
+        userDOS.forEach(user -> {
             // 清除缓存
             flushCache(user.getUsername());
             // 强制退出
@@ -216,16 +216,16 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
         if (fileType != null && !image.contains(fileType)) {
             throw new BadRequestException("文件格式错误！, 仅支持 " + image + " 格式");
         }
-        User user = userMapper.getUserByUsername(SecurityHelper.getCurrentUsername());
-        String oldPath = user.getAvatarPath();
+        UserDO userDO = userMapper.getUserByUsername(SecurityHelper.getCurrentUsername());
+        String oldPath = userDO.getAvatarPath();
         File file = FileUtil.upload(multipartFile, properties.getFile().getPath().getAvatar());
-        user.setAvatarPath(Objects.requireNonNull(file).getPath());
-        user.setAvatarName(file.getName());
-        saveOrUpdate(user);
+        userDO.setAvatarPath(Objects.requireNonNull(file).getPath());
+        userDO.setAvatarName(file.getName());
+        saveOrUpdate(userDO);
         if (StringUtil.isNotBlank(oldPath)) {
             FileUtil.del(oldPath);
         }
-        @NotBlank String username = user.getUsername();
+        @NotBlank String username = userDO.getUsername();
         flushCache(username);
         return new HashMap<>(1) {{
             put("avatar", file.getName());
@@ -240,20 +240,20 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, User> impleme
     }
 
     @Override
-    public void downloadUserExcel(List<User> users, HttpServletResponse response) throws IOException {
+    public void downloadUserExcel(List<UserDO> userDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (User user : users) {
-            List<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
+        for (UserDO userDO : userDOS) {
+            List<String> roles = userDO.getRoleDOS().stream().map(RoleDO::getName).collect(Collectors.toList());
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("用户名", user.getUsername());
+            map.put("用户名", userDO.getUsername());
             map.put("角色", roles);
-            map.put("部门", user.getDept().getName());
-            map.put("岗位", user.getJobs().stream().map(Job::getName).collect(Collectors.toList()));
-            map.put("邮箱", user.getEmail());
-            map.put("状态", user.getEnabled() ? "启用" : "禁用");
-            map.put("手机号码", user.getPhone());
-            map.put("修改密码的时间", user.getPwdResetTime());
-            map.put("创建日期", user.getCreateTime());
+            map.put("部门", userDO.getDeptDO().getName());
+            map.put("岗位", userDO.getJobDOS().stream().map(JobDO::getName).collect(Collectors.toList()));
+            map.put("邮箱", userDO.getEmail());
+            map.put("状态", userDO.getEnabled() ? "启用" : "禁用");
+            map.put("手机号码", userDO.getPhone());
+            map.put("修改密码的时间", userDO.getPwdResetTime());
+            map.put("创建日期", userDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);

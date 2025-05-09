@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.dal.mysql;
 
-import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngress;
+import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -28,6 +28,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2025-05-07
  */
 @Mapper
-public interface AopsKubernetesNetworkIngressMapper extends BaseMapper<AopsKubernetesNetworkIngress> {
+public interface AopsKubernetesNetworkIngressMapper extends BaseMapper<AopsKubernetesNetworkIngressDO> {
 
 }

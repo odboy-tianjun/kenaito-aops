@@ -1,11 +1,11 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.system.User;
-import cn.odboy.core.service.system.dto.CreateRoleRequest;
-import cn.odboy.core.dal.dataobject.system.Role;
-import cn.odboy.core.service.system.dto.QueryRoleRequest;
-import cn.odboy.core.service.system.dto.RoleCodeVo;
+import cn.odboy.core.dal.dataobject.system.RoleDO;
+import cn.odboy.core.dal.dataobject.system.UserDO;
+import cn.odboy.core.service.system.dto.CreateRoleArgs;
+import cn.odboy.core.service.system.dto.QueryRoleArgs;
+import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -14,31 +14,31 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface SystemRoleService extends IService<Role> {
+public interface SystemRoleService extends IService<RoleDO> {
 
     /**
      * 查询全部数据
      *
      * @return /
      */
-    List<Role> describeRoleList();
+    List<RoleDO> describeRoleList();
 
     /**
      * 查询全部
      *
-     * @param criteria 条件
+     * @param args 条件
      * @return /
      */
-    List<Role> describeRoleList(QueryRoleRequest criteria);
+    List<RoleDO> describeRoleList(QueryRoleArgs args);
 
     /**
      * 待条件分页查询
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<Role> describeRolePage(QueryRoleRequest criteria, Page<Object> page);
+    PageResult<RoleDO> describeRolePage(QueryRoleArgs args, Page<Object> page);
 
     /**
      * 根据ID查询
@@ -46,7 +46,7 @@ public interface SystemRoleService extends IService<Role> {
      * @param id /
      * @return /
      */
-    Role describeRoleById(long id);
+    RoleDO describeRoleById(long id);
 
 
     /**
@@ -55,23 +55,23 @@ public interface SystemRoleService extends IService<Role> {
      * @param userId 用户ID
      * @return /
      */
-    List<Role> describeRoleListByUsersId(Long userId);
+    List<RoleDO> describeRoleListByUsersId(Long userId);
 
     /**
      * 根据角色查询角色级别
      *
-     * @param roles /
+     * @param roleDOS /
      * @return /
      */
-    Integer describeDeptLevelByRoles(Set<Role> roles);
+    Integer describeDeptLevelByRoles(Set<RoleDO> roleDOS);
 
     /**
      * 获取用户权限信息
      *
-     * @param user 用户信息
+     * @param userDO 用户信息
      * @return 权限信息
      */
-    List<RoleCodeVo> buildUserRolePermissions(User user);
+    List<RoleCodeVo> buildUserRolePermissions(UserDO userDO);
     /**
      * 验证是否被用户关联
      *
@@ -85,28 +85,28 @@ public interface SystemRoleService extends IService<Role> {
      * @param menuId /
      * @return /
      */
-    List<Role> describeRoleListByMenuId(Long menuId);
+    List<RoleDO> describeRoleListByMenuId(Long menuId);
 
     /**
      * 创建
      *
-     * @param resources /
+     * @param args /
      */
-    void saveRole(CreateRoleRequest resources);
+    void saveRole(CreateRoleArgs args);
 
     /**
      * 编辑
      *
      * @param resources /
      */
-    void modifyRoleById(Role resources);
+    void modifyRoleById(RoleDO resources);
 
     /**
      * 修改绑定的菜单
      *
      * @param resources /
      */
-    void modifyBindMenuById(Role resources);
+    void modifyBindMenuById(RoleDO resources);
 
     /**
      * 删除
@@ -119,10 +119,10 @@ public interface SystemRoleService extends IService<Role> {
     /**
      * 导出数据
      *
-     * @param roles    待导出的数据
+     * @param roleDOS    待导出的数据
      * @param response /
      * @throws IOException /
      */
-    void downloadRoleExcel(List<Role> roles, HttpServletResponse response) throws IOException;
+    void downloadRoleExcel(List<RoleDO> roleDOS, HttpServletResponse response) throws IOException;
 
 }

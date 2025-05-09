@@ -1,10 +1,10 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.system.dto.QueryQuartzJobRequest;
-import cn.odboy.core.service.system.dto.UpdateQuartzJobRequest;
-import cn.odboy.core.dal.dataobject.job.QuartzJob;
-import cn.odboy.core.dal.dataobject.job.QuartzLog;
+import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
+import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
+import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
+import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -13,53 +13,53 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface SystemQuartzJobService extends IService<QuartzJob> {
+public interface SystemQuartzJobService extends IService<QuartzJobDO> {
     /**
      * 分页查询
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<QuartzJob> describeQuartzJobPage(QueryQuartzJobRequest criteria, Page<Object> page);
+    PageResult<QuartzJobDO> describeQuartzJobPage(QueryQuartzJobArgs args, Page<Object> page);
 
     /**
      * 查询全部
      *
-     * @param criteria 条件
+     * @param args 条件
      * @return /
      */
-    List<QuartzJob> describeQuartzJobList(QueryQuartzJobRequest criteria);
+    List<QuartzJobDO> describeQuartzJobList(QueryQuartzJobArgs args);
 
     /**
      * 分页查询日志
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<QuartzLog> describeQuartzLogPage(QueryQuartzJobRequest criteria, Page<Object> page);
+    PageResult<QuartzLogDO> describeQuartzLogPage(QueryQuartzJobArgs args, Page<Object> page);
 
     /**
      * 查询全部
      *
-     * @param criteria 条件
+     * @param args 条件
      * @return /
      */
-    List<QuartzLog> describeQuartzLogList(QueryQuartzJobRequest criteria);
+    List<QuartzLogDO> describeQuartzLogList(QueryQuartzJobArgs args);
     /**
      * 创建
      *
      * @param resources /
      */
-    void createJob(QuartzJob resources);
+    void createJob(QuartzJobDO resources);
 
     /**
      * 修改任务并重新调度
      *
-     * @param resources /
+     * @param args /
      */
-    void modifyQuartzJobResumeCron(UpdateQuartzJobRequest resources);
+    void modifyQuartzJobResumeCron(UpdateQuartzJobArgs args);
 
     /**
      * 删除任务
@@ -71,16 +71,16 @@ public interface SystemQuartzJobService extends IService<QuartzJob> {
     /**
      * 更改定时任务状态
      *
-     * @param quartzJob /
+     * @param quartzJobDO /
      */
-    void switchQuartzJobStatus(QuartzJob quartzJob);
+    void switchQuartzJobStatus(QuartzJobDO quartzJobDO);
 
     /**
      * 立即执行定时任务
      *
-     * @param quartzJob /
+     * @param quartzJobDO /
      */
-    void startQuartzJob(QuartzJob quartzJob);
+    void startQuartzJob(QuartzJobDO quartzJobDO);
 
     /**
      * 导出定时任务
@@ -89,7 +89,7 @@ public interface SystemQuartzJobService extends IService<QuartzJob> {
      * @param response /
      * @throws IOException /
      */
-    void downloadQuartzJobExcel(List<QuartzJob> queryAll, HttpServletResponse response) throws IOException;
+    void downloadQuartzJobExcel(List<QuartzJobDO> queryAll, HttpServletResponse response) throws IOException;
 
     /**
      * 导出定时任务日志
@@ -98,7 +98,7 @@ public interface SystemQuartzJobService extends IService<QuartzJob> {
      * @param response    /
      * @throws IOException /
      */
-    void downloadQuartzLogExcel(List<QuartzLog> queryAllLog, HttpServletResponse response) throws IOException;
+    void downloadQuartzLogExcel(List<QuartzLogDO> queryAllLog, HttpServletResponse response) throws IOException;
 
     /**
      * 执行子任务

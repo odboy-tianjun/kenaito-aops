@@ -3,19 +3,19 @@ package cn.odboy.core.controller.system;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.odboy.common.pojo.MyMetaOption;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.dal.dataobject.system.DeptDO;
+import cn.odboy.core.dal.dataobject.system.RoleDO;
+import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.service.system.SystemDataService;
 import cn.odboy.core.constant.CaptchaBizEnum;
-import cn.odboy.core.dal.dataobject.system.Dept;
-import cn.odboy.core.dal.dataobject.system.Role;
-import cn.odboy.core.dal.dataobject.system.User;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.core.service.system.SystemDeptService;
 import cn.odboy.core.service.system.SystemRoleService;
 import cn.odboy.core.service.system.SystemUserService;
-import cn.odboy.core.service.system.dto.QueryUserRequest;
+import cn.odboy.core.service.system.dto.QueryUserArgs;
 import cn.odboy.core.service.tools.CaptchaService;
-import cn.odboy.core.controller.system.vo.UpdateUserPasswordResponse;
+import cn.odboy.core.controller.system.vo.UpdateUserPasswordVo;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.common.util.RsaEncryptUtil;
@@ -64,35 +64,35 @@ public class UserController {
     @ApiOperation("导出用户数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
-    public void downloadUserExcel(HttpServletResponse response, QueryUserRequest criteria) throws IOException {
-        systemUserService.downloadUserExcel(systemUserService.describeUserList(criteria), response);
+    public void downloadUserExcel(HttpServletResponse response, QueryUserArgs args) throws IOException {
+        systemUserService.downloadUserExcel(systemUserService.describeUserList(args), response);
     }
 
     @ApiOperation("查询用户")
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<PageResult<User>> queryUser(QueryUserRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        if (!ObjectUtils.isEmpty(criteria.getDeptId())) {
-            criteria.getDeptIds().add(criteria.getDeptId());
+    public ResponseEntity<PageResult<UserDO>> queryUser(QueryUserArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        if (!ObjectUtils.isEmpty(args.getDeptId())) {
+            args.getDeptIds().add(args.getDeptId());
             // 先查找是否存在子节点
-            List<Dept> data = systemDeptService.describeDeptListByPid(criteria.getDeptId());
+            List<DeptDO> data = systemDeptService.describeDeptListByPid(args.getDeptId());
             // 然后把子节点的ID都加入到集合中
-            criteria.getDeptIds().addAll(systemDeptService.describeChildDeptIdListByDeptIds(data));
+            args.getDeptIds().addAll(systemDeptService.describeChildDeptIdListByDeptIds(data));
         }
         // 数据权限
         List<Long> dataScopes = systemDataService.describeDeptIdListByUserIdWithDeptId(systemUserService.describeUserByUsername(SecurityHelper.getCurrentUsername()));
         // criteria.getDeptIds() 不为空并且数据权限不为空则取交集
-        if (!CollectionUtils.isEmpty(criteria.getDeptIds()) && !CollectionUtils.isEmpty(dataScopes)) {
+        if (!CollectionUtils.isEmpty(args.getDeptIds()) && !CollectionUtils.isEmpty(dataScopes)) {
             // 取交集
-            criteria.getDeptIds().retainAll(dataScopes);
-            if (!CollectionUtil.isEmpty(criteria.getDeptIds())) {
-                return new ResponseEntity<>(systemUserService.describeUserPage(criteria, page), HttpStatus.OK);
+            args.getDeptIds().retainAll(dataScopes);
+            if (!CollectionUtil.isEmpty(args.getDeptIds())) {
+                return new ResponseEntity<>(systemUserService.describeUserPage(args, page), HttpStatus.OK);
             }
         } else {
             // 否则取并集
-            criteria.getDeptIds().addAll(dataScopes);
-            return new ResponseEntity<>(systemUserService.describeUserPage(criteria, page), HttpStatus.OK);
+            args.getDeptIds().addAll(dataScopes);
+            return new ResponseEntity<>(systemUserService.describeUserPage(args, page), HttpStatus.OK);
         }
         return new ResponseEntity<>(PageUtil.noData(), HttpStatus.OK);
     }
@@ -100,7 +100,7 @@ public class UserController {
     @ApiOperation("新增用户")
     @PostMapping(value = "/saveUser")
     @PreAuthorize("@el.check('user:add')")
-    public ResponseEntity<Object> saveUser(@Validated @RequestBody User resources) {
+    public ResponseEntity<Object> saveUser(@Validated @RequestBody UserDO resources) {
         checkLevel(resources);
         // 默认密码 123456
         resources.setPassword(passwordEncoder.encode("123456"));
@@ -111,7 +111,7 @@ public class UserController {
     @ApiOperation("修改用户")
     @PostMapping(value = "/modifyUserById")
     @PreAuthorize("@el.check('user:edit')")
-    public ResponseEntity<Object> modifyUserById(@Validated(User.Update.class) @RequestBody User resources) throws Exception {
+    public ResponseEntity<Object> modifyUserById(@Validated(UserDO.Update.class) @RequestBody UserDO resources) throws Exception {
         checkLevel(resources);
         systemUserService.modifyUserById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -119,7 +119,7 @@ public class UserController {
 
     @ApiOperation("修改用户：个人中心")
     @PostMapping(value = "modifyUserCenterInfoById")
-    public ResponseEntity<Object> modifyUserCenterInfoById(@Validated(User.Update.class) @RequestBody User resources) {
+    public ResponseEntity<Object> modifyUserCenterInfoById(@Validated(UserDO.Update.class) @RequestBody UserDO resources) {
         if (!resources.getId().equals(SecurityHelper.getCurrentUserId())) {
             throw new BadRequestException("不能修改他人资料");
         }
@@ -132,8 +132,8 @@ public class UserController {
     @PreAuthorize("@el.check('user:del')")
     public ResponseEntity<Object> removeUserByIds(@RequestBody Set<Long> ids) {
         for (Long id : ids) {
-            Integer currentLevel = Collections.min(systemRoleService.describeRoleListByUsersId(SecurityHelper.getCurrentUserId()).stream().map(Role::getLevel).collect(Collectors.toList()));
-            Integer optLevel = Collections.min(systemRoleService.describeRoleListByUsersId(id).stream().map(Role::getLevel).collect(Collectors.toList()));
+            Integer currentLevel = Collections.min(systemRoleService.describeRoleListByUsersId(SecurityHelper.getCurrentUserId()).stream().map(RoleDO::getLevel).collect(Collectors.toList()));
+            Integer optLevel = Collections.min(systemRoleService.describeRoleListByUsersId(id).stream().map(RoleDO::getLevel).collect(Collectors.toList()));
             if (currentLevel > optLevel) {
                 throw new BadRequestException("角色权限不足，不能删除：" + systemUserService.describeUserById(id).getUsername());
             }
@@ -144,17 +144,17 @@ public class UserController {
 
     @ApiOperation("修改密码")
     @PostMapping(value = "/modifyUserPasswordByUsername")
-    public ResponseEntity<Object> modifyUserPasswordByUsername(@RequestBody UpdateUserPasswordResponse passVo) throws Exception {
+    public ResponseEntity<Object> modifyUserPasswordByUsername(@RequestBody UpdateUserPasswordVo passVo) throws Exception {
         String oldPass = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), passVo.getOldPass());
         String newPass = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), passVo.getNewPass());
-        User user = systemUserService.describeUserByUsername(SecurityHelper.getCurrentUsername());
-        if (!passwordEncoder.matches(oldPass, user.getPassword())) {
+        UserDO userDO = systemUserService.describeUserByUsername(SecurityHelper.getCurrentUsername());
+        if (!passwordEncoder.matches(oldPass, userDO.getPassword())) {
             throw new BadRequestException("修改失败，旧密码错误");
         }
-        if (passwordEncoder.matches(newPass, user.getPassword())) {
+        if (passwordEncoder.matches(newPass, userDO.getPassword())) {
             throw new BadRequestException("新密码不能与旧密码相同");
         }
-        systemUserService.modifyUserPasswordByUsername(user.getUsername(), passwordEncoder.encode(newPass));
+        systemUserService.modifyUserPasswordByUsername(userDO.getUsername(), passwordEncoder.encode(newPass));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -174,14 +174,14 @@ public class UserController {
 
     @ApiOperation("修改邮箱")
     @PostMapping(value = "/modifyUserEmailByUsername/{code}")
-    public ResponseEntity<Object> modifyUserEmailByUsername(@PathVariable String code, @RequestBody User resources) throws Exception {
+    public ResponseEntity<Object> modifyUserEmailByUsername(@PathVariable String code, @RequestBody UserDO resources) throws Exception {
         String password = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), resources.getPassword());
-        User user = systemUserService.describeUserByUsername(SecurityHelper.getCurrentUsername());
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        UserDO userDO = systemUserService.describeUserByUsername(SecurityHelper.getCurrentUsername());
+        if (!passwordEncoder.matches(password, userDO.getPassword())) {
             throw new BadRequestException("密码错误");
         }
         verificationCodeService.checkCodeAvailable(CaptchaBizEnum.EMAIL_RESET_EMAIL_CODE.getBizCode(), resources.getEmail(), code);
-        systemUserService.modifyUserEmailByUsername(user.getUsername(), resources.getEmail());
+        systemUserService.modifyUserEmailByUsername(userDO.getUsername(), resources.getEmail());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -190,9 +190,9 @@ public class UserController {
      *
      * @param resources /
      */
-    private void checkLevel(User resources) {
-        Integer currentLevel = Collections.min(systemRoleService.describeRoleListByUsersId(SecurityHelper.getCurrentUserId()).stream().map(Role::getLevel).collect(Collectors.toList()));
-        Integer optLevel = systemRoleService.describeDeptLevelByRoles(resources.getRoles());
+    private void checkLevel(UserDO resources) {
+        Integer currentLevel = Collections.min(systemRoleService.describeRoleListByUsersId(SecurityHelper.getCurrentUserId()).stream().map(RoleDO::getLevel).collect(Collectors.toList()));
+        Integer optLevel = systemRoleService.describeDeptLevelByRoles(resources.getRoleDOS());
         if (currentLevel > optLevel) {
             throw new BadRequestException("角色权限不足");
         }
@@ -201,17 +201,17 @@ public class UserController {
     @ApiOperation("查询用户基础数据")
     @PostMapping(value = "/describeUserMetadataOptions")
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<List<MyMetaOption>> queryUserMetadataOptions(@Validated @RequestBody QueryUserRequest criteria) {
+    public ResponseEntity<List<MyMetaOption>> queryUserMetadataOptions(@Validated @RequestBody QueryUserArgs args) {
         int maxPageSize = 50;
-        return new ResponseEntity<>(systemUserService.page(new Page<>(criteria.getPage(), maxPageSize), new LambdaQueryWrapper<User>()
+        return new ResponseEntity<>(systemUserService.page(new Page<>(args.getPage(), maxPageSize), new LambdaQueryWrapper<UserDO>()
                 .and(c -> {
-                    c.eq(User::getPhone, criteria.getBlurry());
+                    c.eq(UserDO::getPhone, args.getBlurry());
                     c.or();
-                    c.eq(User::getEmail, criteria.getBlurry());
+                    c.eq(UserDO::getEmail, args.getBlurry());
                     c.or();
-                    c.like(User::getUsername, criteria.getBlurry());
+                    c.like(UserDO::getUsername, args.getBlurry());
                     c.or();
-                    c.like(User::getNickName, criteria.getBlurry());
+                    c.like(UserDO::getNickName, args.getBlurry());
                 })
         ).getRecords().stream().map(m -> {
             Map<String, Object> ext = new HashMap<>(1);

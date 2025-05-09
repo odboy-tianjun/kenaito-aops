@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.mysql.system;
 
-import cn.odboy.core.dal.dataobject.system.Menu;
+import cn.odboy.core.dal.dataobject.system.MenuDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Mapper
 public interface RoleMenuMapper {
-    void insertBatchWithRoleId(@Param("menus") Set<Menu> menus, @Param("roleId") Long roleId);
+    void insertBatchWithRoleId(@Param("menuDOS") Set<MenuDO> menuDOS, @Param("roleId") Long roleId);
 
     void deleteByRoleId(@Param("roleId") Long roleId);
 

@@ -1,9 +1,9 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.system.dto.CreateDictRequest;
-import cn.odboy.core.service.system.dto.QueryDictRequest;
-import cn.odboy.core.dal.dataobject.system.Dict;
+import cn.odboy.core.dal.dataobject.system.DictDO;
+import cn.odboy.core.service.system.dto.CreateDictArgs;
+import cn.odboy.core.service.system.dto.QueryDictArgs;
 import cn.odboy.core.service.system.SystemDictService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -33,37 +33,37 @@ public class DictController {
     @ApiOperation("导出字典数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dict:list')")
-    public void exportDict(HttpServletResponse response, QueryDictRequest criteria) throws IOException {
-        systemDictService.downloadDictExcel(systemDictService.describeDictList(criteria), response);
+    public void exportDict(HttpServletResponse response, QueryDictArgs args) throws IOException {
+        systemDictService.downloadDictExcel(systemDictService.describeDictList(args), response);
     }
 
     @ApiOperation("查询字典")
     @PostMapping(value = "/queryAllDict")
     @PreAuthorize("@el.check('dict:list')")
-    public ResponseEntity<List<Dict>> queryAllDict() {
-        return new ResponseEntity<>(systemDictService.describeDictList(new QueryDictRequest()), HttpStatus.OK);
+    public ResponseEntity<List<DictDO>> queryAllDict() {
+        return new ResponseEntity<>(systemDictService.describeDictList(new QueryDictArgs()), HttpStatus.OK);
     }
 
     @ApiOperation("查询字典")
     @GetMapping
     @PreAuthorize("@el.check('dict:list')")
-    public ResponseEntity<PageResult<Dict>> queryDict(QueryDictRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(systemDictService.describeDictPage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<DictDO>> queryDict(QueryDictArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(systemDictService.describeDictPage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("新增字典")
     @PostMapping(value = "/saveDict")
     @PreAuthorize("@el.check('dict:add')")
-    public ResponseEntity<Object> saveDict(@Validated @RequestBody CreateDictRequest resources) {
-        systemDictService.saveDict(resources);
+    public ResponseEntity<Object> saveDict(@Validated @RequestBody CreateDictArgs args) {
+        systemDictService.saveDict(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ApiOperation("修改字典")
     @PostMapping(value = "/modifyDictById")
     @PreAuthorize("@el.check('dict:edit')")
-    public ResponseEntity<Object> modifyDictById(@Validated(Dict.Update.class) @RequestBody Dict resources) {
+    public ResponseEntity<Object> modifyDictById(@Validated(DictDO.Update.class) @RequestBody DictDO resources) {
         systemDictService.modifyDictById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -6,10 +6,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.framework.quartz.core.context.QuartzManage;
-import cn.odboy.core.service.system.dto.QueryQuartzJobRequest;
-import cn.odboy.core.service.system.dto.UpdateQuartzJobRequest;
-import cn.odboy.core.dal.dataobject.job.QuartzJob;
-import cn.odboy.core.dal.dataobject.job.QuartzLog;
+import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
+import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
+import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
+import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
 import cn.odboy.core.dal.mysql.job.QuartzJobMapper;
 import cn.odboy.core.dal.mysql.job.QuartzLogMapper;
 import cn.odboy.common.exception.BadRequestException;
@@ -33,35 +33,35 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service(value = "quartzJobService")
-public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob> implements SystemQuartzJobService {
+public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJobDO> implements SystemQuartzJobService {
     private final QuartzJobMapper quartzJobMapper;
     private final QuartzLogMapper quartzLogMapper;
     private final QuartzManage quartzManage;
     private final RedisHelper redisHelper;
 
     @Override
-    public PageResult<QuartzJob> describeQuartzJobPage(QueryQuartzJobRequest criteria, Page<Object> page) {
-        return PageUtil.toPage(quartzJobMapper.queryQuartzJobPageByArgs(criteria, page));
+    public PageResult<QuartzJobDO> describeQuartzJobPage(QueryQuartzJobArgs args, Page<Object> page) {
+        return PageUtil.toPage(quartzJobMapper.queryQuartzJobPageByArgs(args, page));
     }
 
     @Override
-    public PageResult<QuartzLog> describeQuartzLogPage(QueryQuartzJobRequest criteria, Page<Object> page) {
-        return PageUtil.toPage(quartzLogMapper.queryQuartzLogPageByArgs(criteria, page));
+    public PageResult<QuartzLogDO> describeQuartzLogPage(QueryQuartzJobArgs args, Page<Object> page) {
+        return PageUtil.toPage(quartzLogMapper.queryQuartzLogPageByArgs(args, page));
     }
 
     @Override
-    public List<QuartzJob> describeQuartzJobList(QueryQuartzJobRequest criteria) {
-        return quartzJobMapper.queryQuartzJobPageByArgs(criteria, PageUtil.getCount(quartzJobMapper)).getRecords();
+    public List<QuartzJobDO> describeQuartzJobList(QueryQuartzJobArgs args) {
+        return quartzJobMapper.queryQuartzJobPageByArgs(args, PageUtil.getCount(quartzJobMapper)).getRecords();
     }
 
     @Override
-    public List<QuartzLog> describeQuartzLogList(QueryQuartzJobRequest criteria) {
-        return quartzLogMapper.queryQuartzLogPageByArgs(criteria, PageUtil.getCount(quartzLogMapper)).getRecords();
+    public List<QuartzLogDO> describeQuartzLogList(QueryQuartzJobArgs args) {
+        return quartzLogMapper.queryQuartzLogPageByArgs(args, PageUtil.getCount(quartzLogMapper)).getRecords();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createJob(QuartzJob resources) {
+    public void createJob(QuartzJobDO resources) {
         if (!CronExpression.isValidExpression(resources.getCronExpression())) {
             throw new BadRequestException("cron表达式格式错误");
         }
@@ -71,47 +71,47 @@ public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, Qua
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyQuartzJobResumeCron(UpdateQuartzJobRequest resources) {
-        if (!CronExpression.isValidExpression(resources.getCronExpression())) {
+    public void modifyQuartzJobResumeCron(UpdateQuartzJobArgs args) {
+        if (!CronExpression.isValidExpression(args.getCronExpression())) {
             throw new BadRequestException("cron表达式格式错误");
         }
-        if (StringUtil.isNotBlank(resources.getSubTask())) {
-            List<String> tasks = Arrays.asList(resources.getSubTask().split("[,，]"));
-            if (tasks.contains(resources.getId().toString())) {
+        if (StringUtil.isNotBlank(args.getSubTask())) {
+            List<String> tasks = Arrays.asList(args.getSubTask().split("[,，]"));
+            if (tasks.contains(args.getId().toString())) {
                 throw new BadRequestException("子任务中不能添加当前任务ID");
             }
         }
-        QuartzJob quartzJob = BeanUtil.copyProperties(resources, QuartzJob.class);
-        saveOrUpdate(quartzJob);
-        quartzManage.updateJobCron(quartzJob);
+        QuartzJobDO quartzJobDO = BeanUtil.copyProperties(args, QuartzJobDO.class);
+        saveOrUpdate(quartzJobDO);
+        quartzManage.updateJobCron(quartzJobDO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void switchQuartzJobStatus(QuartzJob quartzJob) {
+    public void switchQuartzJobStatus(QuartzJobDO quartzJobDO) {
         // 置换暂停状态
-        if (quartzJob.getIsPause()) {
-            quartzManage.resumeJob(quartzJob);
-            quartzJob.setIsPause(false);
+        if (quartzJobDO.getIsPause()) {
+            quartzManage.resumeJob(quartzJobDO);
+            quartzJobDO.setIsPause(false);
         } else {
-            quartzManage.pauseJob(quartzJob);
-            quartzJob.setIsPause(true);
+            quartzManage.pauseJob(quartzJobDO);
+            quartzJobDO.setIsPause(true);
         }
-        saveOrUpdate(quartzJob);
+        saveOrUpdate(quartzJobDO);
     }
 
     @Override
-    public void startQuartzJob(QuartzJob quartzJob) {
-        quartzManage.runJobNow(quartzJob);
+    public void startQuartzJob(QuartzJobDO quartzJobDO) {
+        quartzManage.runJobNow(quartzJobDO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeJobByIds(Set<Long> ids) {
         for (Long id : ids) {
-            QuartzJob quartzJob = getById(id);
-            quartzManage.deleteJob(quartzJob);
-            removeById(quartzJob);
+            QuartzJobDO quartzJobDO = getById(id);
+            quartzManage.deleteJob(quartzJobDO);
+            removeById(quartzJobDO);
         }
     }
 
@@ -123,16 +123,16 @@ public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, Qua
                 // 如果是手动清除子任务id，会出现id为空字符串的问题
                 continue;
             }
-            QuartzJob quartzJob = getById(Long.parseLong(id));
-            if (quartzJob == null) {
+            QuartzJobDO quartzJobDO = getById(Long.parseLong(id));
+            if (quartzJobDO == null) {
                 // 防止子任务不存在
                 continue;
             }
             // 执行任务
             String uuid = IdUtil.simpleUUID();
-            quartzJob.setUuid(uuid);
+            quartzJobDO.setUuid(uuid);
             // 执行任务
-            startQuartzJob(quartzJob);
+            startQuartzJob(quartzJobDO);
             // 获取执行状态，如果执行失败则停止后面的子任务执行
             Boolean result = redisHelper.get(uuid, Boolean.class);
             while (result == null) {
@@ -148,37 +148,37 @@ public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, Qua
     }
 
     @Override
-    public void downloadQuartzJobExcel(List<QuartzJob> quartzJobs, HttpServletResponse response) throws IOException {
+    public void downloadQuartzJobExcel(List<QuartzJobDO> quartzJobDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (QuartzJob quartzJob : quartzJobs) {
+        for (QuartzJobDO quartzJobDO : quartzJobDOS) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("任务名称", quartzJob.getJobName());
-            map.put("Bean名称", quartzJob.getBeanName());
-            map.put("执行方法", quartzJob.getMethodName());
-            map.put("参数", quartzJob.getParams());
-            map.put("表达式", quartzJob.getCronExpression());
-            map.put("状态", quartzJob.getIsPause() ? "暂停中" : "运行中");
-            map.put("描述", quartzJob.getDescription());
-            map.put("创建日期", quartzJob.getCreateTime());
+            map.put("任务名称", quartzJobDO.getJobName());
+            map.put("Bean名称", quartzJobDO.getBeanName());
+            map.put("执行方法", quartzJobDO.getMethodName());
+            map.put("参数", quartzJobDO.getParams());
+            map.put("表达式", quartzJobDO.getCronExpression());
+            map.put("状态", quartzJobDO.getIsPause() ? "暂停中" : "运行中");
+            map.put("描述", quartzJobDO.getDescription());
+            map.put("创建日期", quartzJobDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
     }
 
     @Override
-    public void downloadQuartzLogExcel(List<QuartzLog> queryAllLog, HttpServletResponse response) throws IOException {
+    public void downloadQuartzLogExcel(List<QuartzLogDO> queryAllLog, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (QuartzLog quartzLog : queryAllLog) {
+        for (QuartzLogDO quartzLogDO : queryAllLog) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("任务名称", quartzLog.getJobName());
-            map.put("Bean名称", quartzLog.getBeanName());
-            map.put("执行方法", quartzLog.getMethodName());
-            map.put("参数", quartzLog.getParams());
-            map.put("表达式", quartzLog.getCronExpression());
-            map.put("异常详情", quartzLog.getExceptionDetail());
-            map.put("耗时/毫秒", quartzLog.getTime());
-            map.put("状态", quartzLog.getIsSuccess() ? "成功" : "失败");
-            map.put("创建日期", quartzLog.getCreateTime());
+            map.put("任务名称", quartzLogDO.getJobName());
+            map.put("Bean名称", quartzLogDO.getBeanName());
+            map.put("执行方法", quartzLogDO.getMethodName());
+            map.put("参数", quartzLogDO.getParams());
+            map.put("表达式", quartzLogDO.getCronExpression());
+            map.put("异常详情", quartzLogDO.getExceptionDetail());
+            map.put("耗时/毫秒", quartzLogDO.getTime());
+            map.put("状态", quartzLogDO.getIsSuccess() ? "成功" : "失败");
+            map.put("创建日期", quartzLogDO.getCreateTime());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);

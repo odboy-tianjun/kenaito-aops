@@ -1,8 +1,8 @@
 package cn.odboy.core.service.tools;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.tools.QiniuContent;
-import cn.odboy.core.service.tools.dto.QueryQiniuRequest;
+import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
+import cn.odboy.core.service.tools.dto.QueryQiniuArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,30 +11,30 @@ import java.io.IOException;
 import java.util.List;
 
 
-public interface QiniuContentService extends IService<QiniuContent> {
+public interface QiniuContentService extends IService<QiniuContentDO> {
     /**
      * 分页查询
      *
-     * @param criteria 条件
+     * @param args 条件
      * @param page     分页参数
      * @return /
      */
-    PageResult<QiniuContent> describeQiniuContentPage(QueryQiniuRequest criteria, Page<Object> page);
+    PageResult<QiniuContentDO> describeQiniuContentPage(QueryQiniuArgs args, Page<Object> page);
 
     /**
      * 查询全部
      *
-     * @param criteria 条件
+     * @param args 条件
      * @return /
      */
-    List<QiniuContent> describeQiniuContentList(QueryQiniuRequest criteria);
+    List<QiniuContentDO> describeQiniuContentList(QueryQiniuArgs args);
     /**
      * 上传文件
      *
      * @param file 文件
-     * @return QiniuContent
+     * @return QiniuContentDO
      */
-    QiniuContent uploadFile(MultipartFile file);
+    QiniuContentDO uploadFile(MultipartFile file);
 
     /**
      * 创建文件预览链接
@@ -42,7 +42,7 @@ public interface QiniuContentService extends IService<QiniuContent> {
      * @param content 文件信息
      * @return String
      */
-    String createFilePreviewUrl(QiniuContent content);
+    String createFilePreviewUrl(QiniuContentDO content);
 
     /**
      * 同步数据
@@ -63,7 +63,7 @@ public interface QiniuContentService extends IService<QiniuContent> {
      * @param response /
      * @throws IOException /
      */
-    void downloadExcel(List<QiniuContent> queryAll, HttpServletResponse response) throws IOException;
+    void downloadExcel(List<QiniuContentDO> queryAll, HttpServletResponse response) throws IOException;
 
     /**
      * 删除文件

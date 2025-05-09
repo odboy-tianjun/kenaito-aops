@@ -4,10 +4,10 @@ import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
-import cn.odboy.core.dal.dataobject.tools.QiniuConfig;
-import cn.odboy.core.dal.dataobject.tools.QiniuContent;
+import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
+import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
 import cn.odboy.core.dal.mysql.tools.QiniuContentMapper;
-import cn.odboy.core.service.tools.dto.QueryQiniuRequest;
+import cn.odboy.core.service.tools.dto.QueryQiniuArgs;
 import cn.odboy.core.service.tools.util.QiniuUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,7 +36,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "qiNiu")
-public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, QiniuContent> implements QiniuContentService {
+public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, QiniuContentDO> implements QiniuContentService {
     private final QiniuContentMapper qiniuContentMapper;
     private final QiniuConfigService qiniuConfigService;
 
@@ -44,28 +44,28 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     private Long maxSize;
 
     @Override
-    public PageResult<QiniuContent> describeQiniuContentPage(QueryQiniuRequest criteria, Page<Object> page) {
-        return PageUtil.toPage(qiniuContentMapper.queryQiniuContentPageByArgs(criteria, page));
+    public PageResult<QiniuContentDO> describeQiniuContentPage(QueryQiniuArgs args, Page<Object> page) {
+        return PageUtil.toPage(qiniuContentMapper.queryQiniuContentPageByArgs(args, page));
     }
 
     @Override
-    public List<QiniuContent> describeQiniuContentList(QueryQiniuRequest criteria) {
-        return qiniuContentMapper.queryQiniuContentPageByArgs(criteria, PageUtil.getCount(qiniuContentMapper)).getRecords();
+    public List<QiniuContentDO> describeQiniuContentList(QueryQiniuArgs args) {
+        return qiniuContentMapper.queryQiniuContentPageByArgs(args, PageUtil.getCount(qiniuContentMapper)).getRecords();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public QiniuContent uploadFile(MultipartFile file) {
+    public QiniuContentDO uploadFile(MultipartFile file) {
         FileUtil.checkSize(maxSize, file.getSize());
-        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
-        if (qiniuConfig.getId() == null) {
+        QiniuConfigDO qiniuConfigDO = qiniuConfigService.describeQiniuConfig();
+        if (qiniuConfigDO.getId() == null) {
             throw new BadRequestException("请先添加相应配置，再操作");
         }
         // 构造一个带指定Zone对象的配置类
-        Configuration cfg = new Configuration(QiniuUtil.getRegion(qiniuConfig.getZone()));
+        Configuration cfg = new Configuration(QiniuUtil.getRegion(qiniuConfigDO.getZone()));
         UploadManager uploadManager = new UploadManager(cfg);
-        Auth auth = Auth.create(qiniuConfig.getAccessKey(), qiniuConfig.getSecretKey());
-        String upToken = auth.uploadToken(qiniuConfig.getBucket());
+        Auth auth = Auth.create(qiniuConfigDO.getAccessKey(), qiniuConfigDO.getSecretKey());
+        String upToken = auth.uploadToken(qiniuConfigDO.getBucket());
         try {
             String key = file.getOriginalFilename();
             if (qiniuContentMapper.getQiniuContentByName(key) != null) {
@@ -75,17 +75,17 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
             // 解析上传成功的结果
             DefaultPutRet putRet = JSON.parseObject(response.bodyString(), DefaultPutRet.class);
             String fileNameNoExt = FileUtil.getPrefix(putRet.key);
-            QiniuContent content = qiniuContentMapper.getQiniuContentByName(fileNameNoExt);
+            QiniuContentDO content = qiniuContentMapper.getQiniuContentByName(fileNameNoExt);
             if (content == null) {
                 // 存入数据库
-                QiniuContent qiniuContent = new QiniuContent();
-                qiniuContent.setSuffix(FileUtil.getSuffix(putRet.key));
-                qiniuContent.setBucket(qiniuConfig.getBucket());
-                qiniuContent.setType(qiniuConfig.getType());
-                qiniuContent.setKey(fileNameNoExt);
-                qiniuContent.setUrl(qiniuConfig.getHost() + "/" + putRet.key);
-                qiniuContent.setSize(FileUtil.getSize(Integer.parseInt(String.valueOf(file.getSize()))));
-                save(qiniuContent);
+                QiniuContentDO qiniuContentDO = new QiniuContentDO();
+                qiniuContentDO.setSuffix(FileUtil.getSuffix(putRet.key));
+                qiniuContentDO.setBucket(qiniuConfigDO.getBucket());
+                qiniuContentDO.setType(qiniuConfigDO.getType());
+                qiniuContentDO.setKey(fileNameNoExt);
+                qiniuContentDO.setUrl(qiniuConfigDO.getHost() + "/" + putRet.key);
+                qiniuContentDO.setSize(FileUtil.getSize(Integer.parseInt(String.valueOf(file.getSize()))));
+                save(qiniuContentDO);
             }
             return content;
         } catch (Exception e) {
@@ -94,14 +94,14 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     }
 
     @Override
-    public String createFilePreviewUrl(QiniuContent content) {
-        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
+    public String createFilePreviewUrl(QiniuContentDO content) {
+        QiniuConfigDO qiniuConfigDO = qiniuConfigService.describeQiniuConfig();
         String finalUrl;
         String type = "公开";
         if (type.equals(content.getType())) {
             finalUrl = content.getUrl();
         } else {
-            Auth auth = Auth.create(qiniuConfig.getAccessKey(), qiniuConfig.getSecretKey());
+            Auth auth = Auth.create(qiniuConfigDO.getAccessKey(), qiniuConfigDO.getSecretKey());
             // 1小时，可以自定义链接过期时间
             long expireInSeconds = 3600;
             finalUrl = auth.privateDownloadUrl(content.getUrl(), expireInSeconds);
@@ -112,34 +112,34 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeFileById(Long id) {
-        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
-        QiniuContent qiniuContent = qiniuContentMapper.selectById(id);
-        if (qiniuContent == null) {
+        QiniuConfigDO qiniuConfigDO = qiniuConfigService.describeQiniuConfig();
+        QiniuContentDO qiniuContentDO = qiniuContentMapper.selectById(id);
+        if (qiniuContentDO == null) {
             throw new BadRequestException("文件不存在");
         }
         // 构造一个带指定Zone对象的配置类
-        Configuration cfg = new Configuration(QiniuUtil.getRegion(qiniuConfig.getZone()));
-        Auth auth = Auth.create(qiniuConfig.getAccessKey(), qiniuConfig.getSecretKey());
+        Configuration cfg = new Configuration(QiniuUtil.getRegion(qiniuConfigDO.getZone()));
+        Auth auth = Auth.create(qiniuConfigDO.getAccessKey(), qiniuConfigDO.getSecretKey());
         BucketManager bucketManager = new BucketManager(auth, cfg);
         try {
-            bucketManager.delete(qiniuContent.getBucket(), qiniuContent.getKey() + "." + qiniuContent.getSuffix());
+            bucketManager.delete(qiniuContentDO.getBucket(), qiniuContentDO.getKey() + "." + qiniuContentDO.getSuffix());
         } catch (QiniuException ex) {
             log.error("七牛云删除文件失败", ex);
         } finally {
-            removeById(qiniuContent);
+            removeById(qiniuContentDO);
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void synchronize() {
-        QiniuConfig qiniuConfig = qiniuConfigService.describeQiniuConfig();
-        if (qiniuConfig.getId() == null) {
+        QiniuConfigDO qiniuConfigDO = qiniuConfigService.describeQiniuConfig();
+        if (qiniuConfigDO.getId() == null) {
             throw new BadRequestException("请先添加相应配置，再操作");
         }
         //构造一个带指定Zone对象的配置类
-        Configuration cfg = new Configuration(QiniuUtil.getRegion(qiniuConfig.getZone()));
-        Auth auth = Auth.create(qiniuConfig.getAccessKey(), qiniuConfig.getSecretKey());
+        Configuration cfg = new Configuration(QiniuUtil.getRegion(qiniuConfigDO.getZone()));
+        Auth auth = Auth.create(qiniuConfigDO.getAccessKey(), qiniuConfigDO.getSecretKey());
         BucketManager bucketManager = new BucketManager(auth, cfg);
         //文件名前缀
         String prefix = "";
@@ -148,23 +148,23 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
         //指定目录分隔符，列出所有公共前缀（模拟列出目录效果）。缺省值为空字符串
         String delimiter = "";
         //列举空间文件列表
-        BucketManager.FileListIterator fileListIterator = bucketManager.createFileListIterator(qiniuConfig.getBucket(), prefix, limit, delimiter);
+        BucketManager.FileListIterator fileListIterator = bucketManager.createFileListIterator(qiniuConfigDO.getBucket(), prefix, limit, delimiter);
         while (fileListIterator.hasNext()) {
             //处理获取的file list结果
-            QiniuContent qiniuContent;
+            QiniuContentDO qiniuContentDO;
             FileInfo[] items = fileListIterator.next();
             for (FileInfo item : items) {
                 String filename = FileUtil.getPrefix(item.key);
                 String suffix = FileUtil.getSuffix(item.key);
                 if (qiniuContentMapper.getQiniuContentByName(filename) == null) {
-                    qiniuContent = new QiniuContent();
-                    qiniuContent.setSize(FileUtil.getSize(Integer.parseInt(String.valueOf(item.fsize))));
-                    qiniuContent.setSuffix(suffix);
-                    qiniuContent.setKey(filename);
-                    qiniuContent.setType(qiniuConfig.getType());
-                    qiniuContent.setBucket(qiniuConfig.getBucket());
-                    qiniuContent.setUrl(qiniuConfig.getHost() + "/" + item.key);
-                    save(qiniuContent);
+                    qiniuContentDO = new QiniuContentDO();
+                    qiniuContentDO.setSize(FileUtil.getSize(Integer.parseInt(String.valueOf(item.fsize))));
+                    qiniuContentDO.setSuffix(suffix);
+                    qiniuContentDO.setKey(filename);
+                    qiniuContentDO.setType(qiniuConfigDO.getType());
+                    qiniuContentDO.setBucket(qiniuConfigDO.getBucket());
+                    qiniuContentDO.setUrl(qiniuConfigDO.getHost() + "/" + item.key);
+                    save(qiniuContentDO);
                 }
             }
         }
@@ -174,17 +174,17 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     @Transactional(rollbackFor = Exception.class)
     public void removeFileByIds(Long[] ids) {
         for (Long id : ids) {
-            QiniuContent qiniuContent = getById(id);
-            if (qiniuContent != null) {
+            QiniuContentDO qiniuContentDO = getById(id);
+            if (qiniuContentDO != null) {
                 removeFileById(id);
             }
         }
     }
 
     @Override
-    public void downloadExcel(List<QiniuContent> queryAll, HttpServletResponse response) throws IOException {
+    public void downloadExcel(List<QiniuContentDO> queryAll, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
-        for (QiniuContent content : queryAll) {
+        for (QiniuContentDO content : queryAll) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("文件名", content.getKey());
             map.put("文件类型", content.getSuffix());

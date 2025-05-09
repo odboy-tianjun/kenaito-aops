@@ -17,15 +17,15 @@ package cn.odboy.app.job.kubernetes;
 
 import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfig;
-import cn.odboy.app.dal.dataobject.AopsKubernetesClusterNode;
-import cn.odboy.app.framework.kubernetes.model.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.repository.KubernetesPodRepository;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
+import cn.odboy.app.dal.dataobject.AopsKubernetesClusterNodeDO;
+import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.core.repository.KubernetesPodRepository;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterConfigService;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterNodeService;
 import cn.odboy.common.constant.GlobalEnvEnum;
-import cn.odboy.app.framework.kubernetes.model.response.KubernetesResourceResponse;
-import cn.odboy.app.framework.kubernetes.repository.KubernetesNodeRepository;
+import cn.odboy.app.framework.kubernetes.core.vo.KubernetesResourceVo;
+import cn.odboy.app.framework.kubernetes.core.repository.KubernetesNodeRepository;
 import cn.odboy.common.util.CollUtil;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1NodeAddress;
@@ -57,14 +57,14 @@ public class SyncKubernetesNodeDetailJob {
     private final KubernetesPodRepository kubernetesPodRepository;
 
     public void run() {
-        List<AopsKubernetesClusterConfig> list = containerdClusterConfigService.describeKubernetesClusterConfigWithHealth();
+        List<AopsKubernetesClusterConfigDO> list = containerdClusterConfigService.describeKubernetesClusterConfigWithHealth();
         if (CollUtil.isEmpty(list)) {
             log.info("没有找到配置信息");
             return;
         }
-        List<AopsKubernetesClusterNode> newRecordList = new ArrayList<>();
-        List<AopsKubernetesClusterNode> updRecordList = new ArrayList<>();
-        for (AopsKubernetesClusterConfig clusterConfig : list) {
+        List<AopsKubernetesClusterNodeDO> newRecordList = new ArrayList<>();
+        List<AopsKubernetesClusterNodeDO> updRecordList = new ArrayList<>();
+        for (AopsKubernetesClusterConfigDO clusterConfig : list) {
             try {
                 GlobalEnvEnum envEnum = GlobalEnvEnum.getByCode(clusterConfig.getEnvCode());
                 if (envEnum != null) {
@@ -98,10 +98,10 @@ public class SyncKubernetesNodeDetailJob {
         }
     }
 
-    private void injectNodeInfo(ArgsClusterCodeVo clusterCodeVo, AopsKubernetesClusterConfig aopsKubernetesClusterConfig, V1Node item, GlobalEnvEnum envEnum,
-                                List<AopsKubernetesClusterNode> newRecordList, List<AopsKubernetesClusterNode> updRecordList) throws Exception {
-        AopsKubernetesClusterNode clusterNode = new AopsKubernetesClusterNode();
-        clusterNode.setClusterConfigId(aopsKubernetesClusterConfig.getId());
+    private void injectNodeInfo(ArgsClusterCodeVo clusterCodeVo, AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO, V1Node item, GlobalEnvEnum envEnum,
+                                List<AopsKubernetesClusterNodeDO> newRecordList, List<AopsKubernetesClusterNodeDO> updRecordList) throws Exception {
+        AopsKubernetesClusterNodeDO clusterNode = new AopsKubernetesClusterNodeDO();
+        clusterNode.setClusterConfigId(aopsKubernetesClusterConfigDO.getId());
         clusterNode.setEnvCode(envEnum.getCode());
         if (item.getMetadata() != null) {
             clusterNode.setNodeName(item.getMetadata().getName());
@@ -144,10 +144,10 @@ public class SyncKubernetesNodeDetailJob {
         // 计算pod数量
         Map<String, String> fieldSelector = new HashMap<>(1);
         fieldSelector.put("spec.nodeName", clusterNode.getNodeName());
-        List<KubernetesResourceResponse.Pod> podList = kubernetesPodRepository.describePodList(clusterCodeVo, fieldSelector, null);
+        List<KubernetesResourceVo.Pod> podList = kubernetesPodRepository.describePodList(clusterCodeVo, fieldSelector, null);
         // 计算Pod数量
         clusterNode.setNodePodSize(podList.size());
-        AopsKubernetesClusterNode kubernetesClusterNode = containerdClusterNodeService.describeKubernetesClusterNodeByArgs(envEnum, clusterNode.getNodeInternalIp());
+        AopsKubernetesClusterNodeDO kubernetesClusterNode = containerdClusterNodeService.describeKubernetesClusterNodeByArgs(envEnum, clusterNode.getNodeInternalIp());
         if (kubernetesClusterNode == null) {
             newRecordList.add(clusterNode);
         } else {

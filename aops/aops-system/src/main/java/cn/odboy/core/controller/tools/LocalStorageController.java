@@ -2,8 +2,8 @@ package cn.odboy.core.controller.tools;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.constant.FileTypeEnum;
-import cn.odboy.core.service.tools.dto.QueryLocalStorageRequest;
-import cn.odboy.core.dal.dataobject.tools.LocalStorage;
+import cn.odboy.core.service.tools.dto.QueryLocalStorageArgs;
+import cn.odboy.core.dal.dataobject.tools.LocalStorageDO;
 import cn.odboy.core.service.tools.LocalStorageService;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.FileUtil;
@@ -35,16 +35,16 @@ public class LocalStorageController {
     @ApiOperation("查询文件")
     @GetMapping
     @PreAuthorize("@el.check('storage:list')")
-    public ResponseEntity<PageResult<LocalStorage>> queryFile(QueryLocalStorageRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(localStorageService.describeLocalStoragePage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<LocalStorageDO>> queryFile(QueryLocalStorageArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(localStorageService.describeLocalStoragePage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('storage:list')")
-    public void exportFile(HttpServletResponse response, QueryLocalStorageRequest criteria) throws IOException {
-        localStorageService.downloadExcel(localStorageService.describeLocalStorageList(criteria), response);
+    public void exportFile(HttpServletResponse response, QueryLocalStorageArgs args) throws IOException {
+        localStorageService.downloadExcel(localStorageService.describeLocalStorageList(args), response);
     }
 
     @ApiOperation("上传文件")
@@ -57,20 +57,20 @@ public class LocalStorageController {
 
     @ApiOperation("上传图片")
     @PostMapping("/uploadPicture")
-    public ResponseEntity<LocalStorage> uploadPicture(@RequestParam MultipartFile file) {
+    public ResponseEntity<LocalStorageDO> uploadPicture(@RequestParam MultipartFile file) {
         // 判断文件是否为图片
         String suffix = FileUtil.getSuffix(file.getOriginalFilename());
         if (!FileTypeEnum.IMAGE.getCode().equals(FileUtil.getFileType(suffix))) {
             throw new BadRequestException("只能上传图片");
         }
-        LocalStorage localStorage = localStorageService.uploadFile(null, file);
-        return new ResponseEntity<>(localStorage, HttpStatus.OK);
+        LocalStorageDO localStorageDO = localStorageService.uploadFile(null, file);
+        return new ResponseEntity<>(localStorageDO, HttpStatus.OK);
     }
 
     @ApiOperation("修改文件")
     @PostMapping(value = "/modifyLocalStorageById")
     @PreAuthorize("@el.check('storage:edit')")
-    public ResponseEntity<Object> modifyLocalStorageById(@Validated @RequestBody LocalStorage resources) {
+    public ResponseEntity<Object> modifyLocalStorageById(@Validated @RequestBody LocalStorageDO resources) {
         localStorageService.modifyLocalStorageById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

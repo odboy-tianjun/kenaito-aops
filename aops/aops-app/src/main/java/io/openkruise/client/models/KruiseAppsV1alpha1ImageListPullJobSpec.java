@@ -99,10 +99,10 @@ public class KruiseAppsV1alpha1ImageListPullJobSpec {
   }
 
    /**
-   * Parallelism is the requested parallelism, it can be set to any non-negative value. If it is unspecified, it defaults to 1. If it is specified as 0, then the Job is effectively paused until it is increased.
+   * Parallelism is the requested parallelism, it can be set to any non-negative value. If it is unspecified, it defaults to 1. If it is specified as 0, then the JobDO is effectively paused until it is increased.
    * @return parallelism
   **/
-  @ApiModelProperty(value = "Parallelism is the requested parallelism, it can be set to any non-negative value. If it is unspecified, it defaults to 1. If it is specified as 0, then the Job is effectively paused until it is increased.")
+  @ApiModelProperty(value = "Parallelism is the requested parallelism, it can be set to any non-negative value. If it is unspecified, it defaults to 1. If it is specified as 0, then the JobDO is effectively paused until it is increased.")
   public IntOrString getParallelism() {
     return parallelism;
   }

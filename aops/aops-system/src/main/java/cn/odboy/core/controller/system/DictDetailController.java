@@ -3,8 +3,8 @@ package cn.odboy.core.controller.system;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.DictDetail;
 import cn.odboy.core.service.system.SystemDictDetailService;
-import cn.odboy.core.service.system.dto.CreateDictDetailRequest;
-import cn.odboy.core.service.system.dto.QueryDictDetailRequest;
+import cn.odboy.core.service.system.dto.CreateDictDetailArgs;
+import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,9 +32,9 @@ public class DictDetailController {
 
     @ApiOperation("查询字典详情")
     @GetMapping
-    public ResponseEntity<PageResult<DictDetail>> describeDictDetailPage(QueryDictDetailRequest criteria) {
-        Page<Object> page = new Page<>(criteria.getPage(), criteria.getSize());
-        return new ResponseEntity<>(systemDictDetailService.describeDictDetailPage(criteria, page), HttpStatus.OK);
+    public ResponseEntity<PageResult<DictDetail>> describeDictDetailPage(QueryDictDetailArgs args) {
+        Page<Object> page = new Page<>(args.getPage(), args.getSize());
+        return new ResponseEntity<>(systemDictDetailService.describeDictDetailPage(args, page), HttpStatus.OK);
     }
 
     @ApiOperation("查询多个字典详情")
@@ -51,8 +51,8 @@ public class DictDetailController {
     @ApiOperation("新增字典详情")
     @PostMapping(value = "/saveDictDetail")
     @PreAuthorize("@el.check('dict:add')")
-    public ResponseEntity<Object> saveDictDetail(@Validated @RequestBody CreateDictDetailRequest resources) {
-        systemDictDetailService.saveDictDetail(resources);
+    public ResponseEntity<Object> saveDictDetail(@Validated @RequestBody CreateDictDetailArgs args) {
+        systemDictDetailService.saveDictDetail(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
