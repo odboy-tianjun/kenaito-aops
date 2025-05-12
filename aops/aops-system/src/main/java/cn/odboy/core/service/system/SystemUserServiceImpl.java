@@ -83,7 +83,7 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveUser(UserDO resources) {
-        resources.setDeptId(resources.getDeptDO().getId());
+        resources.setDeptId(resources.getDept().getId());
         if (userMapper.getUserByUsername(resources.getUsername()) != null) {
             throw new EntityExistException(UserDO.class, "username", resources.getUsername());
         }
@@ -95,9 +95,9 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
         }
         save(resources);
         // 保存用户岗位
-        userJobMapper.insertBatchWithUserId(resources.getJobDOS(), resources.getId());
+        userJobMapper.insertBatchWithUserId(resources.getJobs(), resources.getId());
         // 保存用户角色
-        userRoleMapper.insertBatchWithUserId(resources.getRoleDOS(), resources.getId());
+        userRoleMapper.insertBatchWithUserId(resources.getRoles(), resources.getId());
     }
 
     @Override
@@ -117,27 +117,27 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
             throw new EntityExistException(UserDO.class, "phone", resources.getPhone());
         }
         // 如果用户的角色改变
-        if (!resources.getRoleDOS().equals(userDO.getRoleDOS())) {
+        if (!resources.getRoles().equals(userDO.getRoles())) {
             redisHelper.del(RedisKeyConst.DATA_USER + resources.getId());
             redisHelper.del(RedisKeyConst.MENU_USER + resources.getId());
             redisHelper.del(RedisKeyConst.ROLE_AUTH + resources.getId());
             redisHelper.del(RedisKeyConst.ROLE_USER + resources.getId());
         }
         // 修改部门会影响 数据权限
-        if (!Objects.equals(resources.getDeptDO(), userDO.getDeptDO())) {
+        if (!Objects.equals(resources.getDept(), userDO.getDept())) {
             redisHelper.del(RedisKeyConst.DATA_USER + resources.getId());
         }
         // 如果用户被禁用，则清除用户登录信息
         if (!resources.getEnabled()) {
             systemUserOnlineInfoDAO.kickOutByUsername(resources.getUsername());
         }
-        userDO.setDeptId(resources.getDeptDO().getId());
+        userDO.setDeptId(resources.getDept().getId());
         userDO.setUsername(resources.getUsername());
         userDO.setEmail(resources.getEmail());
         userDO.setEnabled(resources.getEnabled());
-        userDO.setRoleDOS(resources.getRoleDOS());
-        userDO.setDeptDO(resources.getDeptDO());
-        userDO.setJobDOS(resources.getJobDOS());
+        userDO.setRoles(resources.getRoles());
+        userDO.setDept(resources.getDept());
+        userDO.setJobs(resources.getJobs());
         userDO.setPhone(resources.getPhone());
         userDO.setNickName(resources.getNickName());
         userDO.setGender(resources.getGender());
@@ -146,10 +146,10 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
         delCaches(userDO.getId(), userDO.getUsername());
         // 更新用户岗位
         userJobMapper.deleteByUserId(resources.getId());
-        userJobMapper.insertBatchWithUserId(resources.getJobDOS(), resources.getId());
+        userJobMapper.insertBatchWithUserId(resources.getJobs(), resources.getId());
         // 更新用户角色
         userRoleMapper.deleteByUserId(resources.getId());
-        userRoleMapper.insertBatchWithUserId(resources.getRoleDOS(), resources.getId());
+        userRoleMapper.insertBatchWithUserId(resources.getRoles(), resources.getId());
     }
 
     @Override
@@ -243,12 +243,12 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
     public void downloadUserExcel(List<UserDO> userDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
         for (UserDO userDO : userDOS) {
-            List<String> roles = userDO.getRoleDOS().stream().map(RoleDO::getName).collect(Collectors.toList());
+            List<String> roles = userDO.getRoles().stream().map(RoleDO::getName).collect(Collectors.toList());
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("用户名", userDO.getUsername());
             map.put("角色", roles);
-            map.put("部门", userDO.getDeptDO().getName());
-            map.put("岗位", userDO.getJobDOS().stream().map(JobDO::getName).collect(Collectors.toList()));
+            map.put("部门", userDO.getDept().getName());
+            map.put("岗位", userDO.getJobs().stream().map(JobDO::getName).collect(Collectors.toList()));
             map.put("邮箱", userDO.getEmail());
             map.put("状态", userDO.getEnabled() ? "启用" : "禁用");
             map.put("手机号码", userDO.getPhone());

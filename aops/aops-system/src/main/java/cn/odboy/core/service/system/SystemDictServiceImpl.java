@@ -6,7 +6,7 @@ import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.system.DictDO;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.dal.dataobject.system.DictDetail;
+import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.dal.mysql.system.DictMapper;
 import cn.odboy.core.service.system.dto.CreateDictArgs;
@@ -79,15 +79,15 @@ public class SystemDictServiceImpl extends ServiceImpl<DictMapper, DictDO> imple
     public void downloadDictExcel(List<DictDO> dictDOS, HttpServletResponse response) throws IOException {
         List<Map<String, Object>> list = new ArrayList<>();
         for (DictDO dictDO : dictDOS) {
-            List<DictDetail> dictDetails = dictDetailMapper.queryDictDetailListByDictName(dictDO.getName());
-            if (CollectionUtil.isNotEmpty(dictDetails)) {
-                for (DictDetail dictDetail : dictDetails) {
+            List<DictDetailDO> dictDetailDOS = dictDetailMapper.queryDictDetailListByDictName(dictDO.getName());
+            if (CollectionUtil.isNotEmpty(dictDetailDOS)) {
+                for (DictDetailDO dictDetailDO : dictDetailDOS) {
                     Map<String, Object> map = new LinkedHashMap<>();
                     map.put("字典名称", dictDO.getName());
                     map.put("字典描述", dictDO.getDescription());
-                    map.put("字典标签", dictDetail.getLabel());
-                    map.put("字典值", dictDetail.getValue());
-                    map.put("创建日期", dictDetail.getCreateTime());
+                    map.put("字典标签", dictDetailDO.getLabel());
+                    map.put("字典值", dictDetailDO.getValue());
+                    map.put("创建日期", dictDetailDO.getCreateTime());
                     list.add(map);
                 }
             } else {

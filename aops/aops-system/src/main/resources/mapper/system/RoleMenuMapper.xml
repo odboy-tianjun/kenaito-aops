@@ -4,7 +4,7 @@
     <insert id="insertBatchWithRoleId">
         insert into system_roles_menus (role_id, menu_id)
         values
-        <foreach collection="menuDOS" item="item" open="(" separator="),(" close=")">
+        <foreach collection="menus" item="item" open="(" separator="),(" close=")">
             #{roleId}, #{item.id}
         </foreach>
     </insert>

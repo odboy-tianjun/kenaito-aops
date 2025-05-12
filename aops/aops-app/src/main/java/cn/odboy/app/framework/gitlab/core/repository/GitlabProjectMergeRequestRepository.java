@@ -16,10 +16,10 @@
 package cn.odboy.app.framework.gitlab.core.repository;
 
 import cn.hutool.core.util.StrUtil;
+import cn.odboy.app.framework.gitlab.core.constant.GitlabDefaultConst;
 import cn.odboy.app.framework.gitlab.core.context.GitlabApiClientManager;
 import cn.odboy.app.framework.gitlab.core.exception.GitlabApiExceptionCatch;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.app.framework.gitlab.core.constant.GitlabDefaultConst;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

@@ -15,16 +15,15 @@
  */
 package cn.odboy.app.framework.kubernetes.core.repository;
 
-import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiPodArgs;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsNamespaceNameVo;
-import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceLabelMetaUtil;
 import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
+import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceLabelMetaUtil;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsNamespaceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsResourceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiPodArgs;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesResourceVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsResourceNameVo;
 import cn.odboy.common.util.ValidationUtil;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
@@ -55,8 +54,7 @@ public class KubernetesPodRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "查询pod列表", throwException = false)
-    public List<KubernetesResourceVo.Pod> describePodList(ArgsClusterCodeVo clusterCodeVo, Map<String, String> fieldSelector, Map<String, String> labelSelector) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public List<KubernetesResourceVo.Pod> describePodList(ApiClient apiClient, Map<String, String> fieldSelector, Map<String, String> labelSelector) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String fieldSelectorStr = KubernetesResourceLabelMetaUtil.genLabelSelectorExpression(fieldSelector);
         String labelSelectorStr = KubernetesResourceLabelMetaUtil.genLabelSelectorExpression(labelSelector);
@@ -66,7 +64,7 @@ public class KubernetesPodRepository {
                 fieldSelectorStr,
                 labelSelectorStr,
                 null,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null,
                 null,
@@ -108,13 +106,12 @@ public class KubernetesPodRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据namespace查询pod列表", throwException = false)
-    public List<KubernetesResourceVo.Pod> describePodListByNamespace(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, Map<String, String> labelSelector) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public List<KubernetesResourceVo.Pod> describePodListByNamespace(ApiClient apiClient, CustomArgsNamespaceNameVo namespaceNameVo, Map<String, String> labelSelector) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String labelSelectorStr = KubernetesResourceLabelMetaUtil.genLabelSelectorExpression(labelSelector);
         V1PodList podList = coreV1Api.listNamespacedPod(
                 namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null,
                 null,
@@ -161,14 +158,13 @@ public class KubernetesPodRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据name和namespace查询pod列表", throwException = false)
-    public List<KubernetesResourceVo.Pod> describePodListByNameWithNamespace(ArgsClusterCodeVo clusterCodeVo, ArgsNamespaceNameVo namespaceNameVo, ArgsResourceNameVo resourceNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public List<KubernetesResourceVo.Pod> describePodListByNameWithNamespace(ApiClient apiClient, CustomArgsNamespaceNameVo namespaceNameVo, CustomArgsResourceNameVo resourceNameVo) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         Map<String, String> labelSelector = KubernetesResourceLabelMetaUtil.getLabelsByAppName(namespaceNameVo.getValue());
         String labelSelectorStr = KubernetesResourceLabelMetaUtil.genLabelSelectorExpression(labelSelector);
         V1PodList podList = coreV1Api.listNamespacedPod(
                 namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null,
                 null,
@@ -214,14 +210,13 @@ public class KubernetesPodRepository {
     }
 
     @KubernetesApiExceptionCatch(description = "重建/重启Pod, 通过删除Pod重建")
-    public void rebuildPod(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiPodArgs.Rebuild args) throws Exception {
+    public void rebuildPod(ApiClient apiClient, CustomArgsDryRunVo dryRunVo, KubernetesApiPodArgs.Rebuild args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         coreV1Api.deleteNamespacedPod(
                 args.getPodName(),
                 args.getNamespace(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null,
                 null,

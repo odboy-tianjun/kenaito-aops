@@ -4,7 +4,7 @@
     <insert id="insertBatchWithUserId">
         insert into system_users_roles (user_id, role_id)
         values
-        <foreach collection="roleDOS" item="item" open="(" separator="),(" close=")">
+        <foreach collection="roles" item="item" open="(" separator="),(" close=")">
             #{userId}, #{item.id}
         </foreach>
     </insert>

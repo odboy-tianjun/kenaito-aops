@@ -16,12 +16,12 @@ public class SimpleUserVo extends MyObject {
     @ApiModelProperty(value = "ID", hidden = true)
     private Long id;
     @ApiModelProperty(value = "用户角色")
-    private Set<RoleDO> roleDOS;
+    private Set<RoleDO> roles;
     @ApiModelProperty(value = "用户岗位")
-    private Set<JobDO> jobDOS;
+    private Set<JobDO> jobs;
     private Long deptId;
     @TableField(exist = false)
-    private DeptDO deptDO;
+    private DeptDO dept;
     @ApiModelProperty(value = "用户名称")
     private String username;
     @ApiModelProperty(value = "用户昵称")

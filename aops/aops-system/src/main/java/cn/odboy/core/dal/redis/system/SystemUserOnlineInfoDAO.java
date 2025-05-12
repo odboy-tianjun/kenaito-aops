@@ -85,7 +85,7 @@ public class SystemUserOnlineInfoDAO {
      * @param request   /
      */
     public void saveUserJwtModelByToken(UserJwtVo userJwtVo, String token, HttpServletRequest request) {
-        String dept = userJwtVo.getUserDO().getDeptDO().getName();
+        String dept = userJwtVo.getUser().getDept().getName();
         String ip = BrowserUtil.getIp(request);
         String id = tokenProvider.getId(token);
         String version = BrowserUtil.getVersion(request);
@@ -95,7 +95,7 @@ public class SystemUserOnlineInfoDAO {
             userOnlineVo = new UserOnlineVo();
             userOnlineVo.setUid(id);
             userOnlineVo.setUserName(userJwtVo.getUsername());
-            userOnlineVo.setNickName(userJwtVo.getUserDO().getNickName());
+            userOnlineVo.setNickName(userJwtVo.getUser().getNickName());
             userOnlineVo.setDept(dept);
             userOnlineVo.setBrowser(version);
             userOnlineVo.setIp(ip);

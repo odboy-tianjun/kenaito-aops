@@ -30,15 +30,15 @@ public class RoleDO extends MyEntity {
 
     @TableField(exist = false)
     @ApiModelProperty(value = "用户", hidden = true)
-    private Set<UserDO> userDOS;
+    private Set<UserDO> users;
 
     @TableField(exist = false)
     @ApiModelProperty(value = "菜单", hidden = true)
-    private Set<MenuDO> menuDOS;
+    private Set<MenuDO> menus;
 
     @TableField(exist = false)
     @ApiModelProperty(value = "部门", hidden = true)
-    private Set<DeptDO> deptDOS;
+    private Set<DeptDO> depts;
 
     @NotBlank
     @ApiModelProperty(value = "名称", hidden = true)

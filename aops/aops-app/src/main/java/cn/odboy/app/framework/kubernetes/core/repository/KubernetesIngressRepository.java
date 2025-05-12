@@ -18,14 +18,14 @@ package cn.odboy.app.framework.kubernetes.core.repository;
 import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceNameUtil;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsAppNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsNamespaceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsResourceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsYamlVo;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiIngressArgs;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsAppNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsNamespaceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsResourceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsYamlVo;
 import cn.odboy.common.util.ValidationUtil;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.NetworkingV1Api;
@@ -56,15 +56,14 @@ public class KubernetesIngressRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据appName查询Ingress", throwException = false)
-    public V1Ingress describeIngressByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1Ingress describeIngressByAppName(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsAppNameVo appNameVo) {
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String ingressName = KubernetesResourceNameUtil.getIngressName(appNameVo.getValue(), envCode);
         return networkingV1Api.readNamespacedIngress(
                 ingressName,
                 appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -73,20 +72,19 @@ public class KubernetesIngressRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据ingress名称和namespace查询Ingress", throwException = false)
-    public V1Ingress describeIngressByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1Ingress describeIngressByName(ApiClient apiClient, CustomArgsResourceNameVo resourceNameVo, CustomArgsNamespaceNameVo namespaceNameVo) {
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
         return networkingV1Api.readNamespacedIngress(
                 resourceNameVo.getValue(),
                 namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "创建Ingress")
-    public V1Ingress createIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressArgs.Create args) throws Exception {
+    public V1Ingress createIngress(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiIngressArgs.Create args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         // 构建ingress的yaml对象
@@ -110,28 +108,26 @@ public class KubernetesIngressRepository {
                 .endRule()
                 .endSpec()
                 .build();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
         return networkingV1Api.createNamespacedIngress(
                 args.getAppName(),
                 ingress,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "删除Ingress")
-    public void deleteIngress(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiIngressArgs.Delete args) throws Exception {
+    public void deleteIngress(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiIngressArgs.Delete args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String ingressName = KubernetesResourceNameUtil.getIngressName(args.getAppName(), envCode);
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
         networkingV1Api.deleteNamespacedIngress(
                 ingressName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null,
                 null,
@@ -142,22 +138,21 @@ public class KubernetesIngressRepository {
 
 
     @KubernetesApiExceptionCatch(description = "从yml加载Ingress")
-    public V1Ingress loadIngressFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1Ingress> yamlVo) throws Exception {
+    public V1Ingress loadIngressFromYaml(ApiClient apiClient, CustomArgsDryRunVo dryRunVo, CustomArgsYamlVo<V1Ingress> yamlVo) throws Exception {
         V1Ingress ingress = yamlVo.getTarget();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         NetworkingV1Api networkingV1Api = new NetworkingV1Api(apiClient);
         String ingressName = Objects.requireNonNull(ingress.getMetadata()).getName();
         String namespace = Objects.requireNonNull(ingress.getMetadata()).getNamespace();
         V1Ingress v1Ingress = describeIngressByName(
-                clusterCodeVo,
-                new ArgsResourceNameVo(ingressName),
-                new ArgsNamespaceNameVo(namespace)
+                apiClient,
+                new CustomArgsResourceNameVo(ingressName),
+                new CustomArgsNamespaceNameVo(namespace)
         );
         if (v1Ingress == null) {
             networkingV1Api.createNamespacedIngress(
                     namespace,
                     ingress,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );
@@ -166,7 +161,7 @@ public class KubernetesIngressRepository {
                     ingressName,
                     namespace,
                     ingress,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );

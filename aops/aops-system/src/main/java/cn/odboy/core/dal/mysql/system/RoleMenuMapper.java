@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Mapper
 public interface RoleMenuMapper {
-    void insertBatchWithRoleId(@Param("menuDOS") Set<MenuDO> menuDOS, @Param("roleId") Long roleId);
+    void insertBatchWithRoleId(@Param("menus") Set<MenuDO> menus, @Param("roleId") Long roleId);
 
     void deleteByRoleId(@Param("roleId") Long roleId);
 

@@ -1,16 +1,32 @@
+/*
+ *  Copyright 2021-2025 Odboy
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package cn.odboy.util.kubernetes;
 
 import cn.hutool.core.lang.Dict;
+import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.context.KubernetesYamlTemplateManager;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsYamlVo;
 import cn.odboy.app.framework.kubernetes.core.repository.KubernetesIngressRepository;
 import cn.odboy.app.framework.kubernetes.core.repository.KubernetesNamespaceRepository;
 import cn.odboy.app.framework.kubernetes.core.repository.KubernetesOpenKruiseStatefulSetRepository;
 import cn.odboy.app.framework.kubernetes.core.repository.KubernetesServiceRepository;
 import cn.odboy.app.framework.kubernetes.core.repository.KubernetesStatefulSetRepository;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceNameUtil;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsYamlVo;
+import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.models.V1Ingress;
 import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1Service;
@@ -42,6 +58,8 @@ public class KubernetesLoadResourceFromYamlTests {
     private KubernetesOpenKruiseStatefulSetRepository kubernetesOpenKruiseStatefulSetRepository;
     @Autowired
     private KubernetesYamlTemplateManager kubernetesYamlTemplateManager;
+    @Autowired
+    private KubernetesApiClientManager kubernetesApiClientManager;
 
     @Test
     @SneakyThrows
@@ -51,10 +69,11 @@ public class KubernetesLoadResourceFromYamlTests {
         String content = kubernetesYamlTemplateManager.renderNamespaceYamlContent(Dict.create()
                 .set("appName", appName)
         );
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
         kubernetesNamespaceRepository.loadNamespaceFromYaml(
-                new ArgsClusterCodeVo(clusterCode),
-                new ArgsDryRunVo(false),
-                new ArgsYamlVo<>(content, V1Namespace.class)
+                apiClient,
+                new CustomArgsDryRunVo(false),
+                new CustomArgsYamlVo<>(content, V1Namespace.class)
         );
     }
 
@@ -70,10 +89,11 @@ public class KubernetesLoadResourceFromYamlTests {
                 .set("envCode", envCode)
                 .set("serviceName", serviceName)
         );
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
         kubernetesServiceRepository.loadServiceFromYaml(
-                new ArgsClusterCodeVo(clusterCode),
-                new ArgsDryRunVo(false),
-                new ArgsYamlVo<>(content, V1Service.class)
+                apiClient,
+                new CustomArgsDryRunVo(false),
+                new CustomArgsYamlVo<>(content, V1Service.class)
         );
     }
 
@@ -91,10 +111,11 @@ public class KubernetesLoadResourceFromYamlTests {
                 .set("serviceName", serviceName)
                 .set("hostname", "kenaito-demo.odboy.com")
         );
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
         kubernetesIngressRepository.loadIngressFromYaml(
-                new ArgsClusterCodeVo(clusterCode),
-                new ArgsDryRunVo(false),
-                new ArgsYamlVo<>(content, V1Ingress.class)
+                apiClient,
+                new CustomArgsDryRunVo(false),
+                new CustomArgsYamlVo<>(content, V1Ingress.class)
         );
     }
 
@@ -115,10 +136,11 @@ public class KubernetesLoadResourceFromYamlTests {
                 .set("replicas", replicas)
                 .set("appVersion", appVersion)
         );
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
         kubernetesStatefulSetRepository.loadStatefulSetFromYaml(
-                new ArgsClusterCodeVo(clusterCode),
-                new ArgsDryRunVo(false),
-                new ArgsYamlVo<>(content, V1StatefulSet.class)
+                apiClient,
+                new CustomArgsDryRunVo(false),
+                new CustomArgsYamlVo<>(content, V1StatefulSet.class)
         );
     }
 
@@ -138,10 +160,11 @@ public class KubernetesLoadResourceFromYamlTests {
                 .set("replicas", replicas)
                 .set("appVersion", appVersion)
         );
+        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCode);
         kubernetesOpenKruiseStatefulSetRepository.loadStatefulSetFromYaml(
-                new ArgsClusterCodeVo(clusterCode),
-                new ArgsDryRunVo(false),
-                new ArgsYamlVo<>(content, KruiseAppsV1alpha1StatefulSet.class)
+                apiClient,
+                new CustomArgsDryRunVo(false),
+                new CustomArgsYamlVo<>(content, KruiseAppsV1alpha1StatefulSet.class)
         );
     }
 

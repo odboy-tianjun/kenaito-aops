@@ -27,11 +27,11 @@ public class UserDO extends MyEntity {
 
     @TableField(exist = false)
     @ApiModelProperty(value = "用户角色")
-    private Set<RoleDO> roleDOS;
+    private Set<RoleDO> roles;
 
     @TableField(exist = false)
     @ApiModelProperty(value = "用户岗位")
-    private Set<JobDO> jobDOS;
+    private Set<JobDO> jobs;
 
     @TableField(value = "dept_id")
     @ApiModelProperty(hidden = true)
@@ -39,7 +39,7 @@ public class UserDO extends MyEntity {
 
     @ApiModelProperty(value = "用户部门")
     @TableField(exist = false)
-    private DeptDO deptDO;
+    private DeptDO dept;
 
     @NotBlank
     @ApiModelProperty(value = "用户名称")

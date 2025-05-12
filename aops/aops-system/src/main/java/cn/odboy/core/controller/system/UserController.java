@@ -192,7 +192,7 @@ public class UserController {
      */
     private void checkLevel(UserDO resources) {
         Integer currentLevel = Collections.min(systemRoleService.describeRoleListByUsersId(SecurityHelper.getCurrentUserId()).stream().map(RoleDO::getLevel).collect(Collectors.toList()));
-        Integer optLevel = systemRoleService.describeDeptLevelByRoles(resources.getRoleDOS());
+        Integer optLevel = systemRoleService.describeDeptLevelByRoles(resources.getRoles());
         if (currentLevel > optLevel) {
             throw new BadRequestException("角色权限不足");
         }

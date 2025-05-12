@@ -15,10 +15,10 @@
  */
 package cn.odboy.app.framework.kubernetes.core.context;
 
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.app.framework.kubernetes.core.vo.KubernetesResourceVo;
 import cn.odboy.app.framework.kubernetes.core.repository.KubernetesNamespaceRepository;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.core.vo.KubernetesResourceVo;
+import cn.odboy.common.exception.BadRequestException;
 import io.kubernetes.client.openapi.ApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +35,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KubernetesHealthChecker {
     private final KubernetesNamespaceRepository kubernetesNamespaceRepository;
+    private final KubernetesApiClientManager kubernetesApiClientManager;
 
-    public void checkConfigContent(ArgsClusterCodeVo clusterCodeVo) {
+    public void checkConfigContent(CustomArgsClusterCodeVo clusterCodeVo) {
         try {
-            KubernetesResourceVo.Namespace namespace = kubernetesNamespaceRepository.describeNamespace(clusterCodeVo);
+            ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+            KubernetesResourceVo.Namespace namespace = kubernetesNamespaceRepository.describeNamespace(apiClient);
             if (namespace == null) {
                 throw new BadRequestException("无效配置");
             }

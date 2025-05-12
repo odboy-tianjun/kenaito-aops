@@ -15,9 +15,13 @@
  */
 package cn.odboy.app.dal.mysql;
 
+import cn.hutool.core.lang.Dict;
 import cn.odboy.app.dal.dataobject.AopsKubernetesContainerdSpecConfigDO;
+import cn.odboy.common.pojo.MyMetaOption;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -29,5 +33,14 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface AopsKubernetesContainerdSpecConfigMapper extends BaseMapper<AopsKubernetesContainerdSpecConfigDO> {
-
+    default List<MyMetaOption> queryKubernetesContainerdSpecConfigMetaList() {
+        List<AopsKubernetesContainerdSpecConfigDO> records = selectList(null);
+        return records.stream()
+                .map(m -> MyMetaOption.builder()
+                        .label(String.format("%s(%sC%sG)", m.getSpecName(), m.getCpuNum(), m.getMemNum()))
+                        .value(String.format("%s#%s", m.getCpuNum(), m.getMemNum()))
+                        .ext(Dict.create().set("diskSize", m.getDiskSize()))
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

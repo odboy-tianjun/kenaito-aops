@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Mapper
 public interface UserJobMapper {
-    void insertBatchWithUserId(@Param("jobDOS") Set<JobDO> jobDOS, @Param("userId") Long userId);
+    void insertBatchWithUserId(@Param("jobs") Set<JobDO> jobs, @Param("userId") Long userId);
 
     void deleteByUserId(@Param("userId") Long userId);
 

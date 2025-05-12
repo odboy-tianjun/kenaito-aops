@@ -2,14 +2,14 @@ package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.service.system.dto.CreateDictDetailArgs;
-import cn.odboy.core.dal.dataobject.system.DictDetail;
+import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 
-public interface SystemDictDetailService extends IService<DictDetail> {
+public interface SystemDictDetailService extends IService<DictDetailDO> {
     /**
      * 分页查询
      *
@@ -17,7 +17,7 @@ public interface SystemDictDetailService extends IService<DictDetail> {
      * @param page     分页参数
      * @return /
      */
-    PageResult<DictDetail> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page);
+    PageResult<DictDetailDO> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page);
 
     /**
      * 根据字典名称获取字典详情
@@ -25,7 +25,7 @@ public interface SystemDictDetailService extends IService<DictDetail> {
      * @param name 字典名称
      * @return /
      */
-    List<DictDetail> describeDictDetailListByName(String name);
+    List<DictDetailDO> describeDictDetailListByName(String name);
     /**
      * 创建
      *
@@ -38,7 +38,7 @@ public interface SystemDictDetailService extends IService<DictDetail> {
      *
      * @param resources /
      */
-    void modifyDictDetailById(DictDetail resources);
+    void modifyDictDetailById(DictDetailDO resources);
 
     /**
      * 删除

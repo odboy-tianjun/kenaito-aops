@@ -46,47 +46,45 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "AopsKubernetesClusterConfig对象", description = "Kubernetes集群配置")
 public class AopsKubernetesClusterConfigDO extends MyLogicEntity {
 
-    /**
-     * 自增ID
-     */
     @ApiModelProperty("自增ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 环境编码
-     */
     @TableField("env_code")
     @ApiModelProperty("环境编码")
     private String envCode;
 
-    /**
-     * 集群编码
-     */
     @TableField("cluster_code")
     @ApiModelProperty("集群编码")
     private String clusterCode;
 
-    /**
-     * 集群名称
-     */
     @TableField("cluster_name")
     @ApiModelProperty("集群名称")
     private String clusterName;
 
-    /**
-     * 配置内容
-     */
-    @ApiModelProperty("配置内容")
-    @TableField("config_content")
-    private String configContent;
+    @ApiModelProperty("集群配置内容")
+    @TableField("cluster_config_content")
+    private String clusterConfigContent;
 
-    /**
-     * 健康状态(1、健康 2、不健康)
-     */
     @TableField("`status`")
-    @ApiModelProperty("健康状态(1、健康 2、不健康)")
+    @ApiModelProperty("是否启用(1、启用 0、禁用)")
     private Integer status;
+
+    @TableField("cluster_default_app_image")
+    @ApiModelProperty("集群默认应用镜像")
+    private String clusterDefaultAppImage;
+
+    @TableField("cluster_default_app_yaml")
+    @ApiModelProperty("集群默认应用yaml")
+    private String clusterDefaultAppYaml;
+
+    @TableField("cluster_node_size")
+    @ApiModelProperty("集群节点数量")
+    private Integer clusterNodeSize;
+
+    @TableField("cluster_pod_size")
+    @ApiModelProperty("集群Pod数量")
+    private Integer clusterPodSize;
 
     @Data
     @EqualsAndHashCode(callSuper = false)

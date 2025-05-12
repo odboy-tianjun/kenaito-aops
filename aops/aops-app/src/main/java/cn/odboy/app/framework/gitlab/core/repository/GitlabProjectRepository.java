@@ -23,7 +23,7 @@ import cn.odboy.app.framework.gitlab.core.context.GitlabIgnoreFileAdmin;
 import cn.odboy.app.framework.gitlab.core.exception.GitlabApiExceptionCatch;
 import cn.odboy.app.framework.gitlab.core.vo.GitlabProjectCreateArgs;
 import cn.odboy.app.framework.gitlab.core.vo.GitlabProjectCreateVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsAppNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsAppNameVo;
 import cn.odboy.common.constant.GlobalEnvEnum;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.ValidationUtil;
@@ -168,7 +168,7 @@ public class GitlabProjectRepository {
     public GitlabProjectCreateVo createProject(GitlabProjectCreateArgs args) throws Exception {
         ValidationUtil.validate(args);
         String appName = args.getAppName();
-        String newProjectName = new ArgsAppNameVo(appName).getValue().trim();
+        String newProjectName = new CustomArgsAppNameVo(appName).getValue().trim();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             Optional<Project> loadProjectOptional = projectApi.getProjectsStream().filter(f -> f.getPath().equals(args.getAppName())).findFirst();

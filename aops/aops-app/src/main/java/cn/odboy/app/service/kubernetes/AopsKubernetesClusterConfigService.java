@@ -16,7 +16,9 @@
 package cn.odboy.app.service.kubernetes;
 
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
-import cn.odboy.app.framework.kubernetes.core.constant.KubernetesResourceHealthStatusEnum;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.util.List;
 
 /**
@@ -30,7 +32,7 @@ import java.util.List;
 public interface AopsKubernetesClusterConfigService {
     List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfig();
 
-    void modifyStatusById(Long id, KubernetesResourceHealthStatusEnum healthStatusEnum);
+    void modifyMetaById(AopsKubernetesClusterConfigDO clusterConfig);
 
-    List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigWithHealth();
+    PageResult<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args);
 }

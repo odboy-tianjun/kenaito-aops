@@ -15,10 +15,13 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.hutool.core.util.StrUtil;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterConfigMapper;
-import cn.odboy.app.framework.kubernetes.core.constant.KubernetesResourceHealthStatusEnum;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,17 +47,23 @@ public class AopsKubernetesClusterConfigServiceImpl implements AopsKubernetesClu
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyStatusById(Long id, KubernetesResourceHealthStatusEnum healthStatusEnum) {
-        AopsKubernetesClusterConfigDO record = new AopsKubernetesClusterConfigDO();
-        record.setId(id);
-        record.setStatus(healthStatusEnum.getCode());
-        aopsKubernetesClusterConfigMapper.updateById(record);
+    public void modifyMetaById(AopsKubernetesClusterConfigDO clusterConfig) {
+        aopsKubernetesClusterConfigMapper.updateById(clusterConfig);
     }
 
     @Override
-    public List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigWithHealth() {
-        return aopsKubernetesClusterConfigMapper.selectList(new LambdaQueryWrapper<AopsKubernetesClusterConfigDO>()
-                .eq(AopsKubernetesClusterConfigDO::getStatus, KubernetesResourceHealthStatusEnum.HEALTH.getCode())
-        );
+    public PageResult<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args) {
+        Page<AopsKubernetesClusterConfigDO> pageArgs = new Page<>(args.getPage(), args.getSize());
+        LambdaQueryWrapper<AopsKubernetesClusterConfigDO> wrapper = new LambdaQueryWrapper<>();
+        AopsKubernetesClusterConfigDO args1 = args.getArgs();
+        if (args1 != null) {
+            wrapper.like(StrUtil.isNotBlank(args1.getClusterName()), AopsKubernetesClusterConfigDO::getClusterName, args1.getClusterName());
+            wrapper.eq(StrUtil.isNotBlank(args1.getEnvCode()), AopsKubernetesClusterConfigDO::getEnvCode, args1.getEnvCode());
+        }
+        Page<AopsKubernetesClusterConfigDO> pageResult = aopsKubernetesClusterConfigMapper.selectPage(pageArgs, wrapper);
+        PageResult<AopsKubernetesClusterConfigDO> result = new PageResult<>();
+        result.setContent(pageResult.getRecords());
+        result.setTotalElements(pageResult.getTotal());
+        return result;
     }
 }

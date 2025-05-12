@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = false)
 public class CreateDictDetailArgs extends MyObject {
     @NotBlank(message = "参数dict必填")
-    private DictDO dictDO;
+    private DictDO dict;
     @NotBlank(message = "字典标签必填")
     private String label;
     @NotBlank(message = "字典值必填")

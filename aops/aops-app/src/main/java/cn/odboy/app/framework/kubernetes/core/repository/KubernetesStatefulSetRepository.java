@@ -16,22 +16,22 @@
 package cn.odboy.app.framework.kubernetes.core.repository;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.odboy.app.framework.kubernetes.core.constant.KubernetesPodStatusEnum;
 import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceLabelMetaUtil;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceNameUtil;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsAppNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsNamespaceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsResourceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsYamlVo;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiPodArgs;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiStatefulSetArgs;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesResourceVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsAppNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsNamespaceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsResourceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsYamlVo;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.app.framework.kubernetes.core.constant.KubernetesPodStatusEnum;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
 import cn.odboy.common.util.ValidationUtil;
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.custom.Quantity;
@@ -70,15 +70,14 @@ public class KubernetesStatefulSetRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据appName查询StatefulSet", throwException = false)
-    public V1StatefulSet describeStatefulSetByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1StatefulSet describeStatefulSetByAppName(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsAppNameVo appNameVo) {
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(appNameVo.getValue(), envCode);
         return appsV1Api.readNamespacedStatefulSet(
                 statefulSetName,
                 appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -86,20 +85,19 @@ public class KubernetesStatefulSetRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据name和namespace查询StatefulSet", throwException = false)
-    public V1StatefulSet describeStatefulSetByNameWithNamespace(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1StatefulSet describeStatefulSetByNameWithNamespace(ApiClient apiClient, CustomArgsResourceNameVo resourceNameVo, CustomArgsNamespaceNameVo namespaceNameVo) {
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         return appsV1Api.readNamespacedStatefulSet(
                 resourceNameVo.getValue(),
                 namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "创建StatefulSet")
-    public V1StatefulSet createStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.Create args) throws Exception {
+    public V1StatefulSet createStatefulSet(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.Create args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), envCode);
@@ -142,28 +140,26 @@ public class KubernetesStatefulSetRepository {
                 .endTemplate()
                 .endSpec()
                 .build();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api api = new AppsV1Api(apiClient);
         return api.createNamespacedStatefulSet(
                 args.getAppName(),
                 statefulSet,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "变更StatefulSet副本数量")
-    public V1StatefulSet changeStatefulSetReplicas(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeReplicas args) throws Exception {
+    public V1StatefulSet changeStatefulSetReplicas(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeReplicas args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), envCode);
         V1StatefulSet statefulSet = appsV1Api.readNamespacedStatefulSet(
                 statefulSetName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -175,23 +171,22 @@ public class KubernetesStatefulSetRepository {
                 statefulSetName,
                 args.getAppName(),
                 statefulSet,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "变更StatefulSet镜像地址")
-    public V1StatefulSet changeStatefulSetImage(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeImage args) throws Exception {
+    public V1StatefulSet changeStatefulSetImage(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeImage args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), envCode);
         V1StatefulSet statefulSet = appsV1Api.readNamespacedStatefulSet(
                 statefulSetName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -216,39 +211,38 @@ public class KubernetesStatefulSetRepository {
         /// 事实表明, 处于Pending状态的Pod, 就算添加了新的annotation, 或者label, 也不会生效
         /// 事实表明, 只有处于running中的Pod才会正常的重建
         List<KubernetesResourceVo.Pod> podList = kubernetesPodRepository.describePodListByNameWithNamespace(
-                clusterCodeVo,
-                new ArgsNamespaceNameVo(args.getAppName()),
-                new ArgsResourceNameVo(statefulSetName)
+                apiClient,
+                new CustomArgsNamespaceNameVo(args.getAppName()),
+                new CustomArgsResourceNameVo(statefulSetName)
         );
         for (KubernetesResourceVo.Pod pod : podList) {
             if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
                 KubernetesApiPodArgs.Rebuild rebuildArgs = new KubernetesApiPodArgs.Rebuild();
                 rebuildArgs.setPodName(pod.getName());
                 rebuildArgs.setNamespace(pod.getNamespace());
-                kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
+                kubernetesPodRepository.rebuildPod(apiClient, dryRunVo, rebuildArgs);
             }
         }
         return appsV1Api.replaceNamespacedStatefulSet(
                 statefulSetName,
                 args.getAppName(),
                 statefulSet,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "变更StatefulSet规格")
-    public V1StatefulSet changeStatefulSetSpecs(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeSpecs args) throws Exception {
+    public V1StatefulSet changeStatefulSetSpecs(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeSpecs args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), envCode);
         V1StatefulSet statefulSet = appsV1Api.readNamespacedStatefulSet(
                 statefulSetName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -281,33 +275,32 @@ public class KubernetesStatefulSetRepository {
         /// 事实表明, 处于Pending状态的Pod, 就算添加了新的annotation, 或者label, 也不会生效
         /// 事实表明, 只有处于running中的Pod才会正常的重建
         List<KubernetesResourceVo.Pod> podList = kubernetesPodRepository.describePodListByNameWithNamespace(
-                clusterCodeVo,
-                new ArgsNamespaceNameVo(args.getAppName()),
-                new ArgsResourceNameVo(statefulSetName)
+                apiClient,
+                new CustomArgsNamespaceNameVo(args.getAppName()),
+                new CustomArgsResourceNameVo(statefulSetName)
         );
         for (KubernetesResourceVo.Pod pod : podList) {
             if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
                 KubernetesApiPodArgs.Rebuild rebuildArgs = new KubernetesApiPodArgs.Rebuild();
                 rebuildArgs.setPodName(pod.getName());
                 rebuildArgs.setNamespace(pod.getNamespace());
-                kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
+                kubernetesPodRepository.rebuildPod(apiClient, dryRunVo, rebuildArgs);
             }
         }
         return appsV1Api.replaceNamespacedStatefulSet(
                 statefulSetName,
                 args.getAppName(),
                 statefulSet,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "变更StatefulSet镜像地址V2")
-    public V1StatefulSet changeStatefulSetImageV2(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeImage args) throws Exception {
+    public V1StatefulSet changeStatefulSetImageV2(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.ChangeImage args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), envCode);
         // 这种方式也不能使非Running中的容器重建
@@ -317,7 +310,7 @@ public class KubernetesStatefulSetRepository {
                 statefulSetName,
                 args.getAppName(),
                 patch,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null,
                 null
@@ -325,16 +318,15 @@ public class KubernetesStatefulSetRepository {
     }
 
     @KubernetesApiExceptionCatch(description = "删除StatefulSet")
-    public V1Status deleteStatefulSet(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.Delete args) throws Exception {
+    public V1Status deleteStatefulSet(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiStatefulSetArgs.Delete args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String statefulSetName = KubernetesResourceNameUtil.getStatefulSetName(args.getAppName(), envCode);
         return appsV1Api.deleteNamespacedStatefulSet(
                 statefulSetName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null,
                 null,
@@ -344,18 +336,17 @@ public class KubernetesStatefulSetRepository {
     }
 
     @KubernetesApiExceptionCatch(description = "从yml加载StatefulSet")
-    public V1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1StatefulSet> yamlVo) throws Exception {
+    public V1StatefulSet loadStatefulSetFromYaml(ApiClient apiClient, CustomArgsDryRunVo dryRunVo, CustomArgsYamlVo<V1StatefulSet> yamlVo) throws Exception {
         V1StatefulSet statefulSet = yamlVo.getTarget();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String statefulSetName = Objects.requireNonNull(statefulSet.getMetadata()).getName();
         String namespace = Objects.requireNonNull(statefulSet.getMetadata()).getNamespace();
-        V1StatefulSet statefulSetByName = describeStatefulSetByNameWithNamespace(clusterCodeVo, new ArgsResourceNameVo(statefulSetName), new ArgsNamespaceNameVo(namespace));
+        V1StatefulSet statefulSetByName = describeStatefulSetByNameWithNamespace(apiClient, new CustomArgsResourceNameVo(statefulSetName), new CustomArgsNamespaceNameVo(namespace));
         if (statefulSetByName == null) {
             appsV1Api.createNamespacedStatefulSet(
                     namespace,
                     statefulSet,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );
@@ -364,7 +355,7 @@ public class KubernetesStatefulSetRepository {
                     statefulSetName,
                     namespace,
                     statefulSet,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );

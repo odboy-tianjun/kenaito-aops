@@ -45,7 +45,7 @@ public class SystemDataServiceImpl implements SystemDataService {
                 DataScopeEnum dataScopeEnum = DataScopeEnum.find(roleDO.getDataScope());
                 switch (Objects.requireNonNull(dataScopeEnum)) {
                     case THIS_LEVEL:
-                        deptIds.add(userDO.getDeptDO().getId());
+                        deptIds.add(userDO.getDept().getId());
                         break;
                     case CUSTOMIZE:
                         deptIds.addAll(getCustomize(deptIds, roleDO));

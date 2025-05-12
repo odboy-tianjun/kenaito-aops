@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.odboy.core.dal.mysql.system.DictDetailMapper">
-    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.DictDetail">
+    <resultMap id="BaseResultMap" type="cn.odboy.core.dal.dataobject.system.DictDetailDO">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="label" property="label" jdbcType="VARCHAR"/>
         <result column="value" property="value" jdbcType="VARCHAR"/>
@@ -11,7 +11,7 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <!-- 一对一关联 -->
-        <association property="dictDO" javaType="cn.odboy.core.dal.dataobject.system.DictDO">
+        <association property="dict" javaType="cn.odboy.core.dal.dataobject.system.DictDO">
             <id column="id" property="id" jdbcType="BIGINT"/>
             <result column="name" property="name" jdbcType="VARCHAR"/>
         </association>

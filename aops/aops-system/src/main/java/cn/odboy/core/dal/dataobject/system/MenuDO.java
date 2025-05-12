@@ -27,7 +27,7 @@ public class MenuDO extends MyEntity {
     @TableField(exist = false)
     @JSONField(serialize = false)
     @ApiModelProperty(value = "菜单角色")
-    private Set<RoleDO> roleDOS;
+    private Set<RoleDO> roles;
 
     @TableField(exist = false)
     private List<MenuDO> children;

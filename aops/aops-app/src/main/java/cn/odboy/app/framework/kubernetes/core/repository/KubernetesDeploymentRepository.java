@@ -16,21 +16,21 @@
 package cn.odboy.app.framework.kubernetes.core.repository;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.odboy.app.framework.kubernetes.core.constant.KubernetesPodStatusEnum;
 import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceLabelMetaUtil;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceNameUtil;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsAppNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsNamespaceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsResourceNameVo;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiDeploymentArgs;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiPodArgs;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesResourceVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsAppNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsNamespaceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsResourceNameVo;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.app.framework.kubernetes.core.constant.KubernetesPodStatusEnum;
 import cn.odboy.common.util.ValidationUtil;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.openapi.ApiClient;
@@ -67,15 +67,14 @@ public class KubernetesDeploymentRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据appName查询deployment", throwException = false)
-    public V1Deployment describeDeploymentByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1Deployment describeDeploymentByAppName(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsAppNameVo appNameVo) {
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String deploymentName = KubernetesResourceNameUtil.getDeploymentName(appNameVo.getValue(), envCode);
         return appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -83,20 +82,19 @@ public class KubernetesDeploymentRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据deployment名称和namespace查询deployment", throwException = false)
-    public V1Deployment describeDeploymentByNameWithNamespace(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1Deployment describeDeploymentByNameWithNamespace(ApiClient apiClient, CustomArgsResourceNameVo resourceNameVo, CustomArgsNamespaceNameVo namespaceNameVo) {
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         return appsV1Api.readNamespacedDeployment(
                 resourceNameVo.getValue(),
                 namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "创建Deployment")
-    public V1Deployment createDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.Create args) throws Exception {
+    public V1Deployment createDeployment(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.Create args) throws Exception {
         ValidationUtil.validate(args);
         Map<String, String> labels = KubernetesResourceLabelMetaUtil.getLabelsByAppName(args.getAppName());
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
@@ -126,28 +124,26 @@ public class KubernetesDeploymentRepository {
                 .endTemplate()
                 .endSpec()
                 .build();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         return appsV1Api.createNamespacedDeployment(
                 args.getAppName(),
                 deployment,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "变更Deployment副本数量")
-    public V1Deployment changeDeploymentReplicas(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.ChangeReplicas args) throws Exception {
+    public V1Deployment changeDeploymentReplicas(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.ChangeReplicas args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         V1Deployment deployment = appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -159,23 +155,22 @@ public class KubernetesDeploymentRepository {
                 deploymentName,
                 args.getAppName(),
                 deployment,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "变更Deployment镜像地址")
-    public V1Deployment changeDeploymentImage(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.ChangeImage args) throws Exception {
+    public V1Deployment changeDeploymentImage(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.ChangeImage args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         V1Deployment deployment = appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -194,7 +189,7 @@ public class KubernetesDeploymentRepository {
                 deploymentName,
                 args.getAppName(),
                 deployment,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
@@ -203,32 +198,31 @@ public class KubernetesDeploymentRepository {
         /// 事实表明, 处于Pending状态的Pod, 就算添加了新的annotation, 或者label, 也不会生效
         /// 事实表明, 只有处于running中的Pod才会正常的重建
         List<KubernetesResourceVo.Pod> podList = kubernetesPodRepository.describePodListByNameWithNamespace(
-                clusterCodeVo,
-                new ArgsNamespaceNameVo(args.getAppName()),
-                new ArgsResourceNameVo(deploymentName)
+                apiClient,
+                new CustomArgsNamespaceNameVo(args.getAppName()),
+                new CustomArgsResourceNameVo(deploymentName)
         );
         for (KubernetesResourceVo.Pod pod : podList) {
             if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
                 KubernetesApiPodArgs.Rebuild rebuildArgs = new KubernetesApiPodArgs.Rebuild();
                 rebuildArgs.setPodName(pod.getName());
                 rebuildArgs.setNamespace(pod.getNamespace());
-                kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
+                kubernetesPodRepository.rebuildPod(apiClient, dryRunVo, rebuildArgs);
             }
         }
         return v1Deployment;
     }
 
     @KubernetesApiExceptionCatch(description = "变更Deployment规格")
-    public V1Deployment changeDeploymentSpecs(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.ChangePodSpecs args) throws Exception {
+    public V1Deployment changeDeploymentSpecs(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.ChangePodSpecs args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         V1Deployment deployment = appsV1Api.readNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -260,37 +254,36 @@ public class KubernetesDeploymentRepository {
                 deploymentName,
                 args.getAppName(),
                 deployment,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
         List<KubernetesResourceVo.Pod> pods = kubernetesPodRepository.describePodListByNameWithNamespace(
-                clusterCodeVo,
-                new ArgsNamespaceNameVo(args.getAppName()),
-                new ArgsResourceNameVo(deploymentName)
+                apiClient,
+                new CustomArgsNamespaceNameVo(args.getAppName()),
+                new CustomArgsResourceNameVo(deploymentName)
         );
         for (KubernetesResourceVo.Pod pod : pods) {
             if (KubernetesPodStatusEnum.Pending.getCode().equals(pod.getStatus())) {
                 KubernetesApiPodArgs.Rebuild rebuildArgs = new KubernetesApiPodArgs.Rebuild();
                 rebuildArgs.setNamespace(pod.getNamespace());
                 rebuildArgs.setPodName(pod.getName());
-                kubernetesPodRepository.rebuildPod(clusterCodeVo, dryRunVo, rebuildArgs);
+                kubernetesPodRepository.rebuildPod(apiClient, dryRunVo, rebuildArgs);
             }
         }
         return v1Deployment;
     }
 
     @KubernetesApiExceptionCatch(description = "删除Deployment")
-    public V1Status deleteDeployment(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.Delete args) throws Exception {
+    public V1Status deleteDeployment(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.Delete args) throws Exception {
         ValidationUtil.validate(args);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String deploymentName = KubernetesResourceNameUtil.getDeploymentName(args.getAppName(), envCode);
         return appsV1Api.deleteNamespacedDeployment(
                 deploymentName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null,
                 null,
@@ -301,23 +294,22 @@ public class KubernetesDeploymentRepository {
 
 
     @KubernetesApiExceptionCatch(description = "从yml加载Deployment")
-    public V1Deployment loadDeploymentFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.LoadFromYaml args) throws Exception {
+    public V1Deployment loadDeploymentFromYaml(ApiClient apiClient, CustomArgsDryRunVo dryRunVo, KubernetesApiDeploymentArgs.LoadFromYaml args) throws Exception {
         ValidationUtil.validate(args);
         V1Deployment deployment = Yaml.loadAs(args.getYamlContent(), V1Deployment.class);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         AppsV1Api appsV1Api = new AppsV1Api(apiClient);
         String deploymentName = Objects.requireNonNull(deployment.getMetadata()).getName();
         String namespace = Objects.requireNonNull(deployment.getMetadata()).getNamespace();
         V1Deployment v1Deployment = describeDeploymentByNameWithNamespace(
-                clusterCodeVo,
-                new ArgsResourceNameVo(deploymentName),
-                new ArgsNamespaceNameVo(namespace)
+                apiClient,
+                new CustomArgsResourceNameVo(deploymentName),
+                new CustomArgsNamespaceNameVo(namespace)
         );
         if (v1Deployment == null) {
             appsV1Api.createNamespacedDeployment(
                     namespace,
                     deployment,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );
@@ -326,7 +318,7 @@ public class KubernetesDeploymentRepository {
                     deploymentName,
                     namespace,
                     deployment,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );

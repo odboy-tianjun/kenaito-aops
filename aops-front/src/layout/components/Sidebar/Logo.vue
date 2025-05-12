@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-      title: 'CuteJava后台管理',
+      title: 'KenaitoAOPS',
       logo: Logo
     }
   }

@@ -28,7 +28,7 @@ public class DeptDO extends MyEntity {
     @TableField(exist = false)
     @JSONField(serialize = false)
     @ApiModelProperty(value = "角色")
-    private Set<RoleDO> roleDOS;
+    private Set<RoleDO> roles;
 
     @TableField(exist = false)
     @ApiModelProperty(value = "子部门")

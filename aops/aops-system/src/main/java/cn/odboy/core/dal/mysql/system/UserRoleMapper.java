@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Mapper
 public interface UserRoleMapper {
-    void insertBatchWithUserId(@Param("roleDOS") Set<RoleDO> roleDOS, @Param("userId") Long userId);
+    void insertBatchWithUserId(@Param("roles") Set<RoleDO> roles, @Param("userId") Long userId);
 
     void deleteByUserId(@Param("userId") Long userId);
 

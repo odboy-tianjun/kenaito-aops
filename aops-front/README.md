@@ -1,10 +1,27 @@
-# cutejava-ui
+# aops-front
 
-#### 前端模板
+## 前端模板
 
 初始模板基于： [https://github.com/PanJiaChen/vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
 
 模板文档： [https://panjiachen.github.io/vue-element-admin-site/zh/guide/](https://panjiachen.github.io/vue-element-admin-site/zh/guide/)
+
+## 模块组成
+
+- aops
+  - 项目管理
+    - appManage(新建、查询、配置)
+  - 持续集成、持续部署
+    - appCenter 应用中心
+      - 概览
+      - 部署记录(发布记录，回滚等)
+      - 环境管理(应用环境内容器数量、健康状态，升降配，进容器等操作)
+      - 链路监控(skywalking)
+  - 监控、日志
+    - 日志(Grafana Loki)
+    - 性能监控(skywalking)
+  - 知识库(待定)
+  - 对外提供微服务(待定)
 
 ## 快速开始
 
@@ -32,11 +49,12 @@ IDEA -> Current File -> Edit Configurations... -> Add New Configuration -> npm -
 npm run build:prod
 ```
 
-#### 常见问题
+## 常见问题
 
 1、linux 系统在安装依赖的时候会出现 node-sass 无法安装的问题
 
 解决方案：
+
 ```
 1. 单独安装：npm install --unsafe-perm node-sass 
 2. 直接使用：npm install --unsafe-perm
@@ -46,7 +64,7 @@ npm run build:prod
 
 https://www.ydyno.com/archives/1219.html
 
-#### 特别鸣谢
+## 特别鸣谢
 
 - 感谢 [JetBrains](https://www.jetbrains.com/) 提供的非商业开源软件开发授权
 

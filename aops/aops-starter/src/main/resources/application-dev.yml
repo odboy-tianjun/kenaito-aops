@@ -56,7 +56,7 @@ spring:
       driverClassName: com.p6spy.engine.spy.P6SpyDriver
       url: jdbc:p6spy:mysql://192.168.235.102:3308/kenaito_aops?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
       username: root
-      password: 123456
+      password: PRSxe4GeEftzFhV
       # 初始连接数，建议设置为与最小空闲连接数相同
       initial-size: 2
       # 最小空闲连接数，保持足够的空闲连接以应对请求
@@ -106,12 +106,12 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-      aop-patterns: "cn.odboy.mapper.*,cn.odboy.service.*,cn.odboy.*.mapper.*,cn.odboy.*.service.*"
+#      aop-patterns: "cn.odboy.mapper.*,cn.odboy.service.*,cn.odboy.*.mapper.*,cn.odboy.*.service.*"
   redis:
     database: ${REDIS_DB:1}
     host: ${REDIS_HOST:192.168.235.102}
     port: ${REDIS_PORT:6379}
-    password: ${REDIS_PWD:123456}
+    password: ${REDIS_PWD:PRSxe4GeEftzFhV}
     # 连接超时时间
     timeout: 5000
     # 连接池配置
@@ -235,7 +235,8 @@ app:
 #  level:
 #    root: debug
 gitlab:
-  url: http://192.168.235.103:20080
+#  url: http://192.168.235.103:20080
+  url: http://tools.odboy.cn:20080
   access-token: BDKnL85EqSSpxzA6-2yQ
 dingtalk:
   agent-id:
@@ -246,9 +247,9 @@ dingtalk:
 minio:
   # 控制台登录端口 http://localhost:9001
   # 文件上传&预览端口 http://localhost:9000
-  endpoint: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
+  endpoint: http://tools.odboy.cn:9000
+  access-key: root
+  secret-key: PRSxe4GeEftzFhV
   # 分享链接过期时间，单位天
   share-expire-time: 7
 kubernetes:

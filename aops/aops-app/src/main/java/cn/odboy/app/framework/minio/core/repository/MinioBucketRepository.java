@@ -15,9 +15,9 @@
  */
 package cn.odboy.app.framework.minio.core.repository;
 
+import cn.odboy.core.framework.errorhandler.annotaions.CustomApiExceptionCatch;
 import cn.odboy.app.framework.minio.core.constant.MinioConst;
 import cn.odboy.app.framework.minio.core.context.MinioApiClientManager;
-import cn.odboy.app.framework.errorhandler.annotaions.CustomApiExceptionCatch;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;

@@ -114,7 +114,7 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> imple
                         .collect(Collectors.toList());
             }
             List<RoleDO> roleDOS = roleMapper.queryRoleListByUserId(userDO.getId());
-            permissions = roleDOS.stream().flatMap(role -> role.getMenuDOS().stream())
+            permissions = roleDOS.stream().flatMap(role -> role.getMenus().stream())
                     .map(MenuDO::getPermission)
                     .filter(StringUtil::isNotBlank).collect(Collectors.toSet());
             authorityList = permissions.stream().map(RoleCodeVo::new)
@@ -143,8 +143,8 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> imple
         }
         save(BeanUtil.copyProperties(args, RoleDO.class));
         // 判断是否有部门数据，若有，则需创建关联
-        if (CollectionUtil.isNotEmpty(args.getDeptDOS())) {
-            roleDeptMapper.insertBatchWithRoleId(args.getDeptDOS(), args.getId());
+        if (CollectionUtil.isNotEmpty(args.getDepts())) {
+            roleDeptMapper.insertBatchWithRoleId(args.getDepts(), args.getId());
         }
     }
 
@@ -159,15 +159,15 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> imple
         roleDO.setName(resources.getName());
         roleDO.setDescription(resources.getDescription());
         roleDO.setDataScope(resources.getDataScope());
-        roleDO.setDeptDOS(resources.getDeptDOS());
+        roleDO.setDepts(resources.getDepts());
         roleDO.setLevel(resources.getLevel());
         // 更新
         saveOrUpdate(roleDO);
         // 删除关联部门数据
         roleDeptMapper.deleteByRoleId(resources.getId());
         // 判断是否有部门数据，若有，则需更新关联
-        if (CollectionUtil.isNotEmpty(resources.getDeptDOS())) {
-            roleDeptMapper.insertBatchWithRoleId(resources.getDeptDOS(), resources.getId());
+        if (CollectionUtil.isNotEmpty(resources.getDepts())) {
+            roleDeptMapper.insertBatchWithRoleId(resources.getDepts(), resources.getId());
         }
         // 更新相关缓存
         delCaches(roleDO.getId(), null);
@@ -179,8 +179,8 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> imple
         // 更新菜单
         roleMenuMapper.deleteByRoleId(roleDO.getId());
         // 判断是否为空
-        if (CollUtil.isNotEmpty(roleDO.getMenuDOS())) {
-            roleMenuMapper.insertBatchWithRoleId(roleDO.getMenuDOS(), roleDO.getId());
+        if (CollUtil.isNotEmpty(roleDO.getMenus())) {
+            roleMenuMapper.insertBatchWithRoleId(roleDO.getMenus(), roleDO.getId());
         }
         // 更新缓存
         delCaches(roleDO.getId(), userDOS);

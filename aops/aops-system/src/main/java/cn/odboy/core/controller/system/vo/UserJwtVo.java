@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class UserJwtVo implements UserDetails {
 
     @ApiModelProperty(value = "用户")
-    private final UserDO userDO;
+    private final UserDO user;
 
     @ApiModelProperty(value = "数据权限")
     private final List<Long> dataScopes;
@@ -30,13 +30,13 @@ public class UserJwtVo implements UserDetails {
     @Override
     @JSONField(serialize = false)
     public String getPassword() {
-        return userDO.getPassword();
+        return user.getPassword();
     }
 
     @Override
     @JSONField(serialize = false)
     public String getUsername() {
-        return userDO.getUsername();
+        return user.getUsername();
     }
 
     @Override
@@ -60,6 +60,6 @@ public class UserJwtVo implements UserDetails {
     @Override
     @JSONField(serialize = false)
     public boolean isEnabled() {
-        return userDO.getEnabled();
+        return user.getEnabled();
     }
 }

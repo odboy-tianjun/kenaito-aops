@@ -19,14 +19,14 @@ import cn.odboy.app.framework.kubernetes.core.constant.KubernetesResourceLabelEn
 import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceNameUtil;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsAppNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsClusterCodeVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsNamespaceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsResourceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsYamlVo;
 import cn.odboy.app.framework.kubernetes.core.vo.KubernetesApiServiceArgs;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsAppNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsNamespaceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsResourceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsYamlVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
 import cn.odboy.common.util.ValidationUtil;
 import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.ApiClient;
@@ -54,15 +54,14 @@ public class KubernetesServiceRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据appName查询Service", throwException = false)
-    public V1Service describeServiceByAppName(ArgsClusterCodeVo clusterCodeVo, ArgsAppNameVo appNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1Service describeServiceByAppName(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsAppNameVo appNameVo) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String serviceName = KubernetesResourceNameUtil.getServiceName(appNameVo.getValue(), envCode);
         return coreV1Api.readNamespacedService(
                 serviceName,
                 appNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
@@ -70,20 +69,19 @@ public class KubernetesServiceRepository {
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据name和namespace查询Service", throwException = false)
-    public V1Service describeServiceByNameWithNamespace(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1Service describeServiceByNameWithNamespace(ApiClient apiClient, CustomArgsResourceNameVo resourceNameVo, CustomArgsNamespaceNameVo namespaceNameVo) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         return coreV1Api.readNamespacedService(
                 resourceNameVo.getValue(),
                 namespaceNameVo.getValue(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "创建Service")
-    public V1Service createService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceArgs.Create args) throws Exception {
+    public V1Service createService(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiServiceArgs.Create args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), envCode);
@@ -100,29 +98,27 @@ public class KubernetesServiceRepository {
                 .withSelector(args.getLabelSelector())
                 .endSpec()
                 .build();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         // Deployment and StatefulSet is defined in apps/v1, so you should use AppsV1Api instead of CoreV1API
         CoreV1Api api = new CoreV1Api(apiClient);
         return api.createNamespacedService(
                 args.getAppName(),
                 service,
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null
         );
     }
 
     @KubernetesApiExceptionCatch(description = "删除Service")
-    public void deleteService(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, KubernetesApiServiceArgs.Delete args) throws Exception {
+    public void deleteService(ApiClient apiClient, CustomArgsClusterCodeVo clusterCodeVo, CustomArgsDryRunVo dryRunVo, KubernetesApiServiceArgs.Delete args) throws Exception {
         ValidationUtil.validate(args);
         String envCode = kubernetesApiClientManager.getEnvCode(clusterCodeVo.getValue());
         String serviceName = KubernetesResourceNameUtil.getServiceName(args.getAppName(), envCode);
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api api = new CoreV1Api(apiClient);
         api.deleteNamespacedService(
                 serviceName,
                 args.getAppName(),
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 dryRunVo.getValue(),
                 null,
                 null,
@@ -133,18 +129,17 @@ public class KubernetesServiceRepository {
 
 
     @KubernetesApiExceptionCatch(description = "从yml加载Service")
-    public V1Service loadServiceFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<V1Service> yamlVo) throws Exception {
+    public V1Service loadServiceFromYaml(ApiClient apiClient, CustomArgsDryRunVo dryRunVo, CustomArgsYamlVo<V1Service> yamlVo) throws Exception {
         V1Service v1Service = yamlVo.getTarget();
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         String serviceName = Objects.requireNonNull(v1Service.getMetadata()).getName();
         String namespace = Objects.requireNonNull(v1Service.getMetadata()).getNamespace();
-        V1Service localService = describeServiceByNameWithNamespace(clusterCodeVo, new ArgsResourceNameVo(serviceName), new ArgsNamespaceNameVo(namespace));
+        V1Service localService = describeServiceByNameWithNamespace(apiClient, new CustomArgsResourceNameVo(serviceName), new CustomArgsNamespaceNameVo(namespace));
         if (localService == null) {
             coreV1Api.createNamespacedService(
                     namespace,
                     v1Service,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );
@@ -153,7 +148,7 @@ public class KubernetesServiceRepository {
                     serviceName,
                     namespace,
                     v1Service,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );

@@ -22,5 +22,5 @@ public class CreateRoleArgs extends MyObject {
      * 关联的部门
      */
     private Long id;
-    private Set<DeptDO> deptDOS;
+    private Set<DeptDO> depts;
 }

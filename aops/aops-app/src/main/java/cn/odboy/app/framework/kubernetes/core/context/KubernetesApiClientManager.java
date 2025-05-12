@@ -19,7 +19,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.odboy.common.exception.BadRequestException;
 import io.kubernetes.client.openapi.ApiClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +34,8 @@ import java.util.Map;
 public class KubernetesApiClientManager {
     private static final Map<String, ApiClient> CLIENT_MAP = new HashMap<>();
     private static final Map<String, String> CLIENT_ENV = new HashMap<>();
-    @Autowired
-    private KubernetesHealthChecker kubernetesHealthChecker;
+//    @Autowired
+//    private KubernetesHealthChecker kubernetesHealthChecker;
 
     public void deleteClient(String clusterCode) {
         CLIENT_MAP.remove(clusterCode);
@@ -48,7 +47,7 @@ public class KubernetesApiClientManager {
             throw new BadRequestException("参数clusterCode必填");
         }
         try {
-            kubernetesHealthChecker.checkConfigContent(apiClient);
+//            kubernetesHealthChecker.checkConfigContent(apiClient);
             CLIENT_MAP.put(clusterCode, apiClient);
             CLIENT_ENV.put(clusterCode, envCode);
             log.info("{}集群config配置检测成功，并放入应用缓存中", clusterCode);

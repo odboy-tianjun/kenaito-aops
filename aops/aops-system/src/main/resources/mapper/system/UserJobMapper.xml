@@ -4,7 +4,7 @@
     <insert id="insertBatchWithUserId">
         insert into system_users_jobs (user_id, job_id)
         values
-        <foreach collection="jobDOS" item="item" open="(" separator="),(" close=")">
+        <foreach collection="jobs" item="item" open="(" separator="),(" close=")">
             #{userId}, #{item.id}
         </foreach>
     </insert>

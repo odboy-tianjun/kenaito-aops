@@ -1,7 +1,7 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.system.DictDetail;
+import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.service.system.SystemDictDetailService;
 import cn.odboy.core.service.system.dto.CreateDictDetailArgs;
 import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
@@ -32,7 +32,7 @@ public class DictDetailController {
 
     @ApiOperation("查询字典详情")
     @GetMapping
-    public ResponseEntity<PageResult<DictDetail>> describeDictDetailPage(QueryDictDetailArgs args) {
+    public ResponseEntity<PageResult<DictDetailDO>> describeDictDetailPage(QueryDictDetailArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemDictDetailService.describeDictDetailPage(args, page), HttpStatus.OK);
     }
@@ -41,7 +41,7 @@ public class DictDetailController {
     @GetMapping(value = "/getDictDetailMaps")
     public ResponseEntity<Object> getDictDetailMaps(@RequestParam String dictName) {
         String[] names = dictName.split("[,，]");
-        Map<String, List<DictDetail>> dictMap = new HashMap<>(16);
+        Map<String, List<DictDetailDO>> dictMap = new HashMap<>(16);
         for (String name : names) {
             dictMap.put(name, systemDictDetailService.describeDictDetailListByName(name));
         }
@@ -59,7 +59,7 @@ public class DictDetailController {
     @ApiOperation("修改字典详情")
     @PostMapping(value = "/modifyDictDetailById")
     @PreAuthorize("@el.check('dict:edit')")
-    public ResponseEntity<Object> modifyDictDetailById(@Validated(DictDetail.Update.class) @RequestBody DictDetail resources) {
+    public ResponseEntity<Object> modifyDictDetailById(@Validated(DictDetailDO.Update.class) @RequestBody DictDetailDO resources) {
         systemDictDetailService.modifyDictDetailById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -67,7 +67,7 @@ public class DictDetailController {
     @ApiOperation("删除字典详情")
     @PostMapping(value = "/removeDictDetailById")
     @PreAuthorize("@el.check('dict:del')")
-    public ResponseEntity<Object> removeDictDetailById(@RequestBody DictDetail args) {
+    public ResponseEntity<Object> removeDictDetailById(@RequestBody DictDetailDO args) {
         systemDictDetailService.removeDictDetailById(args.getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }

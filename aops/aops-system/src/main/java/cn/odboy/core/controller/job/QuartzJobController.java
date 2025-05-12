@@ -2,6 +2,7 @@ package cn.odboy.core.controller.job;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.context.SpringBeanHolder;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
 import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
 import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
@@ -47,6 +48,7 @@ public class QuartzJobController {
         return new ResponseEntity<>(systemQuartzJobService.describeQuartzJobPage(args, page), HttpStatus.OK);
     }
 
+    @OperationLog
     @ApiOperation("导出任务数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('timing:list')")
@@ -54,6 +56,7 @@ public class QuartzJobController {
         systemQuartzJobService.downloadQuartzJobExcel(systemQuartzJobService.describeQuartzJobList(args), response);
     }
 
+    @OperationLog
     @ApiOperation("导出日志数据")
     @GetMapping(value = "/logs/download")
     @PreAuthorize("@el.check('timing:list')")
@@ -68,7 +71,7 @@ public class QuartzJobController {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemQuartzJobService.describeQuartzLogPage(args, page), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增定时任务")
     @PostMapping
     @PreAuthorize("@el.check('timing:add')")
@@ -81,7 +84,7 @@ public class QuartzJobController {
         systemQuartzJobService.createJob(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改定时任务")
     @PutMapping
     @PreAuthorize("@el.check('timing:edit')")
@@ -91,7 +94,7 @@ public class QuartzJobController {
         systemQuartzJobService.modifyQuartzJobResumeCron(args);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("更改定时任务状态")
     @PostMapping(value = "/switchQuartzJobStatus/{id}")
     @PreAuthorize("@el.check('timing:edit')")
@@ -99,7 +102,7 @@ public class QuartzJobController {
         systemQuartzJobService.switchQuartzJobStatus(systemQuartzJobService.getById(id));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("执行定时任务")
     @PostMapping(value = "/startQuartzJob/{id}")
     @PreAuthorize("@el.check('timing:edit')")
@@ -107,7 +110,7 @@ public class QuartzJobController {
         systemQuartzJobService.startQuartzJob(systemQuartzJobService.getById(id));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除定时任务")
     @DeleteMapping
     @PreAuthorize("@el.check('timing:del')")

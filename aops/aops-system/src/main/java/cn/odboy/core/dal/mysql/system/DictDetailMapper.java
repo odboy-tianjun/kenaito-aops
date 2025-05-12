@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.mysql.system;
 
-import cn.odboy.core.dal.dataobject.system.DictDetail;
+import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,10 +12,10 @@ import java.util.Set;
 
 
 @Mapper
-public interface DictDetailMapper extends BaseMapper<DictDetail> {
-    List<DictDetail> queryDictDetailListByDictName(@Param("name") String name);
+public interface DictDetailMapper extends BaseMapper<DictDetailDO> {
+    List<DictDetailDO> queryDictDetailListByDictName(@Param("name") String name);
 
-    IPage<DictDetail> queryDictDetailPageByArgs(@Param("args") QueryDictDetailArgs args, Page<Object> page);
+    IPage<DictDetailDO> queryDictDetailPageByArgs(@Param("args") QueryDictDetailArgs args, Page<Object> page);
 
     void deleteDictDetailByDictIds(@Param("dictIds") Set<Long> dictIds);
 }

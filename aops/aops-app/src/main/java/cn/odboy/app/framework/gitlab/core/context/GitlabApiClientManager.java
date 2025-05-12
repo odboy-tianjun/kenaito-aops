@@ -15,8 +15,8 @@
  */
 package cn.odboy.app.framework.gitlab.core.context;
 
-import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.app.framework.gitlab.config.GitlabProperties;
+import cn.odboy.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;

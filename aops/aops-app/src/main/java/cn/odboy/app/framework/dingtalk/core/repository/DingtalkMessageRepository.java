@@ -17,9 +17,9 @@ package cn.odboy.app.framework.dingtalk.core.repository;
 
 import cn.hutool.core.lang.Assert;
 import cn.odboy.app.framework.dingtalk.config.DingtalkProperties;
+import cn.odboy.app.framework.dingtalk.core.context.DingtalkApiClientManager;
 import cn.odboy.app.framework.dingtalk.core.exception.DingtalkApiExceptionCatch;
 import cn.odboy.app.framework.dingtalk.core.util.DingtalkClientConfigUtil;
-import cn.odboy.app.framework.dingtalk.core.context.DingtalkApiClientManager;
 import com.aliyun.dingtalkrobot_1_0.models.RobotRecallDingResponse;
 import com.aliyun.dingtalkrobot_1_0.models.RobotSendDingResponse;
 import com.aliyun.dingtalkrobot_1_0.models.RobotSendDingResponseBody;

@@ -94,6 +94,20 @@ public class SecurityHelper {
      *
      * @return 系统用户名称
      */
+    public static String getSafeCurrentUsername() {
+        try {
+            return getCurrentUsername();
+        } catch (Exception e) {
+            log.error("anonymous调用了这个方法", e);
+            return "anonymous";
+        }
+    }
+
+    /**
+     * 获取系统用户名称
+     *
+     * @return 系统用户名称
+     */
     public static String getCurrentUsername(String token) {
         JWT jwt = JWTUtil.parseToken(token);
         return jwt.getPayload("sub").toString();

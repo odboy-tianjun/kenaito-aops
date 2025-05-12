@@ -27,10 +27,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum KubernetesNetworkTypeEnum {
-    INNER("inner", "内网"),
-    OUTER("outer", "外网");
+    INNER("inner", ".com", "内网"),
+    OUTER("outer", ".cn", "外网");
 
     private final String code;
+    private final String suffix;
     private final String desc;
 
     public static KubernetesNetworkTypeEnum getByCode(String code) {

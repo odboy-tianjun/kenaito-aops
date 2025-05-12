@@ -15,14 +15,12 @@
  */
 package cn.odboy.app.framework.kubernetes.core.repository;
 
-import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsDryRunVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsNamespaceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsResourceNameVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsYamlVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsNamespaceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsResourceNameVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsYamlVo;
 import com.alibaba.fastjson2.JSON;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
@@ -43,12 +41,10 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class KubernetesOpenKruiseStatefulSetRepository {
-    private final KubernetesApiClientManager kubernetesApiClientManager;
-
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "根据name和namespace查询KruiseStatefulSet", throwException = false)
-    public KruiseAppsV1alpha1StatefulSet describeStatefulSetByName(ArgsClusterCodeVo clusterCodeVo, ArgsResourceNameVo resourceNameVo, ArgsNamespaceNameVo namespaceNameVo) {
-        CustomObjectsApi customObjectsApi = new CustomObjectsApi(kubernetesApiClientManager.getClient(clusterCodeVo.getValue()));
+    public KruiseAppsV1alpha1StatefulSet describeStatefulSetByName(ApiClient apiClient, CustomArgsResourceNameVo resourceNameVo, CustomArgsNamespaceNameVo namespaceNameVo) {
+        CustomObjectsApi customObjectsApi = new CustomObjectsApi(apiClient);
         Object obj = customObjectsApi.getNamespacedCustomObject(
                 "apps.kruise.io",
                 "v1beta1",
@@ -60,16 +56,15 @@ public class KubernetesOpenKruiseStatefulSetRepository {
     }
 
     @KubernetesApiExceptionCatch(description = "从yml加载KruiseStatefulSet")
-    public KruiseAppsV1alpha1StatefulSet loadStatefulSetFromYaml(ArgsClusterCodeVo clusterCodeVo, ArgsDryRunVo dryRunVo, ArgsYamlVo<KruiseAppsV1alpha1StatefulSet> yamlVo) throws Exception {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public KruiseAppsV1alpha1StatefulSet loadStatefulSetFromYaml(ApiClient apiClient, CustomArgsDryRunVo dryRunVo, CustomArgsYamlVo<KruiseAppsV1alpha1StatefulSet> yamlVo) throws Exception {
         CustomObjectsApi customObjectsApi = new CustomObjectsApi(apiClient);
         KruiseAppsV1alpha1StatefulSet statefulSet = yamlVo.getTarget();
         String statefulSetName = Objects.requireNonNull(statefulSet.getMetadata()).getName();
         String namespace = Objects.requireNonNull(statefulSet.getMetadata()).getNamespace();
         KruiseAppsV1alpha1StatefulSet statefulSetByName = describeStatefulSetByName(
-                clusterCodeVo,
-                new ArgsResourceNameVo(statefulSetName),
-                new ArgsNamespaceNameVo(namespace)
+                apiClient,
+                new CustomArgsResourceNameVo(statefulSetName),
+                new CustomArgsNamespaceNameVo(namespace)
         );
         if (statefulSetByName == null) {
             customObjectsApi.createNamespacedCustomObject(
@@ -78,7 +73,7 @@ public class KubernetesOpenKruiseStatefulSetRepository {
                     namespace,
                     "statefulsets",
                     statefulSet,
-                    new ArgsPrettyVo(false).getValue(),
+                    new CustomArgsPrettyVo(false).getValue(),
                     dryRunVo.getValue(),
                     null
             );

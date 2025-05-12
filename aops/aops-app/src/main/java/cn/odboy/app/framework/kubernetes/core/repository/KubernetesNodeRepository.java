@@ -15,10 +15,8 @@
  */
 package cn.odboy.app.framework.kubernetes.core.repository;
 
-import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsClusterCodeVo;
-import cn.odboy.app.framework.kubernetes.core.vo.ArgsPrettyVo;
+import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsPrettyVo;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1NodeList;
@@ -37,15 +35,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class KubernetesNodeRepository {
-    private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "查询Node节点列表", throwException = false)
-    public V1NodeList describeNodeList(ArgsClusterCodeVo clusterCodeVo) {
-        ApiClient apiClient = kubernetesApiClientManager.getClient(clusterCodeVo.getValue());
+    public V1NodeList describeNodeList(ApiClient apiClient) {
         CoreV1Api coreV1Api = new CoreV1Api(apiClient);
         return coreV1Api.listNode(
-                new ArgsPrettyVo(false).getValue(),
+                new CustomArgsPrettyVo(false).getValue(),
                 null,
                 null,
                 null,

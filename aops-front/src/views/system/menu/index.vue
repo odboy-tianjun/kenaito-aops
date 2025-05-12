@@ -220,7 +220,7 @@ export default {
     },
     loadMenus({ action, parentNode, callback }) {
       if (action === LOAD_CHILDREN_OPTIONS) {
-        crudMenu.getMenusTree(parentNode.id).then(res => {
+        crudMenu.describeMenuListByPid(parentNode.id).then(res => {
           parentNode.children = res.map(function(obj) {
             if (!obj.leaf) {
               obj.children = null
