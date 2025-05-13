@@ -1,6 +1,7 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.core.constant.CaptchaBizEnum;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.tools.CaptchaService;
 import cn.odboy.core.service.tools.EmailService;
 import io.swagger.annotations.Api;
@@ -27,6 +28,7 @@ public class CaptchaController {
      *
      * @param email 邮件地址
      */
+    @OperationLog
     @ApiOperation("重置邮箱，发送验证码")
     @PostMapping(value = "/sendResetEmailCaptcha")
     public ResponseEntity<Object> sendResetEmailCaptcha(@RequestParam String email) {
@@ -34,6 +36,7 @@ public class CaptchaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @OperationLog
     @ApiOperation("重置密码，发送验证码")
     @PostMapping(value = "/sendResetPasswordCaptcha")
     public ResponseEntity<Object> sendResetPasswordCaptcha(@RequestParam String email) {
@@ -41,6 +44,7 @@ public class CaptchaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @OperationLog
     @ApiOperation("验证码验证")
     @PostMapping(value = "/checkCodeAvailable")
     public ResponseEntity<Object> checkCodeAvailable(@RequestParam String email, @RequestParam String code, @RequestParam String codeBi) {

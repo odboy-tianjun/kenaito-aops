@@ -19,15 +19,12 @@ import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterConfigService;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.dal.dataobject.system.DictDO;
-import cn.odboy.core.service.system.dto.QueryDictArgs;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,10 +42,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/aops/kubernetes/clusterConfig")
 public class AopsKubernetesClusterConfigController {
     private final AopsKubernetesClusterConfigService aopsKubernetesClusterConfigService;
-    @ApiOperation("查询集群配置")
-    @PostMapping("describeKubernetesClusterConfigPage")
+
+    @OperationLog
+    @ApiOperation("分页查询集群配置")
+    @PostMapping("/describeKubernetesClusterConfigPage")
     @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:list')")
-    public ResponseEntity<PageResult<AopsKubernetesClusterConfigDO>> queryDict(PageArgs<AopsKubernetesClusterConfigDO> args) {
+    public ResponseEntity<PageResult<AopsKubernetesClusterConfigDO>> describeKubernetesClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args) {
         return new ResponseEntity<>(aopsKubernetesClusterConfigService.describeKubernetesClusterConfigPage(args), HttpStatus.OK);
     }
 }

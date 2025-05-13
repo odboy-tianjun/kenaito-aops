@@ -2,6 +2,7 @@ package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.DictDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.dto.CreateDictArgs;
 import cn.odboy.core.service.system.dto.QueryDictArgs;
 import cn.odboy.core.service.system.SystemDictService;
@@ -29,7 +30,7 @@ import java.util.Set;
 @RequestMapping("/api/dict")
 public class DictController {
     private final SystemDictService systemDictService;
-
+    @OperationLog
     @ApiOperation("导出字典数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dict:list')")
@@ -51,7 +52,7 @@ public class DictController {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemDictService.describeDictPage(args, page), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增字典")
     @PostMapping(value = "/saveDict")
     @PreAuthorize("@el.check('dict:add')")
@@ -59,7 +60,7 @@ public class DictController {
         systemDictService.saveDict(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改字典")
     @PostMapping(value = "/modifyDictById")
     @PreAuthorize("@el.check('dict:edit')")
@@ -67,7 +68,7 @@ public class DictController {
         systemDictService.modifyDictById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除字典")
     @PostMapping(value = "/removeDictByIds")
     @PreAuthorize("@el.check('dict:del')")

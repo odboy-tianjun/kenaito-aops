@@ -3,6 +3,7 @@ package cn.odboy.core.controller.system;
 import cn.hutool.core.lang.Dict;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.service.system.SystemRoleService;
 import cn.odboy.core.service.system.dto.CreateRoleArgs;
@@ -42,7 +43,7 @@ public class RoleController {
     public ResponseEntity<RoleDO> describeRoleById(@RequestBody RoleDO args) {
         return new ResponseEntity<>(systemRoleService.describeRoleById(args.getId()), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("导出角色数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('role:list')")
@@ -70,7 +71,7 @@ public class RoleController {
     public ResponseEntity<Object> describeRoleLevel() {
         return new ResponseEntity<>(Dict.create().set("level", checkRoleLevels(null)), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增角色")
     @PostMapping(value = "/saveRole")
     @PreAuthorize("@el.check('roles:add')")
@@ -79,7 +80,7 @@ public class RoleController {
         systemRoleService.saveRole(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改角色")
     @PostMapping(value = "/modifyRoleById")
     @PreAuthorize("@el.check('roles:edit')")
@@ -88,7 +89,7 @@ public class RoleController {
         systemRoleService.modifyRoleById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("修改角色菜单")
     @PostMapping(value = "/modifyBindMenuById")
     @PreAuthorize("@el.check('roles:edit')")
@@ -98,7 +99,7 @@ public class RoleController {
         systemRoleService.modifyBindMenuById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除角色")
     @PostMapping(value = "/removeRoleByIds")
     @PreAuthorize("@el.check('roles:del')")

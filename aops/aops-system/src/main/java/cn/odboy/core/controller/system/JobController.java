@@ -2,6 +2,7 @@ package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.JobDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.SystemJobService;
 import cn.odboy.core.service.system.dto.CreateJobArgs;
 import cn.odboy.core.service.system.dto.QueryJobArgs;
@@ -29,7 +30,7 @@ import java.util.Set;
 @RequestMapping("/api/job")
 public class JobController {
     private final SystemJobService systemJobService;
-
+    @OperationLog
     @ApiOperation("导出岗位数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('job:list')")
@@ -44,7 +45,7 @@ public class JobController {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemJobService.describeJobPage(args, page), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增岗位")
     @PostMapping(value = "/saveJob")
     @PreAuthorize("@el.check('job:add')")
@@ -52,7 +53,7 @@ public class JobController {
         systemJobService.saveJob(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改岗位")
     @PostMapping(value = "/modifyJobById")
     @PreAuthorize("@el.check('job:edit')")
@@ -60,7 +61,7 @@ public class JobController {
         systemJobService.modifyJobById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除岗位")
     @PostMapping(value = "/removeJobByIds")
     @PreAuthorize("@el.check('job:del')")

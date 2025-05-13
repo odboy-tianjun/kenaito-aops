@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.controller.system.vo.MenuVo;
 import cn.odboy.core.dal.dataobject.system.MenuDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.service.system.dto.QueryMenuArgs;
 import cn.odboy.core.service.system.SystemMenuService;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 public class MenuController {
     private static final String ENTITY_NAME = "menu";
     private final SystemMenuService systemMenuService;
-
+    @OperationLog
     @ApiOperation("导出菜单数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('menu:list')")
@@ -103,7 +104,7 @@ public class MenuController {
         }
         return new ResponseEntity<>(systemMenuService.describeMenuListByPid(null), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增菜单")
     @PostMapping(value = "/saveMenu")
     @PreAuthorize("@el.check('menu:add')")
@@ -114,7 +115,7 @@ public class MenuController {
         systemMenuService.saveMenu(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改菜单")
     @PostMapping(value = "/modifyMenuById")
     @PreAuthorize("@el.check('menu:edit')")
@@ -122,7 +123,7 @@ public class MenuController {
         systemMenuService.modifyMenuById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除菜单")
     @PostMapping(value = "/removeMenuByIds")
     @PreAuthorize("@el.check('menu:del')")

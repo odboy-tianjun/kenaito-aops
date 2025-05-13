@@ -2,6 +2,7 @@ package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.SystemDeptService;
 import cn.odboy.core.service.system.dto.CreateDeptArgs;
 import cn.odboy.core.service.system.dto.QueryDeptArgs;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/dept")
 public class DeptController {
     private final SystemDeptService systemDeptService;
-
+    @OperationLog
     @ApiOperation("导出部门数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dept:list')")
@@ -70,7 +71,7 @@ public class DeptController {
         }
         return new ResponseEntity<>(systemDeptService.buildDeptTree(new ArrayList<>(deptDOSet)), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增部门")
     @PostMapping(value = "/saveDept")
     @PreAuthorize("@el.check('dept:add')")
@@ -78,7 +79,7 @@ public class DeptController {
         systemDeptService.saveDept(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改部门")
     @PostMapping(value = "/modifyDept")
     @PreAuthorize("@el.check('dept:edit')")
@@ -86,7 +87,7 @@ public class DeptController {
         systemDeptService.modifyDept(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除部门")
     @PostMapping(value = "/removeDeptByIds")
     @PreAuthorize("@el.check('dept:del')")

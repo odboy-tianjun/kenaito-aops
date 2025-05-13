@@ -4,6 +4,7 @@ import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.controller.system.vo.UserOnlineVo;
 import cn.odboy.common.util.DesEncryptUtil;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -34,14 +35,14 @@ public class OnlineController {
     public ResponseEntity<PageResult<UserOnlineVo>> queryOnlineUser(String username, Pageable pageable) {
         return new ResponseEntity<>(systemUserOnlineInfoDAO.describeUserOnlineModelPage(username, pageable), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check()")
     public void exportOnlineUser(HttpServletResponse response, String username) throws IOException {
         systemUserOnlineInfoDAO.downloadUserOnlineModelExcel(systemUserOnlineInfoDAO.describeUserOnlineModelListByUsername(username), response);
     }
-
+    @OperationLog
     @ApiOperation("踢出用户")
     @PostMapping(value = "/kickOutUser")
     @PreAuthorize("@el.check()")

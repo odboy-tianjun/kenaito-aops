@@ -6,6 +6,7 @@ import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.SystemDataService;
 import cn.odboy.core.constant.CaptchaBizEnum;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
@@ -60,11 +61,11 @@ public class UserController {
     private final SystemRoleService systemRoleService;
     private final CaptchaService verificationCodeService;
     private final AppProperties properties;
-
+    @OperationLog
     @ApiOperation("导出用户数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
-    public void downloadUserExcel(HttpServletResponse response, QueryUserArgs args) throws IOException {
+    public void exportUser(HttpServletResponse response, QueryUserArgs args) throws IOException {
         systemUserService.downloadUserExcel(systemUserService.describeUserList(args), response);
     }
 
@@ -96,7 +97,7 @@ public class UserController {
         }
         return new ResponseEntity<>(PageUtil.noData(), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("新增用户")
     @PostMapping(value = "/saveUser")
     @PreAuthorize("@el.check('user:add')")
@@ -107,7 +108,7 @@ public class UserController {
         systemUserService.saveUser(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
+    @OperationLog
     @ApiOperation("修改用户")
     @PostMapping(value = "/modifyUserById")
     @PreAuthorize("@el.check('user:edit')")
@@ -116,7 +117,7 @@ public class UserController {
         systemUserService.modifyUserById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("修改用户：个人中心")
     @PostMapping(value = "modifyUserCenterInfoById")
     public ResponseEntity<Object> modifyUserCenterInfoById(@Validated(UserDO.Update.class) @RequestBody UserDO resources) {
@@ -126,7 +127,7 @@ public class UserController {
         systemUserService.modifyUserCenterInfoById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @OperationLog
     @ApiOperation("删除用户")
     @PostMapping(value = "/removeUserByIds")
     @PreAuthorize("@el.check('user:del')")
@@ -141,7 +142,7 @@ public class UserController {
         systemUserService.removeUserByIds(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("修改密码")
     @PostMapping(value = "/modifyUserPasswordByUsername")
     public ResponseEntity<Object> modifyUserPasswordByUsername(@RequestBody UpdateUserPasswordVo passVo) throws Exception {
@@ -157,7 +158,7 @@ public class UserController {
         systemUserService.modifyUserPasswordByUsername(userDO.getUsername(), passwordEncoder.encode(newPass));
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("重置密码")
     @PostMapping(value = "/resetUserPasswordByIds")
     public ResponseEntity<Object> resetUserPasswordByIds(@RequestBody Set<Long> ids) {
@@ -171,7 +172,7 @@ public class UserController {
     public ResponseEntity<Object> modifyUserAvatar(@RequestParam MultipartFile avatar) {
         return new ResponseEntity<>(systemUserService.modifyUserAvatar(avatar), HttpStatus.OK);
     }
-
+    @OperationLog
     @ApiOperation("修改邮箱")
     @PostMapping(value = "/modifyUserEmailByUsername/{code}")
     public ResponseEntity<Object> modifyUserEmailByUsername(@PathVariable String code, @RequestBody UserDO resources) throws Exception {
