@@ -8,7 +8,7 @@
         placeholder="输入部门名称搜索"
         prefix-icon="el-icon-search"
         class="filter-item"
-        @input="getDeptDatas"
+        @input="getDeptData"
       />
     </div>
     <el-tree
@@ -64,7 +64,7 @@ export default {
           if (resolve) {
             resolve(res.content)
           } else {
-            this.deptDatas = res.content
+            this.deptData = res.content
           }
         })
       }, 100)

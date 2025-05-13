@@ -29,8 +29,8 @@ import lombok.Getter;
 public enum GlobalEnvEnum {
     Daily("daily", "日常环境"),
     Stage("stage", "预发环境"),
-    Online("online", "生产环境"),
-    DEFAULT("default", "默认环境");
+    Online("online", "生产环境");
+//    DEFAULT("default", "默认环境");
     private final String code;
     private final String desc;
 
@@ -40,15 +40,15 @@ public enum GlobalEnvEnum {
                 return item;
             }
         }
-        return DEFAULT;
+        return null;
     }
 
-    public static String getByDesc(String code) {
+    public static String getDescByCode(String code) {
         for (GlobalEnvEnum item : GlobalEnvEnum.values()) {
             if (item.getCode().equals(code)) {
                 return item.getDesc();
             }
         }
-        return DEFAULT.getDesc();
+        return "未知";
     }
 }

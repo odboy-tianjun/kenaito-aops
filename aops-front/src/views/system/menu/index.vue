@@ -68,10 +68,10 @@
           <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" style="width: 178px;" />
         </el-form-item>
         <el-form-item v-show="form.iFrame.toString() !== 'true' && form.type.toString() === '1'" label="组件名称" prop="componentName">
-          <el-input v-model="form.componentName" style="width: 178px;" placeholder="匹配组件内Name字段" />
+          <el-input v-model="form.componentName" style="width: 450px;" placeholder="匹配组件内Name字段" />
         </el-form-item>
         <el-form-item v-show="form.iFrame.toString() !== 'true' && form.type.toString() === '1'" label="组件路径" prop="component">
-          <el-input v-model="form.component" style="width: 178px;" placeholder="组件路径" />
+          <el-input v-model="form.component" style="width: 450px;" placeholder="组件路径" />
         </el-form-item>
         <el-form-item label="上级类目" prop="pid">
           <treeselect

@@ -25,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +49,7 @@ public class AopsKubernetesClusterConfigController {
     @ApiOperation("分页查询集群配置")
     @PostMapping("/describeKubernetesClusterConfigPage")
     @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:list')")
-    public ResponseEntity<PageResult<AopsKubernetesClusterConfigDO>> describeKubernetesClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args) {
+    public ResponseEntity<PageResult<AopsKubernetesClusterConfigDO>> describeKubernetesClusterConfigPage(@Validated @RequestBody PageArgs<AopsKubernetesClusterConfigDO> args) {
         return new ResponseEntity<>(aopsKubernetesClusterConfigService.describeKubernetesClusterConfigPage(args), HttpStatus.OK);
     }
 }

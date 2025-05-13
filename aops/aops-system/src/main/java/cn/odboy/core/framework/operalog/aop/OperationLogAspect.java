@@ -26,6 +26,7 @@ import cn.odboy.core.dal.dataobject.log.OperationLogDO;
 import cn.odboy.core.dal.mysql.log.OperationLogMapper;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
+import com.alibaba.fastjson2.JSON;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -62,12 +63,24 @@ public class OperationLogAspect {
         try {
             Object result = joinPoint.proceed();
             OperationLogDO record = getOperationLogDO(joinPoint, annotation, timeInterval);
-            ThreadUtil.execAsync(() -> operationLogMapper.insert(record));
+            ThreadUtil.execAsync(() -> {
+                try {
+                    operationLogMapper.insert(record);
+                } catch (Exception e) {
+                    log.error("保存审计日志失败", e);
+                }
+            });
             return result;
         } catch (Throwable exception) {
             OperationLogDO record = getOperationLogDO(joinPoint, annotation, timeInterval);
             record.setExceptionDetail(ExceptionUtil.stacktraceToString(exception));
-            ThreadUtil.execAsync(() -> operationLogMapper.insert(record));
+            ThreadUtil.execAsync(() -> {
+                try {
+                    operationLogMapper.insert(record);
+                } catch (Exception e) {
+                    log.error("保存审计日志失败", e);
+                }
+            });
             throw exception;
         }
     }
@@ -87,9 +100,8 @@ public class OperationLogAspect {
             bizName = "默认业务";
         }
         String method = joinPoint.getTarget().getClass().getName() + "." + signature.getName() + "()";
-        String params = Arrays.stream(joinPoint.getArgs())
-                .map(String::valueOf)
-                .collect(Collectors.joining(", "));
+        Object[] args = joinPoint.getArgs();
+        String params = JSON.toJSONString(args);
         HttpServletRequest request = RequestHolder.getHttpServletRequest();
         String requestIp = BrowserUtil.getIp(request);
         String browserInfo = BrowserUtil.getVersion(request);
