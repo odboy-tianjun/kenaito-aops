@@ -7,4 +7,3 @@
 */*.iml
 /.gradle/
 /application.pid
-application-dev.yml
