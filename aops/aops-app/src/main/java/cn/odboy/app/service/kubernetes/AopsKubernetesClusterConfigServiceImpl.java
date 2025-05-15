@@ -15,11 +15,17 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.odboy.app.controller.cmdb.vo.CreateClusterConfigArgs;
+import cn.odboy.app.controller.cmdb.vo.ModifyClusterDefaultAppYmlArgs;
+import cn.odboy.app.controller.cmdb.vo.UpdateClusterConfigArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterConfigMapper;
+import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.RemoveByIdArgs;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -41,13 +47,13 @@ public class AopsKubernetesClusterConfigServiceImpl implements AopsKubernetesClu
     private final AopsKubernetesClusterConfigMapper aopsKubernetesClusterConfigMapper;
 
     @Override
-    public List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfig() {
+    public List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigList() {
         return aopsKubernetesClusterConfigMapper.selectList(null);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyMetaById(AopsKubernetesClusterConfigDO clusterConfig) {
+    public void updateById(AopsKubernetesClusterConfigDO clusterConfig) {
         aopsKubernetesClusterConfigMapper.updateById(clusterConfig);
     }
 
@@ -61,9 +67,45 @@ public class AopsKubernetesClusterConfigServiceImpl implements AopsKubernetesClu
             wrapper.eq(StrUtil.isNotBlank(args1.getEnvCode()), AopsKubernetesClusterConfigDO::getEnvCode, args1.getEnvCode());
         }
         Page<AopsKubernetesClusterConfigDO> pageResult = aopsKubernetesClusterConfigMapper.selectPage(pageArgs, wrapper);
+        // 解决前端YamlEdit报错
+        pageResult.getRecords().forEach(c -> {
+            if (StrUtil.isBlank(c.getClusterDefaultAppYaml())) {
+                c.setClusterDefaultAppYaml("");
+            }
+        });
+
         PageResult<AopsKubernetesClusterConfigDO> result = new PageResult<>();
         result.setContent(pageResult.getRecords());
         result.setTotalElements(pageResult.getTotal());
         return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void modifyClusterDefaultAppYml(ModifyClusterDefaultAppYmlArgs args) {
+        AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO = new AopsKubernetesClusterConfigDO();
+        aopsKubernetesClusterConfigDO.setId(args.getId());
+        aopsKubernetesClusterConfigDO.setClusterDefaultAppYaml(args.getClusterDefaultAppYaml());
+        aopsKubernetesClusterConfigMapper.updateById(aopsKubernetesClusterConfigDO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateClusterConfig(UpdateClusterConfigArgs args) {
+        AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO = BeanUtil.copyProperties(args, AopsKubernetesClusterConfigDO.class);
+        aopsKubernetesClusterConfigMapper.updateById(aopsKubernetesClusterConfigDO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeClusterConfig(RemoveByIdArgs args) {
+        aopsKubernetesClusterConfigMapper.deleteById(args.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createClusterConfig(CreateClusterConfigArgs args) {
+        AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO = BeanUtil.copyProperties(args, AopsKubernetesClusterConfigDO.class);
+        aopsKubernetesClusterConfigMapper.insert(aopsKubernetesClusterConfigDO);
     }
 }

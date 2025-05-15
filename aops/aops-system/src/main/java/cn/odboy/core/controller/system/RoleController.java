@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class RoleController {
     private final SystemRoleService systemRoleService;
 
-    @ApiOperation("获取单个role")
+    @ApiOperation("查询单个role")
     @PostMapping(value = "/describeRoleById")
     @PreAuthorize("@el.check('roles:list')")
     public ResponseEntity<RoleDO> describeRoleById(@RequestBody RoleDO args) {
@@ -66,7 +66,7 @@ public class RoleController {
         return new ResponseEntity<>(systemRoleService.describeRolePage(args, page), HttpStatus.OK);
     }
 
-    @ApiOperation("获取用户级别")
+    @ApiOperation("查询用户级别")
     @PostMapping(value = "/describeRoleLevel")
     public ResponseEntity<Object> describeRoleLevel() {
         return new ResponseEntity<>(Dict.create().set("level", checkRoleLevels(null)), HttpStatus.OK);

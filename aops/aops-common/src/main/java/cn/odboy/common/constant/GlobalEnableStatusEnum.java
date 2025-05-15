@@ -13,22 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.common.constant;
 
-import lombok.Data;
-import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
- * 自定义参数
+ * 是否启用
  *
  * @author odboy
- * @date 2025-05-07
+ * @date 2025-05-15
  */
-public class CustomArgs {
+@Getter
+@AllArgsConstructor
+public enum GlobalEnableStatusEnum {
+    ENABLED("1", "启用"),
+    DISABLED("0", "禁用");
+    private final String code;
+    private final String desc;
 
-    @Data
-    public static class RemoveArgs {
-        @NotNull(message = "必填")
-        private Long id;
+    public static GlobalEnableStatusEnum getByCode(Integer code) {
+        for (GlobalEnableStatusEnum item : GlobalEnableStatusEnum.values()) {
+            if (item.getCode().equals(code)) {
+                return item;
+            }
+        }
+        return null;
     }
 }

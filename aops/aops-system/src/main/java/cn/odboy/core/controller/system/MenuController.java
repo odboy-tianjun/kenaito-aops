@@ -48,7 +48,7 @@ public class MenuController {
     }
 
     @PostMapping(value = "/buildMenus")
-    @ApiOperation("获取前端所需菜单")
+    @ApiOperation("查询前端所需菜单")
     public ResponseEntity<List<MenuVo>> buildMenus() {
         List<MenuDO> menuDOList = systemMenuService.describeMenuListByUserId(SecurityHelper.getCurrentUserId());
         List<MenuDO> menuDOS = systemMenuService.buildMenuTree(menuDOList);

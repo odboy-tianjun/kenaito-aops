@@ -15,9 +15,13 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.odboy.app.controller.cmdb.vo.CreateClusterConfigArgs;
+import cn.odboy.app.controller.cmdb.vo.ModifyClusterDefaultAppYmlArgs;
+import cn.odboy.app.controller.cmdb.vo.UpdateClusterConfigArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.RemoveByIdArgs;
 import java.util.List;
 
 /**
@@ -29,9 +33,17 @@ import java.util.List;
  * @since 2025-05-07
  */
 public interface AopsKubernetesClusterConfigService {
-    List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfig();
+    List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigList();
 
-    void modifyMetaById(AopsKubernetesClusterConfigDO clusterConfig);
+    void updateById(AopsKubernetesClusterConfigDO clusterConfig);
 
     PageResult<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args);
+
+    void modifyClusterDefaultAppYml(ModifyClusterDefaultAppYmlArgs args);
+
+    void updateClusterConfig(UpdateClusterConfigArgs args);
+
+    void removeClusterConfig(RemoveByIdArgs args);
+
+    void createClusterConfig(CreateClusterConfigArgs args);
 }

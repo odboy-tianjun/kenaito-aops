@@ -18,11 +18,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageArgs<T> implements Serializable {
-    @NotNull(message = "参数page不能为空")
+    @NotNull(message = "page必填")
     @Min(value = 1, message = "参数page最小值为1")
     @ApiModelProperty(value = "页码", example = "1")
     private Integer page;
-    @NotNull(message = "参数size不能为空")
+    @NotNull(message = "size必填")
     @Min(value = 1, message = "参数size最小值为1")
     @ApiModelProperty(value = "每页数据量", example = "10")
     private Integer size;

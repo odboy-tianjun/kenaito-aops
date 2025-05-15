@@ -68,7 +68,7 @@ public class AopsKubernetesClusterConfigDO extends MyLogicEntity {
 
     @TableField("`status`")
     @ApiModelProperty("是否启用(1、启用 0、禁用)")
-    private Integer status;
+    private String status;
 
     @TableField("cluster_default_app_image")
     @ApiModelProperty("集群默认应用镜像")
@@ -85,37 +85,4 @@ public class AopsKubernetesClusterConfigDO extends MyLogicEntity {
     @TableField("cluster_pod_size")
     @ApiModelProperty("集群Pod数量")
     private Integer clusterPodSize;
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class QueryPage extends MyObject {
-        private Long id;
-        private String envCode;
-        private String clusterCode;
-        private String clusterName;
-        private String configContent;
-        private Integer envStatus;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class CreateArgs extends MyObject {
-        @NotBlank(message = "必填")
-        private String envCode;
-        @NotBlank(message = "必填")
-        private String clusterCode;
-        @NotBlank(message = "必填")
-        private String clusterName;
-        @NotBlank(message = "必填")
-        private String configContent;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class ModifyArgs extends MyObject {
-        @NotNull(message = "必填")
-        private Long id;
-        @NotBlank(message = "必填")
-        private String configContent;
-    }
 }

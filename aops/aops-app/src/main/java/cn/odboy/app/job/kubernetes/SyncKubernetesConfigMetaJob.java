@@ -49,7 +49,7 @@ public class SyncKubernetesConfigMetaJob {
     private final AopsKubernetesClusterConfigService aopsKubernetesClusterConfigService;
 
     public void run() {
-        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfig();
+        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfigList();
         if (CollUtil.isEmpty(list)) {
             log.info("没有找到配置信息");
             return;
@@ -73,7 +73,7 @@ public class SyncKubernetesConfigMetaJob {
                     }
                     clusterConfig.setClusterNodeSize(clusterNodeSize);
                     clusterConfig.setClusterPodSize(clusterPodSize);
-                    aopsKubernetesClusterConfigService.modifyMetaById(clusterConfig);
+                    aopsKubernetesClusterConfigService.updateById(clusterConfig);
                 }
             } catch (Exception e) {
 //                aopsKubernetesClusterConfigService.modifyStatusById(aopsKubernetesClusterConfigDO.getId(), KubernetesResourceHealthStatusEnum.UN_HEALTH);

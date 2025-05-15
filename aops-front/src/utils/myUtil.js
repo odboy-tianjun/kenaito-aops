@@ -70,7 +70,7 @@ const LabelUtil = {
       if (find) {
         return find.label
       }
-      return ''
+      return '未知'
     }
   }
 }

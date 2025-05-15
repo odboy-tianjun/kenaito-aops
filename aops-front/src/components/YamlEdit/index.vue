@@ -37,8 +37,8 @@ export default {
         this.editor.setValue(this.value)
       }
     },
-    height(value) {
-      this.editor.setSize('auto', this.height)
+    height(newHeight) {
+      this.editor.setSize('auto', newHeight)
     }
   },
   mounted() {
@@ -53,7 +53,9 @@ export default {
       theme: 'idea'
     })
     this.editor.setSize('auto', this.height)
-    this.editor.setValue(this.value)
+    if (this.value) {
+      this.editor.setValue(this.value)
+    }
     this.editor.setOption('readOnly', this.readOnly)
     this.editor.on('change', cm => {
       this.$emit('changed', cm.getValue())

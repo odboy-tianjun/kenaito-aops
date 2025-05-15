@@ -96,7 +96,7 @@ public class AuthController {
         return ResponseEntity.ok(authInfo);
     }
 
-    @ApiOperation("获取用户信息")
+    @ApiOperation("查询用户信息")
     @PostMapping(value = "/info")
     public ResponseEntity<UserInfoVo> getUserInfo() {
         UserJwtVo jwtUser = (UserJwtVo) SecurityHelper.getCurrentUser();
@@ -104,7 +104,7 @@ public class AuthController {
         return ResponseEntity.ok(userInfoVo);
     }
 
-    @ApiOperation("获取验证码")
+    @ApiOperation("查询验证码")
     @AnonymousPostMapping(value = "/code")
     public ResponseEntity<Object> getCode() {
         // 获取运算的结果

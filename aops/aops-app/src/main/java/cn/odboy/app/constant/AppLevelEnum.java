@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 应用语言
+ * 应用等级
  *
  * @author odboy
  * @date 2024-09-13

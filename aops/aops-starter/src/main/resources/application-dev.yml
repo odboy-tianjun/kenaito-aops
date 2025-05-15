@@ -56,7 +56,7 @@ spring:
       driverClassName: com.p6spy.engine.spy.P6SpyDriver
       url: jdbc:p6spy:mysql://192.168.235.102:3308/kenaito_aops?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
       username: root
-      password: JaxxatrZ2BkfyMtYmHjryE9jfsvFFh
+      password: GzD7bbTfVXGuLqN7uMcHDm2kQ5qRbN
       # 初始连接数，建议设置为与最小空闲连接数相同
       initial-size: 2
       # 最小空闲连接数，保持足够的空闲连接以应对请求
@@ -111,7 +111,7 @@ spring:
     database: ${REDIS_DB:1}
     host: ${REDIS_HOST:192.168.235.102}
     port: ${REDIS_PORT:6379}
-    password: ${REDIS_PWD:JaxxatrZ2BkfyMtYmHjryE9jfsvFFh}
+    password: ${REDIS_PWD:GzD7bbTfVXGuLqN7uMcHDm2kQ5qRbN}
     # 连接超时时间
     timeout: 5000
     # 连接池配置
@@ -237,7 +237,7 @@ app:
 gitlab:
 #  url: http://192.168.235.103:20080
   url: http://tools.odboy.cn:20080
-  access-token: Xrs4jnsypijJsGQz3S6J
+  access-token: B7XeXEy4aAs3pWtc_xhB
 dingtalk:
   agent-id:
   app-key:
@@ -248,8 +248,8 @@ minio:
   # 控制台登录端口 http://localhost:9001
   # 文件上传&预览端口 http://localhost:9000
   endpoint: http://tools.odboy.cn:9000
-  access-key: ktCTioGEuLmZxvx6
-  secret-key: cRNLQYKpJpy4Bmlr9ojOukiWLlmJEbau
+  access-key: root
+  secret-key: GzD7bbTfVXGuLqN7uMcHDm2kQ5qRbN
   # 分享链接过期时间，单位天
   share-expire-time: 7
 kubernetes:

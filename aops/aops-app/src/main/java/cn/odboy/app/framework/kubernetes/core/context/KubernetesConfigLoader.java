@@ -53,7 +53,7 @@ public class KubernetesConfigLoader implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfig();
+        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfigList();
         for (AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO : list) {
             try {
                 ApiClient apiClient = kubernetesConfigHelper.loadFormContent(aopsKubernetesClusterConfigDO.getClusterConfigContent());
