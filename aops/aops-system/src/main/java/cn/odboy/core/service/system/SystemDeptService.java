@@ -14,8 +14,8 @@ public interface SystemDeptService extends IService<DeptDO> {
     /**
      * 查询所有数据
      *
-     * @param args 条件
-     * @param isQuery  /
+     * @param args    条件
+     * @param isQuery /
      * @return /
      * @throws Exception /
      */
@@ -28,6 +28,7 @@ public interface SystemDeptService extends IService<DeptDO> {
      * @return /
      */
     DeptDO describeDeptById(Long id);
+
     /**
      * 根据PID查询
      *
@@ -43,6 +44,7 @@ public interface SystemDeptService extends IService<DeptDO> {
      * @return /
      */
     Set<DeptDO> describeDeptByRoleId(Long id);
+
     /**
      * 获取部门下所有关联的部门
      *
@@ -87,10 +89,11 @@ public interface SystemDeptService extends IService<DeptDO> {
     /**
      * 遍历所有部门和子部门
      *
-     * @param ids   /
+     * @param ids     /
      * @param deptDOS /
      */
     void traverseDeptByIdWithPids(Set<Long> ids, Set<DeptDO> deptDOS);
+
     /**
      * 创建
      *
@@ -115,7 +118,7 @@ public interface SystemDeptService extends IService<DeptDO> {
     /**
      * 导出数据
      *
-     * @param deptDOS    待导出的数据
+     * @param deptDOS  待导出的数据
      * @param response /
      * @throws IOException /
      */

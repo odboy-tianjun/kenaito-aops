@@ -3,6 +3,7 @@ package cn.odboy.app.controller.cmdb.vo;
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -16,6 +17,6 @@ import javax.validation.constraints.NotNull;
 public class ModifyClusterDefaultAppYmlArgs extends MyObject {
     @NotNull(message = "ID必填")
     private Long id;
-    @NotNull(message = "集群默认应用负载配置必填")
+    @NotBlank(message = "应用负载Yml必填")
     private String clusterDefaultAppYaml;
 }

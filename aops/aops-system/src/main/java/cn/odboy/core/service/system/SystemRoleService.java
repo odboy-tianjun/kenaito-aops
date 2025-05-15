@@ -1,11 +1,11 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.service.system.dto.CreateRoleArgs;
 import cn.odboy.core.service.system.dto.QueryRoleArgs;
-import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +35,7 @@ public interface SystemRoleService extends IService<RoleDO> {
      * 待条件分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<RoleDO> describeRolePage(QueryRoleArgs args, Page<Object> page);
@@ -72,6 +72,7 @@ public interface SystemRoleService extends IService<RoleDO> {
      * @return 权限信息
      */
     List<RoleCodeVo> buildUserRolePermissions(UserDO userDO);
+
     /**
      * 验证是否被用户关联
      *
@@ -119,7 +120,7 @@ public interface SystemRoleService extends IService<RoleDO> {
     /**
      * 导出数据
      *
-     * @param roleDOS    待导出的数据
+     * @param roleDOS  待导出的数据
      * @param response /
      * @throws IOException /
      */

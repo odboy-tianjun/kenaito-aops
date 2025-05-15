@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 public class MenuController {
     private static final String ENTITY_NAME = "menu";
     private final SystemMenuService systemMenuService;
+
     @OperationLog
     @ApiOperation("导出菜单数据")
     @GetMapping(value = "/download")
@@ -104,6 +105,7 @@ public class MenuController {
         }
         return new ResponseEntity<>(systemMenuService.describeMenuListByPid(null), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增菜单")
     @PostMapping(value = "/saveMenu")
@@ -115,6 +117,7 @@ public class MenuController {
         systemMenuService.saveMenu(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改菜单")
     @PostMapping(value = "/modifyMenuById")
@@ -123,6 +126,7 @@ public class MenuController {
         systemMenuService.modifyMenuById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除菜单")
     @PostMapping(value = "/removeMenuByIds")

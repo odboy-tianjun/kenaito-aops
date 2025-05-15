@@ -80,6 +80,7 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
     public UserDO describeUserByUsername(String username) {
         return userMapper.getUserByUsername(username);
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveUser(UserDO resources) {

@@ -35,6 +35,7 @@ public class OnlineController {
     public ResponseEntity<PageResult<UserOnlineVo>> queryOnlineUser(String username, Pageable pageable) {
         return new ResponseEntity<>(systemUserOnlineInfoDAO.describeUserOnlineModelPage(username, pageable), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
@@ -42,6 +43,7 @@ public class OnlineController {
     public void exportOnlineUser(HttpServletResponse response, String username) throws IOException {
         systemUserOnlineInfoDAO.downloadUserOnlineModelExcel(systemUserOnlineInfoDAO.describeUserOnlineModelListByUsername(username), response);
     }
+
     @OperationLog
     @ApiOperation("踢出用户")
     @PostMapping(value = "/kickOutUser")

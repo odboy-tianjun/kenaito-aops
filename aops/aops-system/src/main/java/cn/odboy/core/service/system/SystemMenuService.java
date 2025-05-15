@@ -15,8 +15,8 @@ public interface SystemMenuService extends IService<MenuDO> {
     /**
      * 查询全部数据
      *
-     * @param args 条件
-     * @param isQuery  /
+     * @param args    条件
+     * @param isQuery /
      * @return /
      * @throws Exception /
      */
@@ -29,6 +29,7 @@ public interface SystemMenuService extends IService<MenuDO> {
      * @return /
      */
     MenuDO describeMenuById(long id);
+
     /**
      * 获取所有子节点，包含自身ID
      *
@@ -53,6 +54,7 @@ public interface SystemMenuService extends IService<MenuDO> {
      * @return /
      */
     List<MenuVo> buildMenuResponse(List<MenuDO> menuDOS);
+
     /**
      * 懒加载菜单数据
      *
@@ -64,7 +66,7 @@ public interface SystemMenuService extends IService<MenuDO> {
     /**
      * 根据ID获取同级与上级数据
      *
-     * @param menuDO    /
+     * @param menuDO  /
      * @param objects /
      * @return /
      */
@@ -77,6 +79,7 @@ public interface SystemMenuService extends IService<MenuDO> {
      * @return /
      */
     List<MenuDO> describeMenuListByUserId(Long currentUserId);
+
     /**
      * 创建
      *
@@ -102,7 +105,7 @@ public interface SystemMenuService extends IService<MenuDO> {
     /**
      * 导出
      *
-     * @param menuDOS    待导出的数据
+     * @param menuDOS  待导出的数据
      * @param response /
      * @throws IOException /
      */

@@ -61,6 +61,7 @@ public class UserController {
     private final SystemRoleService systemRoleService;
     private final CaptchaService verificationCodeService;
     private final AppProperties properties;
+
     @OperationLog
     @ApiOperation("导出用户数据")
     @GetMapping(value = "/download")
@@ -97,6 +98,7 @@ public class UserController {
         }
         return new ResponseEntity<>(PageUtil.noData(), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增用户")
     @PostMapping(value = "/saveUser")
@@ -108,6 +110,7 @@ public class UserController {
         systemUserService.saveUser(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改用户")
     @PostMapping(value = "/modifyUserById")
@@ -117,6 +120,7 @@ public class UserController {
         systemUserService.modifyUserById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("修改用户：个人中心")
     @PostMapping(value = "modifyUserCenterInfoById")
@@ -127,6 +131,7 @@ public class UserController {
         systemUserService.modifyUserCenterInfoById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除用户")
     @PostMapping(value = "/removeUserByIds")
@@ -142,6 +147,7 @@ public class UserController {
         systemUserService.removeUserByIds(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("修改密码")
     @PostMapping(value = "/modifyUserPasswordByUsername")
@@ -158,6 +164,7 @@ public class UserController {
         systemUserService.modifyUserPasswordByUsername(userDO.getUsername(), passwordEncoder.encode(newPass));
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("重置密码")
     @PostMapping(value = "/resetUserPasswordByIds")
@@ -172,6 +179,7 @@ public class UserController {
     public ResponseEntity<Object> modifyUserAvatar(@RequestParam MultipartFile avatar) {
         return new ResponseEntity<>(systemUserService.modifyUserAvatar(avatar), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("修改邮箱")
     @PostMapping(value = "/modifyUserEmailByUsername/{code}")

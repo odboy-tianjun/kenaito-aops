@@ -26,10 +26,12 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
     private final DictMapper dictMapper;
     private final RedisHelper redisHelper;
     private final DictDetailMapper dictDetailMapper;
+
     @Override
     public PageResult<DictDetailDO> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page) {
         return PageUtil.toPage(dictDetailMapper.queryDictDetailPageByArgs(args, page));
     }
+
     @Override
     public List<DictDetailDO> describeDictDetailListByName(String name) {
         String key = RedisKeyConst.DICT_NAME + name;
@@ -61,7 +63,6 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
         // 清理缓存
         delCaches(dictDetailDO);
     }
-
 
 
     @Override

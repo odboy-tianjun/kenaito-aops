@@ -16,17 +16,22 @@ export function updateClusterConfig(args) {
   return request({
     url: 'api/aops/kubernetes/clusterConfig/updateClusterConfig',
     method: 'post',
-    data: { ...args }
+    data: args
   })
 }
 
-export function modifyClusterDefaultAppYml(id, clusterDefaultAppYaml) {
+export function modifyClusterDefaultAppYml(args) {
   return request({
     url: 'api/aops/kubernetes/clusterConfig/modifyClusterDefaultAppYml',
     method: 'post',
-    data: {
-      id: id,
-      clusterDefaultAppYaml: clusterDefaultAppYaml
-    }
+    data: args
+  })
+}
+
+export function removeClusterConfig(args) {
+  return request({
+    url: 'api/aops/kubernetes/clusterConfig/removeClusterConfig',
+    method: 'post',
+    data: args
   })
 }

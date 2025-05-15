@@ -2,7 +2,7 @@ package cn.odboy.core.service.system.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,5 +24,5 @@ public class QueryDeptArgs {
     private Boolean pidIsNull;
 
     @ApiModelProperty(value = "创建时间")
-    private List<Timestamp> createTime;
+    private List<Date> createTime;
 }

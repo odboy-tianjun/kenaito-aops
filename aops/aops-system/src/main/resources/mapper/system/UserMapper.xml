@@ -112,27 +112,27 @@
         order by u.user_user_id desc
     </select>
     <select id="getUserByUsername" resultMap="BaseResultMap">
-        select u.password          user_password,
-               u.is_admin          user_is_admin,
-               u.user_id        as user_user_id,
-               u.dept_id        as user_dept_id,
-               u.username       as user_username,
-               u.nick_name      as user_nick_name,
-               u.email          as user_email,
-               u.phone          as user_phone,
-               u.gender         as user_gender,
-               u.avatar_name    as user_avatar_name,
-               u.avatar_path    as user_avatar_path,
-               u.enabled        as user_enabled,
-               u.pwd_reset_time as user_pwd_reset_time,
-               u.create_by      as user_create_by,
-               u.update_by      as user_update_by,
-               u.create_time    as user_create_time,
-               u.update_time    as user_update_time,
-               d.dept_id        as dept_id,
-               d.name           as dept_name
+        select u.password user_password,
+        u.is_admin user_is_admin,
+        u.user_id as user_user_id,
+        u.dept_id as user_dept_id,
+        u.username as user_username,
+        u.nick_name as user_nick_name,
+        u.email as user_email,
+        u.phone as user_phone,
+        u.gender as user_gender,
+        u.avatar_name as user_avatar_name,
+        u.avatar_path as user_avatar_path,
+        u.enabled as user_enabled,
+        u.pwd_reset_time as user_pwd_reset_time,
+        u.create_by as user_create_by,
+        u.update_by as user_update_by,
+        u.create_time as user_create_time,
+        u.update_time as user_update_time,
+        d.dept_id as dept_id,
+        d.name as dept_name
         from system_user u
-                 left join system_dept d on u.dept_id = d.dept_id
+        left join system_dept d on u.dept_id = d.dept_id
         where u.username = #{username}
     </select>
     <select id="getUserByEmail" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
@@ -147,8 +147,8 @@
     </select>
     <update id="updatePasswordByUsername">
         update system_user
-        set password       = #{password},
-            pwd_reset_time = #{lastPasswordResetTime}
+        set password = #{password},
+        pwd_reset_time = #{lastPasswordResetTime}
         where username = #{username}
     </update>
     <update id="updateEmailByUsername">
@@ -159,29 +159,29 @@
     <select id="queryUserListByRoleId" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         SELECT u.user_id as id, u.username
         FROM system_user u,
-             system_users_roles r
+        system_users_roles r
         WHERE u.user_id = r.user_id
-          AND r.role_id = #{roleId}
+        AND r.role_id = #{roleId}
         group by u.user_id
     </select>
     <select id="queryUserListByDeptId" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         SELECT u.*
         FROM system_user u,
-             system_users_roles r,
-             system_roles_depts d
+        system_users_roles r,
+        system_roles_depts d
         WHERE u.user_id = r.user_id
-          AND r.role_id = d.role_id
-          AND d.dept_id = #{deptId}
+        AND r.role_id = d.role_id
+        AND d.dept_id = #{deptId}
         group by u.user_id
     </select>
     <select id="queryUserListByMenuId" resultType="cn.odboy.core.dal.dataobject.system.UserDO">
         SELECT u.user_id as id, u.username
         FROM system_user u,
-             system_users_roles ur,
-             system_roles_menus rm
+        system_users_roles ur,
+        system_roles_menus rm
         WHERE u.user_id = ur.user_id
-          AND ur.role_id = rm.role_id
-          AND rm.menu_id = #{menuId}
+        AND ur.role_id = rm.role_id
+        AND rm.menu_id = #{menuId}
         group by u.user_id
     </select>
     <select id="getUserCountByJobIds" resultType="int">

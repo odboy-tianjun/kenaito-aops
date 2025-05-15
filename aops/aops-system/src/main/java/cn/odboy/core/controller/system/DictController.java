@@ -30,6 +30,7 @@ import java.util.Set;
 @RequestMapping("/api/dict")
 public class DictController {
     private final SystemDictService systemDictService;
+
     @OperationLog
     @ApiOperation("导出字典数据")
     @GetMapping(value = "/download")
@@ -52,6 +53,7 @@ public class DictController {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemDictService.describeDictPage(args, page), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增字典")
     @PostMapping(value = "/saveDict")
@@ -60,6 +62,7 @@ public class DictController {
         systemDictService.saveDict(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改字典")
     @PostMapping(value = "/modifyDictById")
@@ -68,6 +71,7 @@ public class DictController {
         systemDictService.modifyDictById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除字典")
     @PostMapping(value = "/removeDictByIds")

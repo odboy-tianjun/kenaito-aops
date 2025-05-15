@@ -18,7 +18,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * 分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<QuartzJobDO> describeQuartzJobPage(QueryQuartzJobArgs args, Page<Object> page);
@@ -35,7 +35,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * 分页查询日志
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<QuartzLogDO> describeQuartzLogPage(QueryQuartzJobArgs args, Page<Object> page);
@@ -47,6 +47,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * @return /
      */
     List<QuartzLogDO> describeQuartzLogList(QueryQuartzJobArgs args);
+
     /**
      * 创建
      *

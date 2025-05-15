@@ -12,6 +12,7 @@ public interface QiniuConfigService extends IService<QiniuConfigDO> {
      * @return QiniuConfigDO
      */
     QiniuConfigDO describeQiniuConfig();
+
     /**
      * 保存
      *

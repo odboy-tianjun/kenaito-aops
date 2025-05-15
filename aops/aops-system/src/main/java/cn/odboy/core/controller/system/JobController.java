@@ -30,6 +30,7 @@ import java.util.Set;
 @RequestMapping("/api/job")
 public class JobController {
     private final SystemJobService systemJobService;
+
     @OperationLog
     @ApiOperation("导出岗位数据")
     @GetMapping(value = "/download")
@@ -45,6 +46,7 @@ public class JobController {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemJobService.describeJobPage(args, page), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增岗位")
     @PostMapping(value = "/saveJob")
@@ -53,6 +55,7 @@ public class JobController {
         systemJobService.saveJob(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改岗位")
     @PostMapping(value = "/modifyJobById")
@@ -61,6 +64,7 @@ public class JobController {
         systemJobService.modifyJobById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除岗位")
     @PostMapping(value = "/removeJobByIds")

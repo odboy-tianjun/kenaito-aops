@@ -18,7 +18,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="handleFormSearch">查询</el-button>
+              <el-button type="primary" @click="handleFormSearch(1,pageable.pageSize,searchForm)">查询</el-button>
               <el-button style="margin-left: 10pt" @click="handleFormReset('form')">重置</el-button>
             </el-form-item>
           </el-form>
@@ -50,6 +50,7 @@
             </el-table-column>
             <el-table-column prop="clusterNodeSize" label="集群节点数量" />
             <el-table-column prop="clusterPodSize" label="集群Pod数量" />
+            <el-table-column prop="clusterDefaultAppImage" label="初始镜像地址" />
             <el-table-column prop="clusterDefaultAppYaml" label="应用负载Yaml">
               <template slot-scope="scope">
                 <el-button
@@ -62,9 +63,9 @@
               </template>
             </el-table-column>
             <el-table-column prop="status" label="是否启用" :formatter="formatterStatus" />
-            <el-table-column fixed="right" label="操作" width="260">
+            <el-table-column fixed="right" label="操作" width="240">
               <template slot-scope="scope">
-                <el-button type="text" size="small" @click.native.prevent="handleModifyClusterConfig(scope.row)">
+                <el-button type="text" size="small" @click.native.prevent="handleUpdateClusterConfig(scope.row)">
                   编辑集群
                 </el-button>
                 <el-button
@@ -82,30 +83,30 @@
         </el-main>
         <el-footer>
           <el-pagination
-            :current-page.sync="pagination.page"
+            :current-page.sync="pageable.page"
             :page-sizes="[10, 20, 30, 40, 50, 100]"
-            :page-size="pagination.pageSize"
+            :page-size="pageable.pageSize"
             layout="total,sizes, prev, pager, next"
-            :total="pagination.total"
+            :total="pageable.total"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
         </el-footer>
       </el-container>
     </el-card>
-    <el-dialog :title="dialogs.detail.title" :visible.sync="dialogs.detail.visible" width="70%">
-      <YamlEdit :value="dialogs.detail.content" height="500px" :read-only="true" />
-    </el-dialog>
-    <el-dialog title="编辑集群" :visible.sync="dialogs.clusterConfig.visible" width="70%">
-      <el-form :model="dialogs.clusterConfig.from">
-        <el-form-item label="集群名称" :label-width="dialogs.clusterConfig.labelWith">
-          <el-input v-model="dialogs.clusterConfig.from.clusterName" autocomplete="off" />
+    <el-drawer :title="drawers.detail.title" :visible.sync="drawers.detail.visible" size="50%">
+      <YamlEdit :value="drawers.detail.content" height="500px" :read-only="true" />
+    </el-drawer>
+    <el-drawer title="编辑集群" :visible.sync="drawers.updateClusterConfig.visible" size="50%">
+      <el-form ref="form" :model="drawers.updateClusterConfig.from" :rules="drawers.updateClusterConfig.rules">
+        <el-form-item prop="clusterName" label="集群名称" :label-width="drawers.updateClusterConfig.labelWith">
+          <el-input v-model="drawers.updateClusterConfig.from.clusterName" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="集群编码" :label-width="dialogs.clusterConfig.labelWith">
-          <el-input v-model="dialogs.clusterConfig.from.clusterCode" autocomplete="off" />
+        <el-form-item prop="clusterCode" label="集群编码" :label-width="drawers.updateClusterConfig.labelWith">
+          <el-input v-model="drawers.updateClusterConfig.from.clusterCode" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="所属环境" :label-width="dialogs.clusterConfig.labelWith">
-          <el-select v-model="dialogs.clusterConfig.from.envCode" placeholder="请选择所属环境">
+        <el-form-item prop="envCode" label="所属环境" :label-width="drawers.updateClusterConfig.labelWith">
+          <el-select v-model="drawers.updateClusterConfig.from.envCode" placeholder="请选择所属环境">
             <el-option
               v-for="item in metadata.Env"
               :key="item.value"
@@ -114,46 +115,49 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="是否启用" :label-width="dialogs.clusterConfig.labelWith">
-          <el-switch v-model="dialogs.clusterConfig.from.status" active-value="1" inactive-value="0" />
+        <el-form-item label="是否启用" :label-width="drawers.updateClusterConfig.labelWith">
+          <el-switch v-model="drawers.updateClusterConfig.from.status" active-value="1" inactive-value="0" />
         </el-form-item>
-        <el-form-item label="集群配置" :label-width="dialogs.clusterConfig.labelWith">
+        <el-form-item prop="clusterDefaultAppImage" label="初始镜像地址" :label-width="drawers.updateClusterConfig.labelWith">
+          <el-input v-model="drawers.updateClusterConfig.from.clusterDefaultAppImage" autocomplete="off" />
+        </el-form-item>
+        <el-form-item prop="clusterConfigContent" label="集群配置" :label-width="drawers.updateClusterConfig.labelWith">
           <YamlEdit
-            v-model="dialogs.clusterConfig.from.clusterConfigContent"
+            v-model="drawers.updateClusterConfig.from.clusterConfigContent"
             height="500px"
             :read-only="false"
           />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogs.clusterConfig.visible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogs.clusterConfig.visible = false">确 定</el-button>
+      <div style="text-align: right;padding: 10pt 20pt 10pt 10pt;">
+        <el-button @click="drawers.updateClusterConfig.visible = false">取 消</el-button>
+        <el-button type="primary" @click="doUpdateClusterConfig">确 定</el-button>
       </div>
-    </el-dialog>
-    <el-dialog title="编辑应用负载Yml" :visible.sync="dialogs.clusterConfig.appYamlVisible" width="70%">
-      <el-form :model="dialogs.clusterConfig.from">
-        <el-form-item>
+    </el-drawer>
+    <el-drawer title="编辑应用负载Yml" :visible.sync="drawers.modifyClusterDefaultAppYaml.visible" size="50%">
+      <el-form :model="drawers.modifyClusterDefaultAppYaml.from" :rules="drawers.modifyClusterDefaultAppYaml.rules">
+        <el-form-item prop="clusterDefaultAppYaml">
           <YamlEdit
-            v-model="dialogs.clusterConfig.from.clusterDefaultAppYaml"
+            v-model="drawers.modifyClusterDefaultAppYaml.from.clusterDefaultAppYaml"
             height="500px"
             :read-only="false"
           />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogs.clusterConfig.appYamlVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogs.clusterConfig.appYamlVisible = false">确 定</el-button>
+      <div style="text-align: right;padding: 10pt 20pt 10pt 10pt;">
+        <el-button @click="drawers.modifyClusterDefaultAppYaml.visible = false">取 消</el-button>
+        <el-button type="primary" @click="doModifyClusterDefaultAppYaml">确 定</el-button>
       </div>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import * as kubernetesClusterConfigService from '@/api/aops/cmdb/kubernetesClusterConfig'
 import * as metadataService from '@/api/aops/cmdb/metadata'
-import { MessageUtil } from '@/utils/myElement'
 import YamlEdit from '@/components/YamlEdit/index'
 import { LabelUtil } from '@/utils/myUtil'
+import { MessageBoxUtil, MessageUtil } from '@/utils/myElement'
 
 export default {
   name: 'AopsCmdbClusterConfig',
@@ -178,20 +182,19 @@ export default {
         data: [],
         loading: false
       },
-      pagination: {
+      pageable: {
         page: 1,
         pageSize: 10,
         total: 0
       },
-      dialogs: {
+      drawers: {
         detail: {
           visible: false,
           title: '',
           content: ''
         },
-        clusterConfig: {
+        updateClusterConfig: {
           visible: false,
-          appYamlVisible: false,
           labelWith: '120px',
           from: {
             id: null,
@@ -199,8 +202,39 @@ export default {
             clusterCode: null,
             envCode: null,
             clusterConfigContent: null,
+            clusterDefaultAppImage: null,
             clusterDefaultAppYaml: null,
-            status: null
+            status: 1
+          },
+          rules: {
+            clusterName: [
+              { required: true, message: '请输入集群名称', trigger: 'blur' }
+            ],
+            clusterCode: [
+              { required: true, message: '请输入集群编码', trigger: 'blur' }
+            ],
+            envCode: [
+              { required: true, message: '请选择所属环境', trigger: 'change' }
+            ],
+            clusterConfigContent: [
+              { required: true, message: '请输入集群配置', trigger: 'blur' }
+            ],
+            clusterDefaultAppImage: [
+              { required: true, message: '请输入初始镜像地址', trigger: 'blur' }
+            ]
+          }
+        },
+        modifyClusterDefaultAppYaml: {
+          visible: false,
+          labelWith: '120px',
+          from: {
+            id: null,
+            clusterDefaultAppYaml: null
+          },
+          rules: {
+            clusterDefaultAppYaml: [
+              { required: true, message: '请输入应用负载Yml配置', trigger: 'blur' }
+            ]
           }
         }
       }
@@ -208,8 +242,7 @@ export default {
   },
   mounted() {
     this.initMetadata()
-    this.pagination.page = 1
-    this.handleFormSearch(this.pagination.page, this.pagination.pageSize, this.searchForm)
+    this.handleFormSearch(1, this.pageable.pageSize, this.searchForm)
   },
   methods: {
     initMetadata() {
@@ -227,10 +260,11 @@ export default {
     handleFormSearch(page, pageSize, args) {
       // 初始化表格数据
       const _this = this
+      _this.pageable.page = page
       _this.table.loading = true
       kubernetesClusterConfigService.describePage(page, pageSize, args).then(data => {
         _this.table.data = data.content
-        _this.pagination.total = data.totalElements
+        _this.pageable.total = data.totalElements
         _this.table.loading = false
       }).finally(() => {
         _this.table.loading = false
@@ -246,35 +280,52 @@ export default {
       return LabelUtil.getLabel(this.metadata.EnableStatus, cellValue)
     },
     handleShowDetailDialog(title, value) {
-      this.dialogs.detail.title = title
-      this.dialogs.detail.content = value
-      this.dialogs.detail.visible = true
+      this.drawers.detail.title = title
+      this.drawers.detail.content = value
+      this.drawers.detail.visible = true
     },
-    handleModifyClusterConfig(values) {
-      MessageUtil.warning(this, '功能开发中')
-      this.dialogs.clusterConfig.from = { ...values }
-      this.dialogs.clusterConfig.visible = true
-      console.error('handleModifyClusterConfig(values)', this.dialogs.clusterConfig.from)
+    handleUpdateClusterConfig(values) {
+      this.drawers.updateClusterConfig.from = { ...values }
+      this.drawers.updateClusterConfig.visible = true
+    },
+    doUpdateClusterConfig() {
+      const _this = this
+      kubernetesClusterConfigService.updateClusterConfig(_this.drawers.updateClusterConfig.from).then(data => {
+        MessageUtil.success(_this, '操作成功')
+        _this.drawers.updateClusterConfig.visible = false
+        _this.handleFormSearch(1, _this.pageable.pageSize, _this.searchForm)
+      })
     },
     handleModifyClusterDefaultAppYaml(values) {
-      MessageUtil.warning(this, '功能开发中')
-      this.dialogs.clusterConfig.from = { ...values }
-      this.dialogs.clusterConfig.appYamlVisible = true
-      console.error('handleModifyClusterDefaultAppYaml(values)', this.dialogs.clusterConfig.from)
+      this.drawers.modifyClusterDefaultAppYaml.from = { ...values }
+      this.drawers.modifyClusterDefaultAppYaml.visible = true
+    },
+    doModifyClusterDefaultAppYaml() {
+      const _this = this
+      kubernetesClusterConfigService.modifyClusterDefaultAppYml(_this.drawers.modifyClusterDefaultAppYaml.from).then(data => {
+        MessageUtil.success(_this, '操作成功')
+        _this.drawers.modifyClusterDefaultAppYaml.visible = false
+        _this.handleFormSearch(1, _this.pageable.pageSize, _this.searchForm)
+      })
     },
     handleRemoveClusterConfig(values) {
-      MessageUtil.warning(this, '功能开发中')
-      this.dialogs.clusterConfig.from = { ...values }
-      console.error('handleRemoveClusterConfig(values)', this.dialogs.clusterConfig.from)
+      const _this = this
+      MessageBoxUtil.deleteMessageConfirm(_this, `确认删除 ${values.clusterName} 配置吗？`,
+        () => {
+          kubernetesClusterConfigService.removeClusterConfig(values).then(data => {
+            MessageUtil.success(_this, '操作成功')
+            _this.handleFormSearch(1, _this.pageable.pageSize, _this.searchForm)
+          })
+        },
+        null
+      )
     },
     handleCurrentChange(page) {
-      this.pagination.page = page
-      this.handleFormSearch(this.pagination.page, this.pagination.pageSize, this.searchForm)
+      this.handleFormSearch(page, this.pageable.pageSize, this.searchForm)
     },
     handleSizeChange(size) {
-      this.pagination.page = 1
-      this.pagination.pageSize = size
-      this.handleFormSearch(this.pagination.page, this.pagination.pageSize, this.searchForm)
+      this.pageable.pageSize = size
+      this.handleFormSearch(1, this.pageable.pageSize, this.searchForm)
     }
   }
 }

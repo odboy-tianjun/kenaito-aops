@@ -14,7 +14,7 @@ public interface SystemDictDetailService extends IService<DictDetailDO> {
      * 分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<DictDetailDO> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page);
@@ -26,6 +26,7 @@ public interface SystemDictDetailService extends IService<DictDetailDO> {
      * @return /
      */
     List<DictDetailDO> describeDictDetailListByName(String name);
+
     /**
      * 创建
      *

@@ -17,7 +17,7 @@ public interface SystemJobService extends IService<JobDO> {
      * 分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<JobDO> describeJobPage(QueryJobArgs args, Page<Object> page);
@@ -45,6 +45,7 @@ public interface SystemJobService extends IService<JobDO> {
      * @return /
      */
     JobDO describeJobById(Long id);
+
     /**
      * 创建
      *
@@ -69,7 +70,7 @@ public interface SystemJobService extends IService<JobDO> {
     /**
      * 导出数据
      *
-     * @param jobDOS     待导出的数据
+     * @param jobDOS   待导出的数据
      * @param response /
      * @throws IOException /
      */

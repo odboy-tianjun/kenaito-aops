@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @TableName("system_quartz_log")
@@ -46,5 +46,5 @@ public class QuartzLogDO extends MyObject {
 
     @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间", hidden = true)
-    private Timestamp createTime;
+    private Date createTime;
 }

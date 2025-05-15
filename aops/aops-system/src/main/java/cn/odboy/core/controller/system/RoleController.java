@@ -43,6 +43,7 @@ public class RoleController {
     public ResponseEntity<RoleDO> describeRoleById(@RequestBody RoleDO args) {
         return new ResponseEntity<>(systemRoleService.describeRoleById(args.getId()), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("导出角色数据")
     @GetMapping(value = "/download")
@@ -71,6 +72,7 @@ public class RoleController {
     public ResponseEntity<Object> describeRoleLevel() {
         return new ResponseEntity<>(Dict.create().set("level", checkRoleLevels(null)), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增角色")
     @PostMapping(value = "/saveRole")
@@ -80,6 +82,7 @@ public class RoleController {
         systemRoleService.saveRole(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改角色")
     @PostMapping(value = "/modifyRoleById")
@@ -89,6 +92,7 @@ public class RoleController {
         systemRoleService.modifyRoleById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("修改角色菜单")
     @PostMapping(value = "/modifyBindMenuById")
@@ -99,6 +103,7 @@ public class RoleController {
         systemRoleService.modifyBindMenuById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除角色")
     @PostMapping(value = "/removeRoleByIds")

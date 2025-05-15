@@ -3,11 +3,25 @@
 </template>
 
 <script>
-import CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
-// 替换主题这里需修改名称
-import 'codemirror/theme/idea.css'
-import 'codemirror/mode/yaml/yaml'
+import 'codemirror/mode/css/css.js'
+import 'codemirror/mode/yaml/yaml.js'
+import 'codemirror/mode/yaml-frontmatter/yaml-frontmatter.js'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/addon/selection/active-line' // 代码高亮
+import 'codemirror/addon/fold/foldgutter.css'
+import 'codemirror/addon/fold/foldcode'
+import 'codemirror/addon/fold/brace-fold'
+import 'codemirror/addon/scroll/simplescrollbars.css'
+import 'codemirror/addon/scroll/simplescrollbars'
+import 'codemirror/addon/hint/show-hint'
+import 'codemirror/addon/hint/javascript-hint'
+import 'codemirror/addon/hint/anyword-hint'
+import 'codemirror/addon/hint/css-hint'
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/theme/dracula.css'
+import 'codemirror/theme/monokai.css' // 主题
+import CodeMirror from 'codemirror'
 export default {
   props: {
     value: {
@@ -43,14 +57,17 @@ export default {
   },
   mounted() {
     this.editor = CodeMirror.fromTextArea(this.$refs.textarea, {
-      mode: 'text/x-yaml',
-      lineNumbers: true,
+      mode: 'yaml',
+      lineNumbers: true, // 显示行数
       lint: true,
-      lineWrapping: true,
+      matchBrackets: true, // 括号匹配
+      lineWrapping: true, // 自动换行
+      indentUnit: 2, // 缩进单位为2
+      smartIndent: true, // 自动缩进是否开启
+      styleActiveLine: true, // 当前行背景高亮
       tabSize: 2,
-      cursorHeight: 0.9,
-      // 替换主题这里需修改名称
-      theme: 'idea'
+      cursorHeight: 1,
+      theme: 'dracula' // 主题
     })
     this.editor.setSize('auto', this.height)
     if (this.value) {

@@ -22,7 +22,7 @@ public class TokenFilter extends GenericFilterBean {
     private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
 
     /**
-     * @param tokenProvider     Token
+     * @param tokenProvider           Token
      * @param systemUserOnlineInfoDAO 用户在线
      */
     public TokenFilter(TokenProvider tokenProvider, SystemUserOnlineInfoDAO systemUserOnlineInfoDAO) {

@@ -12,6 +12,7 @@ public interface EmailService extends IService<EmailConfigDO> {
      * @return EmailConfigDO 邮件配置
      */
     EmailConfigDO describeEmailConfig();
+
     /**
      * 更新邮件配置
      *

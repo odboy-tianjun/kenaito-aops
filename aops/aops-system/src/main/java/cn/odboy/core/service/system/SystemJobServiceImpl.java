@@ -2,16 +2,16 @@ package cn.odboy.core.service.system;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.system.JobDO;
+import cn.odboy.core.dal.mysql.system.JobMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.service.system.dto.CreateJobArgs;
-import cn.odboy.core.dal.mysql.system.JobMapper;
-import cn.odboy.common.exception.EntityExistException;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.FileUtil;
 import cn.odboy.core.service.system.dto.QueryJobArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -33,6 +33,7 @@ public class SystemJobServiceImpl extends ServiceImpl<JobMapper, JobDO> implemen
     private final JobMapper jobMapper;
     private final RedisHelper redisHelper;
     private final UserMapper userMapper;
+
     @Override
     public PageResult<JobDO> describeJobPage(QueryJobArgs args, Page<Object> page) {
         return PageUtil.toPage(jobMapper.queryJobPageByArgs(args, page));

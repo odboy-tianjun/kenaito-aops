@@ -2,11 +2,15 @@ package cn.odboy.core.framework.web.core;
 
 import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.core.framework.system.core.dto.FileUploadSettingModel;
+import cn.odboy.core.framework.web.converters.DateStringArraysToListDateConverter;
+import cn.odboy.core.framework.web.converters.DateStringToDateConverter;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.support.config.FastJsonConfig;
 import com.alibaba.fastjson2.support.spring.http.converter.FastJsonHttpMessageConverter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -22,16 +26,14 @@ import java.util.List;
 
 @Configuration
 @EnableWebMvc
+@RequiredArgsConstructor
 public class ConfigurerAdapter implements WebMvcConfigurer {
-
     /**
      * 文件配置
      */
-    private final AppProperties properties;
-
-    public ConfigurerAdapter(AppProperties properties) {
-        this.properties = properties;
-    }
+    private final AppProperties appProperties;
+    private final DateStringArraysToListDateConverter dateStringArraysToListDateConverter;
+    private final DateStringToDateConverter dateStringToDateConverter;
 
     @Bean
     public CorsFilter corsFilter() {
@@ -47,7 +49,7 @@ public class ConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        FileUploadSettingModel.ElPath path = properties.getFile().getPath();
+        FileUploadSettingModel.ElPath path = appProperties.getFile().getPath();
         String avatarUtl = "file:" + path.getAvatar().replace("\\", "/");
         String pathUtl = "file:" + path.getPath().replace("\\", "/");
         registry.addResourceHandler("/avatar/**").addResourceLocations(avatarUtl).setCachePeriod(0);
@@ -86,5 +88,14 @@ public class ConfigurerAdapter implements WebMvcConfigurer {
         fastJsonConverter.setDefaultCharset(StandardCharsets.UTF_8);
         // 将 FastJsonHttpMessageConverter 添加到列表末尾
         converters.add(fastJsonConverter);
+    }
+
+    /**
+     * 自定义时间转换器
+     */
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(dateStringArraysToListDateConverter);
+        registry.addConverter(dateStringToDateConverter);
     }
 }

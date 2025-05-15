@@ -16,7 +16,7 @@ public interface LocalStorageService extends IService<LocalStorageDO> {
      * 分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<LocalStorageDO> describeLocalStoragePage(QueryLocalStorageArgs args, Page<Object> page);
@@ -28,6 +28,7 @@ public interface LocalStorageService extends IService<LocalStorageDO> {
      * @return /
      */
     List<LocalStorageDO> describeLocalStorageList(QueryLocalStorageArgs args);
+
     /**
      * 上传
      *
@@ -55,7 +56,7 @@ public interface LocalStorageService extends IService<LocalStorageDO> {
      * 导出数据
      *
      * @param localStorageDOS 待导出的数据
-     * @param response      /
+     * @param response        /
      * @throws IOException /
      */
     void downloadExcel(List<LocalStorageDO> localStorageDOS, HttpServletResponse response) throws IOException;

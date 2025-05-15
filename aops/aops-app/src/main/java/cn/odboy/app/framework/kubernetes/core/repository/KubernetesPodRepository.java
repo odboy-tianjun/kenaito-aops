@@ -15,7 +15,6 @@
  */
 package cn.odboy.app.framework.kubernetes.core.repository;
 
-import cn.odboy.app.framework.kubernetes.core.context.KubernetesApiClientManager;
 import cn.odboy.app.framework.kubernetes.core.exception.KubernetesApiExceptionCatch;
 import cn.odboy.app.framework.kubernetes.core.util.KubernetesResourceLabelMetaUtil;
 import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsDryRunVo;
@@ -50,7 +49,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class KubernetesPodRepository {
-    private final KubernetesApiClientManager kubernetesApiClientManager;
 
     @SneakyThrows
     @KubernetesApiExceptionCatch(description = "查询pod列表", throwException = false)

@@ -1,8 +1,8 @@
 package cn.odboy.common.exception.handler;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -34,7 +34,8 @@
         select
         roleDO.role_id as role_role_id, roleDO.name as role_name, roleDO.data_scope as role_data_scope,
         roleDO.level as role_level, roleDO.description as role_description, roleDO.create_by as role_create_by,
-        roleDO.update_by as role_update_by, roleDO.create_time as role_create_time, roleDO.update_time as role_update_time
+        roleDO.update_by as role_update_by, roleDO.create_time as role_create_time, roleDO.update_time as
+        role_update_time
         from system_role roleDO
         <where>
             <if test="args.blurry != null and args.blurry != ''">
@@ -79,50 +80,50 @@
         where name = #{name}
     </select>
     <select id="getRoleById" resultMap="BaseResultMap">
-        select roleDO.role_id     as role_role_id,
-               roleDO.name        as role_name,
-               roleDO.data_scope  as role_data_scope,
-               roleDO.level       as role_level,
-               roleDO.description as role_description,
-               roleDO.create_by   as role_create_by,
-               roleDO.update_by   as role_update_by,
-               roleDO.create_time as role_create_time,
-               roleDO.update_time as role_update_time,
-               deptDO.dept_id     as dept_id,
-               deptDO.name        as dept_name,
-               menuDO.menu_id     as menu_id,
-               menuDO.title       as menu_title,
-               menuDO.permission  as menu_permission
+        select roleDO.role_id as role_role_id,
+        roleDO.name as role_name,
+        roleDO.data_scope as role_data_scope,
+        roleDO.level as role_level,
+        roleDO.description as role_description,
+        roleDO.create_by as role_create_by,
+        roleDO.update_by as role_update_by,
+        roleDO.create_time as role_create_time,
+        roleDO.update_time as role_update_time,
+        deptDO.dept_id as dept_id,
+        deptDO.name as dept_name,
+        menuDO.menu_id as menu_id,
+        menuDO.title as menu_title,
+        menuDO.permission as menu_permission
         from system_role roleDO
-                 left join system_roles_menus srm on roleDO.role_id = srm.role_id
-                 left join system_menu menuDO on menuDO.menu_id = srm.menu_id
-                 left join system_roles_depts srd on roleDO.role_id = srd.role_id
-                 left join system_dept deptDO on deptDO.dept_id = srd.dept_id
+        left join system_roles_menus srm on roleDO.role_id = srm.role_id
+        left join system_menu menuDO on menuDO.menu_id = srm.menu_id
+        left join system_roles_depts srd on roleDO.role_id = srd.role_id
+        left join system_dept deptDO on deptDO.dept_id = srd.dept_id
         where roleDO.role_id = #{roleId}
     </select>
     <select id="queryRoleListByUserId" resultMap="BaseResultMap">
-        SELECT roleDO.role_id     as role_role_id,
-               roleDO.name        as role_name,
-               roleDO.data_scope  as role_data_scope,
-               roleDO.level       as role_level,
-               roleDO.description as role_description,
-               roleDO.create_by   as role_create_by,
-               roleDO.update_by   as role_update_by,
-               roleDO.create_time as role_create_time,
-               roleDO.update_time as role_update_time,
-               deptDO.dept_id     as dept_id,
-               deptDO.name        as dept_name,
-               menuDO.menu_id     as menu_id,
-               menuDO.title       as menu_title,
-               menuDO.permission  as menu_permission
+        SELECT roleDO.role_id as role_role_id,
+        roleDO.name as role_name,
+        roleDO.data_scope as role_data_scope,
+        roleDO.level as role_level,
+        roleDO.description as role_description,
+        roleDO.create_by as role_create_by,
+        roleDO.update_by as role_update_by,
+        roleDO.create_time as role_create_time,
+        roleDO.update_time as role_update_time,
+        deptDO.dept_id as dept_id,
+        deptDO.name as dept_name,
+        menuDO.menu_id as menu_id,
+        menuDO.title as menu_title,
+        menuDO.permission as menu_permission
         from system_role roleDO
-                 left join system_roles_menus srm on roleDO.role_id = srm.role_id
-                 left join system_menu menuDO on menuDO.menu_id = srm.menu_id
-                 left join system_roles_depts srd on roleDO.role_id = srd.role_id
-                 left join system_dept deptDO on deptDO.dept_id = srd.dept_id
-                 left join system_users_roles ur on roleDO.role_id = ur.role_id
+        left join system_roles_menus srm on roleDO.role_id = srm.role_id
+        left join system_menu menuDO on menuDO.menu_id = srm.menu_id
+        left join system_roles_depts srd on roleDO.role_id = srd.role_id
+        left join system_dept deptDO on deptDO.dept_id = srd.dept_id
+        left join system_users_roles ur on roleDO.role_id = ur.role_id
         WHERE roleDO.role_id = ur.role_id
-          AND ur.user_id = #{userId}
+        AND ur.user_id = #{userId}
     </select>
     <select id="getRoleCountByDeptIds" resultType="int">
         select count(*)
@@ -136,8 +137,8 @@
     <select id="queryRoleListByMenuId" resultType="cn.odboy.core.dal.dataobject.system.RoleDO">
         SELECT roleDO.role_id as id
         FROM system_role roleDO,
-             system_roles_menus rm
+        system_roles_menus rm
         WHERE roleDO.role_id = rm.role_id
-          AND rm.menu_id = #{menuId}
+        AND rm.menu_id = #{menuId}
     </select>
 </mapper>

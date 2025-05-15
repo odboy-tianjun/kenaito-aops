@@ -1,7 +1,9 @@
 package cn.odboy.core.controller.system.vo;
 
+import com.alibaba.fastjson2.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 /**

@@ -3,15 +3,15 @@ package cn.odboy.core.service.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.system.DictDO;
-import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.dal.mysql.system.DictMapper;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.service.system.dto.CreateDictArgs;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.FileUtil;
 import cn.odboy.core.service.system.dto.QueryDictArgs;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -33,6 +33,7 @@ public class SystemDictServiceImpl extends ServiceImpl<DictMapper, DictDO> imple
     private final DictMapper dictMapper;
     private final DictDetailMapper dictDetailMapper;
     private final RedisHelper redisHelper;
+
     @Override
     public PageResult<DictDO> describeDictPage(QueryDictArgs args, Page<Object> page) {
         IPage<DictDO> dicts = dictMapper.queryDictPageByArgs(args, page);

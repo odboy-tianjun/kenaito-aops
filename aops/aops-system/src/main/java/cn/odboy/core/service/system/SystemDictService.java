@@ -17,7 +17,7 @@ public interface SystemDictService extends IService<DictDO> {
      * 分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<DictDO> describeDictPage(QueryDictArgs args, Page<Object> page);
@@ -29,6 +29,7 @@ public interface SystemDictService extends IService<DictDO> {
      * @return /
      */
     List<DictDO> describeDictList(QueryDictArgs args);
+
     /**
      * 创建
      *

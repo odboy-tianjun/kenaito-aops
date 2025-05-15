@@ -64,7 +64,7 @@ public class SystemDataServiceImpl implements SystemDataService {
      * 获取自定义的数据权限
      *
      * @param deptIds 部门ID
-     * @param roleDO    角色
+     * @param roleDO  角色
      * @return 数据权限ID
      */
     public Set<Long> getCustomize(Set<Long> deptIds, RoleDO roleDO) {

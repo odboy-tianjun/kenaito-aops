@@ -54,15 +54,15 @@
     </select>
     <select id="queryDeptListByPid" resultMap="BaseResultMap">
         select dept_id,
-               name,
-               pid,
-               sub_count,
-               create_time,
-               update_time,
-               create_by,
-               update_by,
-               enabled,
-               dept_sort
+        name,
+        pid,
+        sub_count,
+        create_time,
+        update_time,
+        create_by,
+        update_by,
+        enabled,
+        dept_sort
         from system_dept
         where pid = #{pid}
     </select>
@@ -73,33 +73,33 @@
     </select>
     <select id="queryDeptListByPidIsNull" resultMap="BaseResultMap">
         select dept_id,
-               name,
-               pid,
-               sub_count,
-               create_time,
-               update_time,
-               create_by,
-               update_by,
-               enabled,
-               dept_sort
+        name,
+        pid,
+        sub_count,
+        create_time,
+        update_time,
+        create_by,
+        update_by,
+        enabled,
+        dept_sort
         from system_dept
         where pid is null
     </select>
     <select id="queryDeptSetByRoleId" resultType="cn.odboy.core.dal.dataobject.system.DeptDO">
         SELECT d.dept_id AS id,
-               d.NAME,
-               d.pid,
-               d.sub_count,
-               d.create_time,
-               d.update_time,
-               d.create_by,
-               d.update_by,
-               d.enabled,
-               d.dept_sort
+        d.NAME,
+        d.pid,
+        d.sub_count,
+        d.create_time,
+        d.update_time,
+        d.create_by,
+        d.update_by,
+        d.enabled,
+        d.dept_sort
         FROM system_dept d,
-             system_roles_depts rd
+        system_roles_depts rd
         WHERE d.dept_id = rd.dept_id
-          AND rd.role_id = #{roleId}
+        AND rd.role_id = #{roleId}
     </select>
     <update id="updateSubCountById">
         update system_dept

@@ -1,9 +1,9 @@
 package cn.odboy.core.service.tools;
 
+import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.core.constant.TransferProtocolConst;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
 import cn.odboy.core.dal.mysql.tools.QiniuConfigMapper;
-import cn.odboy.common.exception.BadRequestException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;

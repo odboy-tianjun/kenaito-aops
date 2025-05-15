@@ -15,13 +15,11 @@
  */
 package cn.odboy.app.framework.kubernetes.core.vo;
 
-import com.alibaba.fastjson2.annotation.JSONField;
 import io.kubernetes.client.openapi.models.V1NamespaceSpec;
 import io.kubernetes.client.openapi.models.V1NamespaceStatus;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1PodCondition;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +44,8 @@ public class KubernetesResourceVo {
     public static class Pod {
         private String name;
         private String ip;
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date createTime;
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date deleteTime;
-        @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date startTime;
         private Map<String, String> labels;
         private String namespace;

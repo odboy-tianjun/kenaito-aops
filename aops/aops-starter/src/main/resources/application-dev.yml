@@ -106,7 +106,7 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-#      aop-patterns: "cn.odboy.mapper.*,cn.odboy.service.*,cn.odboy.*.mapper.*,cn.odboy.*.service.*"
+  #      aop-patterns: "cn.odboy.mapper.*,cn.odboy.service.*,cn.odboy.*.mapper.*,cn.odboy.*.service.*"
   redis:
     database: ${REDIS_DB:1}
     host: ${REDIS_HOST:192.168.235.102}
@@ -235,7 +235,7 @@ app:
 #  level:
 #    root: debug
 gitlab:
-#  url: http://192.168.235.103:20080
+  #  url: http://192.168.235.103:20080
   url: http://tools.odboy.cn:20080
   access-token: B7XeXEy4aAs3pWtc_xhB
 dingtalk:

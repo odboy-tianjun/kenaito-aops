@@ -1,6 +1,5 @@
 package cn.odboy.common.pojo;
 
-import com.alibaba.fastjson2.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
@@ -10,9 +9,8 @@ import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 逻辑删除通用模型
@@ -33,14 +31,10 @@ public class MyLogicEntity extends MyObject {
     private String updateBy;
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间", hidden = true)
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp createTime;
+    private Date createTime;
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "更新时间", hidden = true)
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Timestamp updateTime;
+    private Date updateTime;
     @ApiModelProperty(value = "数据有效性", hidden = true)
     @TableLogic
     @TableField("available")

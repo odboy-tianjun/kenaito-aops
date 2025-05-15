@@ -34,7 +34,7 @@ public interface SystemUserService extends IService<UserDO> {
      * 查询全部
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<UserDO> describeUserPage(QueryUserArgs args, Page<Object> page);
@@ -68,6 +68,7 @@ public interface SystemUserService extends IService<UserDO> {
      * @param ids /
      */
     void removeUserByIds(Set<Long> ids);
+
     /**
      * 修改密码
      *

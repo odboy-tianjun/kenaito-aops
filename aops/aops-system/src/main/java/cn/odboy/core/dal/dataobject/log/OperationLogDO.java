@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 import java.util.Date;
 
 /**
@@ -27,7 +26,7 @@ import java.util.Date;
 @ToString
 @TableName("operation_log")
 @ApiModel(value = "OperationLog对象", description = "审计日志")
-public class OperationLogDO extends MyObject{
+public class OperationLogDO extends MyObject {
 
     /**
      * id

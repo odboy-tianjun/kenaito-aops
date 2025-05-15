@@ -20,6 +20,6 @@ public class UpdateClusterConfigArgs extends MyObject {
     private String clusterName;
     @NotBlank(message = "集群配置必填")
     private String clusterConfigContent;
-    @NotBlank(message = "集群默认应用镜像必填")
+    @NotBlank(message = "初始镜像地址必填")
     private String clusterDefaultAppImage;
 }

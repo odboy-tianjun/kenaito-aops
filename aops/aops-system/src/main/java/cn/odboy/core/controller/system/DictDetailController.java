@@ -48,6 +48,7 @@ public class DictDetailController {
         }
         return new ResponseEntity<>(dictMap, HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增字典详情")
     @PostMapping(value = "/saveDictDetail")
@@ -56,6 +57,7 @@ public class DictDetailController {
         systemDictDetailService.saveDictDetail(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改字典详情")
     @PostMapping(value = "/modifyDictDetailById")
@@ -64,6 +66,7 @@ public class DictDetailController {
         systemDictDetailService.modifyDictDetailById(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除字典详情")
     @PostMapping(value = "/removeDictDetailById")

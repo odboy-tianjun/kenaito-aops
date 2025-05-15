@@ -16,7 +16,7 @@ public interface QiniuContentService extends IService<QiniuContentDO> {
      * 分页查询
      *
      * @param args 条件
-     * @param page     分页参数
+     * @param page 分页参数
      * @return /
      */
     PageResult<QiniuContentDO> describeQiniuContentPage(QueryQiniuArgs args, Page<Object> page);
@@ -28,6 +28,7 @@ public interface QiniuContentService extends IService<QiniuContentDO> {
      * @return /
      */
     List<QiniuContentDO> describeQiniuContentList(QueryQiniuArgs args);
+
     /**
      * 上传文件
      *

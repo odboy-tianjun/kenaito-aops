@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/dept")
 public class DeptController {
     private final SystemDeptService systemDeptService;
+
     @OperationLog
     @ApiOperation("导出部门数据")
     @GetMapping(value = "/download")
@@ -71,6 +72,7 @@ public class DeptController {
         }
         return new ResponseEntity<>(systemDeptService.buildDeptTree(new ArrayList<>(deptDOSet)), HttpStatus.OK);
     }
+
     @OperationLog
     @ApiOperation("新增部门")
     @PostMapping(value = "/saveDept")
@@ -79,6 +81,7 @@ public class DeptController {
         systemDeptService.saveDept(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
     @OperationLog
     @ApiOperation("修改部门")
     @PostMapping(value = "/modifyDept")
@@ -87,6 +90,7 @@ public class DeptController {
         systemDeptService.modifyDept(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @OperationLog
     @ApiOperation("删除部门")
     @PostMapping(value = "/removeDeptByIds")

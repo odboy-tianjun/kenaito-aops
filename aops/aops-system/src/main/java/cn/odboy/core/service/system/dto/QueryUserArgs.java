@@ -4,7 +4,7 @@ import cn.odboy.common.pojo.MyObject;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class QueryUserArgs extends MyObject {
     private Long deptId;
 
     @ApiModelProperty(value = "创建时间")
-    private List<Timestamp> createTime;
+    private List<Date> createTime;
 
     @ApiModelProperty(value = "页码", example = "1")
     private Integer page = 1;

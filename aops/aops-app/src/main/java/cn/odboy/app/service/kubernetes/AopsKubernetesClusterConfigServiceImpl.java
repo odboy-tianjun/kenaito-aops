@@ -22,7 +22,6 @@ import cn.odboy.app.controller.cmdb.vo.ModifyClusterDefaultAppYmlArgs;
 import cn.odboy.app.controller.cmdb.vo.UpdateClusterConfigArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterConfigMapper;
-import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.pojo.vo.RemoveByIdArgs;

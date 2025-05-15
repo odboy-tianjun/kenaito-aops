@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 上传成功后，存储结果
@@ -44,5 +44,5 @@ public class QiniuContentDO extends MyObject {
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "创建或更新时间")
-    private Timestamp updateTime;
+    private Date updateTime;
 }

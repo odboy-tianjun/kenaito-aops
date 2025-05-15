@@ -21,7 +21,7 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
-             <version>7.0.1</version>
+            <version>7.0.1</version>
         </dependency>
         <!-- 官方库 https://mvnrepository.com/artifact/io.kubernetes/client-java -->
         <dependency>
