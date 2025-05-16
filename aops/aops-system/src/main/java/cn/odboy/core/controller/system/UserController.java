@@ -1,7 +1,7 @@
 package cn.odboy.core.controller.system;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.odboy.common.pojo.MyMetaOption;
+import cn.odboy.common.pojo.MyMetaOptionItem;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
@@ -14,9 +14,9 @@ import cn.odboy.core.framework.system.config.AppProperties;
 import cn.odboy.core.service.system.SystemDeptService;
 import cn.odboy.core.service.system.SystemRoleService;
 import cn.odboy.core.service.system.SystemUserService;
-import cn.odboy.core.service.system.dto.QueryUserArgs;
+import cn.odboy.core.service.system.dto.UserQueryArgs;
 import cn.odboy.core.service.tools.CaptchaService;
-import cn.odboy.core.controller.system.vo.UpdateUserPasswordVo;
+import cn.odboy.core.controller.system.vo.UserModifyPasswordVo;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.common.util.RsaEncryptUtil;
@@ -66,14 +66,14 @@ public class UserController {
     @ApiOperation("导出用户数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('user:list')")
-    public void exportUser(HttpServletResponse response, QueryUserArgs args) throws IOException {
+    public void exportUser(HttpServletResponse response, UserQueryArgs args) throws IOException {
         systemUserService.downloadUserExcel(systemUserService.describeUserList(args), response);
     }
 
     @ApiOperation("查询用户")
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<PageResult<UserDO>> queryUser(QueryUserArgs args) {
+    public ResponseEntity<PageResult<UserDO>> queryUser(UserQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         if (!ObjectUtils.isEmpty(args.getDeptId())) {
             args.getDeptIds().add(args.getDeptId());
@@ -151,7 +151,7 @@ public class UserController {
     @OperationLog
     @ApiOperation("修改密码")
     @PostMapping(value = "/modifyUserPasswordByUsername")
-    public ResponseEntity<Object> modifyUserPasswordByUsername(@RequestBody UpdateUserPasswordVo passVo) throws Exception {
+    public ResponseEntity<Object> modifyUserPasswordByUsername(@RequestBody UserModifyPasswordVo passVo) throws Exception {
         String oldPass = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), passVo.getOldPass());
         String newPass = RsaEncryptUtil.decryptByPrivateKey(properties.getRsa().getPrivateKey(), passVo.getNewPass());
         UserDO userDO = systemUserService.describeUserByUsername(SecurityHelper.getCurrentUsername());
@@ -210,7 +210,7 @@ public class UserController {
     @ApiOperation("查询用户基础数据")
     @PostMapping(value = "/describeUserMetadataOptions")
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<List<MyMetaOption>> queryUserMetadataOptions(@Validated @RequestBody QueryUserArgs args) {
+    public ResponseEntity<List<MyMetaOptionItem>> queryUserMetadataOptions(@Validated @RequestBody UserQueryArgs args) {
         int maxPageSize = 50;
         return new ResponseEntity<>(systemUserService.page(new Page<>(args.getPage(), maxPageSize), new LambdaQueryWrapper<UserDO>()
                 .and(c -> {
@@ -228,7 +228,7 @@ public class UserController {
             ext.put("deptId", m.getDeptId());
             ext.put("email", m.getEmail());
             ext.put("phone", m.getPhone());
-            return MyMetaOption.builder()
+            return MyMetaOptionItem.builder()
                     .label(m.getNickName())
                     .value(m.getUsername())
                     .ext(ext)

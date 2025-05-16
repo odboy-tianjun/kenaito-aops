@@ -18,8 +18,8 @@ import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.models.V1LabelSelector;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Objects;
 import javax.annotation.Generated;
+import java.util.Objects;
 
 /**
  * Rolling update config params. Present only if type &#x3D; \&quot;RollingUpdate\&quot;.

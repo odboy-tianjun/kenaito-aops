@@ -16,8 +16,8 @@ package io.openkruise.client.models;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Objects;
 import javax.annotation.Generated;
+import java.util.Objects;
 
 /**
  * StatusContext is synced from the real Pod status during this ContainerRecreateRequest creating. Populated by the system. Read-only.

@@ -1,7 +1,7 @@
 package cn.odboy.core.service.tools;
 
 import cn.odboy.core.dal.dataobject.tools.EmailConfigDO;
-import cn.odboy.core.service.tools.dto.SendEmailArgs;
+import cn.odboy.core.service.tools.dto.EmailSendArgs;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 
@@ -27,5 +27,5 @@ public interface EmailService extends IService<EmailConfigDO> {
      *
      * @param args 邮件发送的内容
      */
-    void sendEmail(SendEmailArgs args);
+    void sendEmail(EmailSendArgs args);
 }

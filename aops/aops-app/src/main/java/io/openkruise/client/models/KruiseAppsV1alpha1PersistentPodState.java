@@ -13,20 +13,12 @@
 
 package io.openkruise.client.models;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.openkruise.client.models.KruiseAppsV1alpha1PersistentPodStateSpec;
-import io.openkruise.client.models.KruiseAppsV1alpha1PersistentPodStateStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
 import javax.annotation.Generated;
+import java.util.Objects;
 
 /**
  * PersistentPodState is the Schema for the PersistentPodState API

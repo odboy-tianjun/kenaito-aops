@@ -1,8 +1,8 @@
 package cn.odboy.core.framework.system.core.dto;
 
-import cn.odboy.core.constant.LoginCodeEnum;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.constant.LoginCodeEnum;
 import com.wf.captcha.ArithmeticCaptcha;
 import com.wf.captcha.ChineseCaptcha;
 import com.wf.captcha.ChineseGifCaptcha;

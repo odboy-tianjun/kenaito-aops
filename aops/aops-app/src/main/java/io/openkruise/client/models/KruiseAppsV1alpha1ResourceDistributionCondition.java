@@ -16,11 +16,11 @@ package io.openkruise.client.models;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
-import org.joda.time.DateTime;
 
 /**
  * ResourceDistributionCondition allows a row to be marked with additional information.

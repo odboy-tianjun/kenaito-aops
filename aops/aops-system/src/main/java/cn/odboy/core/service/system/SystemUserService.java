@@ -2,7 +2,7 @@ package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.UserDO;
-import cn.odboy.core.service.system.dto.QueryUserArgs;
+import cn.odboy.core.service.system.dto.UserQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +37,7 @@ public interface SystemUserService extends IService<UserDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<UserDO> describeUserPage(QueryUserArgs args, Page<Object> page);
+    PageResult<UserDO> describeUserPage(UserQueryArgs args, Page<Object> page);
 
     /**
      * 查询全部不分页
@@ -45,7 +45,7 @@ public interface SystemUserService extends IService<UserDO> {
      * @param args 条件
      * @return /
      */
-    List<UserDO> describeUserList(QueryUserArgs args);
+    List<UserDO> describeUserList(UserQueryArgs args);
 
     /**
      * 新增用户

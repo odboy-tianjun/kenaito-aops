@@ -4,8 +4,8 @@ import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.SystemJobService;
-import cn.odboy.core.service.system.dto.CreateJobArgs;
-import cn.odboy.core.service.system.dto.QueryJobArgs;
+import cn.odboy.core.service.system.dto.JobCreateArgs;
+import cn.odboy.core.service.system.dto.JobQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,14 +35,14 @@ public class JobController {
     @ApiOperation("导出岗位数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('job:list')")
-    public void exportJob(HttpServletResponse response, QueryJobArgs args) throws IOException {
+    public void exportJob(HttpServletResponse response, JobQueryArgs args) throws IOException {
         systemJobService.downloadJobExcel(systemJobService.describeJobList(args), response);
     }
 
     @ApiOperation("查询岗位")
     @GetMapping
     @PreAuthorize("@el.check('job:list','user:list')")
-    public ResponseEntity<PageResult<JobDO>> queryJob(QueryJobArgs args) {
+    public ResponseEntity<PageResult<JobDO>> queryJob(JobQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemJobService.describeJobPage(args, page), HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class JobController {
     @ApiOperation("新增岗位")
     @PostMapping(value = "/saveJob")
     @PreAuthorize("@el.check('job:add')")
-    public ResponseEntity<Object> saveJob(@Validated @RequestBody CreateJobArgs args) {
+    public ResponseEntity<Object> saveJob(@Validated @RequestBody JobCreateArgs args) {
         systemJobService.saveJob(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

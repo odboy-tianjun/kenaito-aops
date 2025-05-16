@@ -15,6 +15,13 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.odboy.app.controller.cmdb.vo.NetworkIngressCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.NetworkIngressUpdateArgs;
+import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+
 /**
  * <p>
  * Kubernetes网络ingress-nginx 服务类
@@ -25,4 +32,11 @@ package cn.odboy.app.service.kubernetes;
  */
 public interface AopsKubernetesNetworkIngressService {
 
+    PageResult<AopsKubernetesNetworkIngressDO> describeIngressPage(PageArgs<AopsKubernetesNetworkIngressDO> args);
+
+    void createIngress(NetworkIngressCreateArgs args);
+
+    void deleteIngress(DeleteByIdArgs args);
+
+    void updateIngress(NetworkIngressUpdateArgs args);
 }

@@ -16,11 +16,11 @@ package io.openkruise.client.models;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
+import javax.annotation.Generated;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Generated;
-import org.joda.time.DateTime;
 
 /**
  * PodUnavailableBudgetStatus defines the observed state of PodUnavailableBudget

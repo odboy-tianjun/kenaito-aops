@@ -13,21 +13,14 @@
 
 package io.openkruise.client.models;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import io.kubernetes.client.openapi.models.V1ListMeta;
-import io.openkruise.client.models.KruiseAppsV1alpha1PodProbeMarker;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.IOException;
+import javax.annotation.Generated;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * PodProbeMarkerList is a list of PodProbeMarker

@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.system;
 
 import cn.odboy.core.dal.dataobject.system.DeptDO;
-import cn.odboy.core.service.system.dto.QueryDeptArgs;
+import cn.odboy.core.service.system.dto.DeptQueryArgs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Mapper
 public interface DeptMapper extends BaseMapper<DeptDO> {
-    List<DeptDO> queryDeptListByArgs(@Param("args") QueryDeptArgs args);
+    List<DeptDO> queryDeptListByArgs(@Param("args") DeptQueryArgs args);
 
     List<DeptDO> queryDeptListByPid(@Param("pid") Long pid);
 

@@ -15,12 +15,7 @@
  */
 package cn.odboy.util.kubernetes;
 
-import cn.odboy.app.dal.mysql.AopsKubernetesContainerdSpecConfigMapper;
-import cn.odboy.common.pojo.MyMetaOption;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.util.List;
 
 /**
  * k8sMapper 测试
@@ -30,12 +25,4 @@ import java.util.List;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class KubernetesMapperTests {
-    @Autowired
-    private AopsKubernetesContainerdSpecConfigMapper aopsKubernetesContainerdSpecConfigMapper;
-
-    @Test
-    public void test1() {
-        List<MyMetaOption> myMetaOptions = aopsKubernetesContainerdSpecConfigMapper.queryKubernetesContainerdSpecConfigMetaList();
-        System.err.println(myMetaOptions);
-    }
 }

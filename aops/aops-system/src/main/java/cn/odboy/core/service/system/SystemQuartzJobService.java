@@ -1,10 +1,10 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
-import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
 import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
 import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
+import cn.odboy.core.service.system.dto.QuartzJobQueryArgs;
+import cn.odboy.core.service.system.dto.QuartzJobUpdateArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +21,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<QuartzJobDO> describeQuartzJobPage(QueryQuartzJobArgs args, Page<Object> page);
+    PageResult<QuartzJobDO> describeQuartzJobPage(QuartzJobQueryArgs args, Page<Object> page);
 
     /**
      * 查询全部
@@ -29,7 +29,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * @param args 条件
      * @return /
      */
-    List<QuartzJobDO> describeQuartzJobList(QueryQuartzJobArgs args);
+    List<QuartzJobDO> describeQuartzJobList(QuartzJobQueryArgs args);
 
     /**
      * 分页查询日志
@@ -38,7 +38,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<QuartzLogDO> describeQuartzLogPage(QueryQuartzJobArgs args, Page<Object> page);
+    PageResult<QuartzLogDO> describeQuartzLogPage(QuartzJobQueryArgs args, Page<Object> page);
 
     /**
      * 查询全部
@@ -46,7 +46,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      * @param args 条件
      * @return /
      */
-    List<QuartzLogDO> describeQuartzLogList(QueryQuartzJobArgs args);
+    List<QuartzLogDO> describeQuartzLogList(QuartzJobQueryArgs args);
 
     /**
      * 创建
@@ -60,7 +60,7 @@ public interface SystemQuartzJobService extends IService<QuartzJobDO> {
      *
      * @param args /
      */
-    void modifyQuartzJobResumeCron(UpdateQuartzJobArgs args);
+    void modifyQuartzJobResumeCron(QuartzJobUpdateArgs args);
 
     /**
      * 删除任务

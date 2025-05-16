@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CreateRoleArgs extends MyObject {
+public class RoleCreateArgs extends MyObject {
     @NotBlank(message = "角色名称必填")
     private String name;
     @NotNull(message = "角色级别必填")

@@ -15,7 +15,20 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.odboy.app.controller.cmdb.vo.NetworkServiceCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.NetworkServiceUpdateArgs;
+import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkServiceDO;
+import cn.odboy.app.dal.mysql.AopsKubernetesNetworkServiceMapper;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.core.framework.mybatisplus.mybatis.core.util.AnyQueryTool;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -26,6 +39,37 @@ import org.springframework.stereotype.Service;
  * @since 2025-05-07
  */
 @Service
+@RequiredArgsConstructor
 public class AopsKubernetesNetworkServiceServiceImpl implements AopsKubernetesNetworkServiceService {
+    private final AopsKubernetesNetworkServiceMapper currentMapper;
 
+    @Override
+    public PageResult<AopsKubernetesNetworkServiceDO> describeServicePage(PageArgs<AopsKubernetesNetworkServiceDO> args) {
+        LambdaQueryWrapper<AopsKubernetesNetworkServiceDO> wrapper = new LambdaQueryWrapper<>();
+        AopsKubernetesNetworkServiceDO queryParams = args.getArgs();
+        if (queryParams != null) {
+            wrapper.like(StrUtil.isNotBlank(queryParams.getRemark()), AopsKubernetesNetworkServiceDO::getRemark, queryParams.getRemark());
+        }
+        return AnyQueryTool.selectPageResult(currentMapper, args, wrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createService(NetworkServiceCreateArgs args) {
+        AopsKubernetesNetworkServiceDO copied = BeanUtil.copyProperties(args, AopsKubernetesNetworkServiceDO.class);
+        currentMapper.insert(copied);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteService(DeleteByIdArgs args) {
+        currentMapper.deleteById(args.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateService(NetworkServiceUpdateArgs args) {
+        AopsKubernetesNetworkServiceDO copied = BeanUtil.copyProperties(args, AopsKubernetesNetworkServiceDO.class);
+        currentMapper.updateById(copied);
+    }
 }

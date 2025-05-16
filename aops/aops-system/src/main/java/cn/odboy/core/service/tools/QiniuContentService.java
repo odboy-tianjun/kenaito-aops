@@ -2,7 +2,7 @@ package cn.odboy.core.service.tools;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
-import cn.odboy.core.service.tools.dto.QueryQiniuArgs;
+import cn.odboy.core.service.tools.dto.QiniuQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +19,7 @@ public interface QiniuContentService extends IService<QiniuContentDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<QiniuContentDO> describeQiniuContentPage(QueryQiniuArgs args, Page<Object> page);
+    PageResult<QiniuContentDO> describeQiniuContentPage(QiniuQueryArgs args, Page<Object> page);
 
     /**
      * 查询全部
@@ -27,7 +27,7 @@ public interface QiniuContentService extends IService<QiniuContentDO> {
      * @param args 条件
      * @return /
      */
-    List<QiniuContentDO> describeQiniuContentList(QueryQiniuArgs args);
+    List<QiniuContentDO> describeQiniuContentList(QiniuQueryArgs args);
 
     /**
      * 上传文件

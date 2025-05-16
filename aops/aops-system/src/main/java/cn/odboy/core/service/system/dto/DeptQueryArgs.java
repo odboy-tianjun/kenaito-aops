@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class QueryDeptArgs {
+public class DeptQueryArgs {
 
     @ApiModelProperty(value = "部门id集合")
     private List<Long> ids;

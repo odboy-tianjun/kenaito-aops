@@ -1,14 +1,14 @@
 package cn.odboy.core.controller.job;
 
-import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.context.SpringBeanHolder;
-import cn.odboy.core.framework.operalog.annotaions.OperationLog;
-import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
-import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
+import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
 import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
+import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.SystemQuartzJobService;
-import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.core.service.system.dto.QuartzJobQueryArgs;
+import cn.odboy.core.service.system.dto.QuartzJobUpdateArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +43,7 @@ public class QuartzJobController {
     @ApiOperation("查询定时任务")
     @GetMapping
     @PreAuthorize("@el.check('timing:list')")
-    public ResponseEntity<PageResult<QuartzJobDO>> queryQuartzJob(QueryQuartzJobArgs args) {
+    public ResponseEntity<PageResult<QuartzJobDO>> queryQuartzJob(QuartzJobQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemQuartzJobService.describeQuartzJobPage(args, page), HttpStatus.OK);
     }
@@ -52,7 +52,7 @@ public class QuartzJobController {
     @ApiOperation("导出任务数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('timing:list')")
-    public void exportQuartzJob(HttpServletResponse response, QueryQuartzJobArgs args) throws IOException {
+    public void exportQuartzJob(HttpServletResponse response, QuartzJobQueryArgs args) throws IOException {
         systemQuartzJobService.downloadQuartzJobExcel(systemQuartzJobService.describeQuartzJobList(args), response);
     }
 
@@ -60,14 +60,14 @@ public class QuartzJobController {
     @ApiOperation("导出日志数据")
     @GetMapping(value = "/logs/download")
     @PreAuthorize("@el.check('timing:list')")
-    public void exportQuartzJobLog(HttpServletResponse response, QueryQuartzJobArgs args) throws IOException {
+    public void exportQuartzJobLog(HttpServletResponse response, QuartzJobQueryArgs args) throws IOException {
         systemQuartzJobService.downloadQuartzLogExcel(systemQuartzJobService.describeQuartzLogList(args), response);
     }
 
     @ApiOperation("查询任务执行日志")
     @GetMapping(value = "/logs")
     @PreAuthorize("@el.check('timing:list')")
-    public ResponseEntity<PageResult<QuartzLogDO>> queryQuartzJobLog(QueryQuartzJobArgs args) {
+    public ResponseEntity<PageResult<QuartzLogDO>> queryQuartzJobLog(QuartzJobQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemQuartzJobService.describeQuartzLogPage(args, page), HttpStatus.OK);
     }
@@ -90,7 +90,7 @@ public class QuartzJobController {
     @ApiOperation("修改定时任务")
     @PutMapping
     @PreAuthorize("@el.check('timing:edit')")
-    public ResponseEntity<Object> updateQuartzJob(@Validated(QuartzJobDO.Update.class) @RequestBody UpdateQuartzJobArgs args) {
+    public ResponseEntity<Object> updateQuartzJob(@Validated(QuartzJobDO.Update.class) @RequestBody QuartzJobUpdateArgs args) {
         // 验证Bean是不是合法的，合法的定时任务 Bean 需要用 @Service 定义
         checkBean(args.getBeanName());
         systemQuartzJobService.modifyQuartzJobResumeCron(args);

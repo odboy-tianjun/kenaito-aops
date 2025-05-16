@@ -1,8 +1,8 @@
 package cn.odboy.core.controller.tools;
 
 import cn.odboy.core.dal.dataobject.tools.EmailConfigDO;
-import cn.odboy.core.service.tools.dto.SendEmailArgs;
 import cn.odboy.core.service.tools.EmailService;
+import cn.odboy.core.service.tools.dto.EmailSendArgs;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class EmailController {
 
     @ApiOperation("发送邮件")
     @PostMapping(value = "/sendEmail")
-    public ResponseEntity<Object> sendEmail(@Validated @RequestBody SendEmailArgs args) {
+    public ResponseEntity<Object> sendEmail(@Validated @RequestBody EmailSendArgs args) {
         emailService.sendEmail(args);
         return new ResponseEntity<>(HttpStatus.OK);
     }

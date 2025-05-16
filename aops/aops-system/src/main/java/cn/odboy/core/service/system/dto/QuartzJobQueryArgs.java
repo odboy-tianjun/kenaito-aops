@@ -1,4 +1,4 @@
-package cn.odboy.core.service.tools.dto;
+package cn.odboy.core.service.system.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,10 +7,13 @@ import java.util.List;
 
 
 @Data
-public class QueryLocalStorageArgs {
+public class QuartzJobQueryArgs {
 
-    @ApiModelProperty(value = "模糊查询")
-    private String blurry;
+    @ApiModelProperty(value = "定时任务名称")
+    private String jobName;
+
+    @ApiModelProperty(value = "是否成功")
+    private Boolean isSuccess;
 
     @ApiModelProperty(value = "创建时间")
     private List<Date> createTime;

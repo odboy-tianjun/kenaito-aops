@@ -4,11 +4,14 @@ import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CreateDictArgs extends MyObject {
-    @NotBlank(message = "字典名称必填")
+public class JobCreateArgs extends MyObject {
+    @NotBlank(message = "职位名称必填")
     private String name;
-    private String description;
+    @NotNull(message = "职位排序必填")
+    private Integer jobSort;
+    private Boolean enabled;
 }

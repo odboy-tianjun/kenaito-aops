@@ -4,10 +4,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class QueryDictArgs {
+public class DictDetailQueryArgs {
 
-    @ApiModelProperty(value = "模糊查询")
-    private String blurry;
+    @ApiModelProperty(value = "标签")
+    private String label;
+
+    @ApiModelProperty(value = "字典名称")
+    private String dictName;
 
     @ApiModelProperty(value = "页码", example = "1")
     private Integer page = 1;

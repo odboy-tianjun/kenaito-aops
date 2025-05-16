@@ -15,6 +15,13 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.odboy.app.controller.cmdb.vo.NetworkServiceCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.NetworkServiceUpdateArgs;
+import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkServiceDO;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+
 /**
  * <p>
  * Kubernetes网络service 服务类
@@ -24,5 +31,11 @@ package cn.odboy.app.service.kubernetes;
  * @since 2025-05-07
  */
 public interface AopsKubernetesNetworkServiceService {
+    PageResult<AopsKubernetesNetworkServiceDO> describeServicePage(PageArgs<AopsKubernetesNetworkServiceDO> args);
 
+    void createService(NetworkServiceCreateArgs args);
+
+    void deleteService(DeleteByIdArgs args);
+
+    void updateService(NetworkServiceUpdateArgs args);
 }

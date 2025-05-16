@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CreateDeptArgs extends MyObject {
+public class DeptCreateArgs extends MyObject {
     @NotBlank(message = "部门名称必填")
     private String name;
     @NotNull(message = "部门排序必填")

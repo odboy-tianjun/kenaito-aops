@@ -3,19 +3,19 @@ package cn.odboy.core.service.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
-import cn.odboy.core.framework.quartz.core.context.QuartzManage;
-import cn.odboy.core.service.system.dto.QueryQuartzJobArgs;
-import cn.odboy.core.service.system.dto.UpdateQuartzJobArgs;
+import cn.odboy.common.util.StringUtil;
 import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
 import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
 import cn.odboy.core.dal.mysql.job.QuartzJobMapper;
 import cn.odboy.core.dal.mysql.job.QuartzLogMapper;
-import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.FileUtil;
-import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.framework.quartz.core.context.QuartzManage;
+import cn.odboy.core.service.system.dto.QuartzJobQueryArgs;
+import cn.odboy.core.service.system.dto.QuartzJobUpdateArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -40,22 +40,22 @@ public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, Qua
     private final RedisHelper redisHelper;
 
     @Override
-    public PageResult<QuartzJobDO> describeQuartzJobPage(QueryQuartzJobArgs args, Page<Object> page) {
+    public PageResult<QuartzJobDO> describeQuartzJobPage(QuartzJobQueryArgs args, Page<Object> page) {
         return PageUtil.toPage(quartzJobMapper.queryQuartzJobPageByArgs(args, page));
     }
 
     @Override
-    public PageResult<QuartzLogDO> describeQuartzLogPage(QueryQuartzJobArgs args, Page<Object> page) {
+    public PageResult<QuartzLogDO> describeQuartzLogPage(QuartzJobQueryArgs args, Page<Object> page) {
         return PageUtil.toPage(quartzLogMapper.queryQuartzLogPageByArgs(args, page));
     }
 
     @Override
-    public List<QuartzJobDO> describeQuartzJobList(QueryQuartzJobArgs args) {
+    public List<QuartzJobDO> describeQuartzJobList(QuartzJobQueryArgs args) {
         return quartzJobMapper.queryQuartzJobPageByArgs(args, PageUtil.getCount(quartzJobMapper)).getRecords();
     }
 
     @Override
-    public List<QuartzLogDO> describeQuartzLogList(QueryQuartzJobArgs args) {
+    public List<QuartzLogDO> describeQuartzLogList(QuartzJobQueryArgs args) {
         return quartzLogMapper.queryQuartzLogPageByArgs(args, PageUtil.getCount(quartzLogMapper)).getRecords();
     }
 
@@ -71,7 +71,7 @@ public class SystemQuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, Qua
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyQuartzJobResumeCron(UpdateQuartzJobArgs args) {
+    public void modifyQuartzJobResumeCron(QuartzJobUpdateArgs args) {
         if (!CronExpression.isValidExpression(args.getCronExpression())) {
             throw new BadRequestException("cron表达式格式错误");
         }

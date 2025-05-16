@@ -4,8 +4,8 @@ import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;
-import cn.odboy.core.service.system.dto.CreateRoleArgs;
-import cn.odboy.core.service.system.dto.QueryRoleArgs;
+import cn.odboy.core.service.system.dto.RoleCreateArgs;
+import cn.odboy.core.service.system.dto.RoleQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +29,7 @@ public interface SystemRoleService extends IService<RoleDO> {
      * @param args 条件
      * @return /
      */
-    List<RoleDO> describeRoleList(QueryRoleArgs args);
+    List<RoleDO> describeRoleList(RoleQueryArgs args);
 
     /**
      * 待条件分页查询
@@ -38,7 +38,7 @@ public interface SystemRoleService extends IService<RoleDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<RoleDO> describeRolePage(QueryRoleArgs args, Page<Object> page);
+    PageResult<RoleDO> describeRolePage(RoleQueryArgs args, Page<Object> page);
 
     /**
      * 根据ID查询
@@ -93,7 +93,7 @@ public interface SystemRoleService extends IService<RoleDO> {
      *
      * @param args /
      */
-    void saveRole(CreateRoleArgs args);
+    void saveRole(RoleCreateArgs args);
 
     /**
      * 编辑

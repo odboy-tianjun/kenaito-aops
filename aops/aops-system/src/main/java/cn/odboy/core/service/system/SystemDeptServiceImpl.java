@@ -18,8 +18,8 @@ import cn.odboy.core.dal.mysql.system.RoleMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
-import cn.odboy.core.service.system.dto.CreateDeptArgs;
-import cn.odboy.core.service.system.dto.QueryDeptArgs;
+import cn.odboy.core.service.system.dto.DeptCreateArgs;
+import cn.odboy.core.service.system.dto.DeptQueryArgs;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, DeptDO> imple
     }
 
     @Override
-    public List<DeptDO> describeDeptList(QueryDeptArgs args, Boolean isQuery) throws Exception {
+    public List<DeptDO> describeDeptList(DeptQueryArgs args, Boolean isQuery) throws Exception {
         String dataScopeType = SecurityHelper.getDataScopeType();
         if (isQuery) {
             if (dataScopeType.equals(DataScopeEnum.ALL.getValue())) {
@@ -215,7 +215,7 @@ public class SystemDeptServiceImpl extends ServiceImpl<DeptMapper, DeptDO> imple
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDept(CreateDeptArgs args) {
+    public void saveDept(DeptCreateArgs args) {
         save(BeanUtil.copyProperties(args, DeptDO.class));
         // 清理缓存
         updateSubCnt(args.getPid());

@@ -30,7 +30,6 @@ public enum GlobalEnvEnum {
     Daily("daily", "日常环境"),
     Stage("stage", "预发环境"),
     Online("online", "生产环境");
-    //    DEFAULT("default", "默认环境");
     private final String code;
     private final String desc;
 

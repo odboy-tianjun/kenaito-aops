@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CreateDictDetailArgs extends MyObject {
+public class DictDetailCreateArgs extends MyObject {
     @NotBlank(message = "参数dict必填")
     private DictDO dict;
     @NotBlank(message = "字典标签必填")

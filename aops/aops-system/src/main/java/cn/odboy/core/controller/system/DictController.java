@@ -3,8 +3,8 @@ package cn.odboy.core.controller.system;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.DictDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
-import cn.odboy.core.service.system.dto.CreateDictArgs;
-import cn.odboy.core.service.system.dto.QueryDictArgs;
+import cn.odboy.core.service.system.dto.DictCreateArgs;
+import cn.odboy.core.service.system.dto.DictQueryArgs;
 import cn.odboy.core.service.system.SystemDictService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class DictController {
     @ApiOperation("导出字典数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dict:list')")
-    public void exportDict(HttpServletResponse response, QueryDictArgs args) throws IOException {
+    public void exportDict(HttpServletResponse response, DictQueryArgs args) throws IOException {
         systemDictService.downloadDictExcel(systemDictService.describeDictList(args), response);
     }
 
@@ -43,13 +43,13 @@ public class DictController {
     @PostMapping(value = "/queryAllDict")
     @PreAuthorize("@el.check('dict:list')")
     public ResponseEntity<List<DictDO>> queryAllDict() {
-        return new ResponseEntity<>(systemDictService.describeDictList(new QueryDictArgs()), HttpStatus.OK);
+        return new ResponseEntity<>(systemDictService.describeDictList(new DictQueryArgs()), HttpStatus.OK);
     }
 
     @ApiOperation("查询字典")
     @GetMapping
     @PreAuthorize("@el.check('dict:list')")
-    public ResponseEntity<PageResult<DictDO>> queryDict(QueryDictArgs args) {
+    public ResponseEntity<PageResult<DictDO>> queryDict(DictQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemDictService.describeDictPage(args, page), HttpStatus.OK);
     }
@@ -58,7 +58,7 @@ public class DictController {
     @ApiOperation("新增字典")
     @PostMapping(value = "/saveDict")
     @PreAuthorize("@el.check('dict:add')")
-    public ResponseEntity<Object> saveDict(@Validated @RequestBody CreateDictArgs args) {
+    public ResponseEntity<Object> saveDict(@Validated @RequestBody DictCreateArgs args) {
         systemDictService.saveDict(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

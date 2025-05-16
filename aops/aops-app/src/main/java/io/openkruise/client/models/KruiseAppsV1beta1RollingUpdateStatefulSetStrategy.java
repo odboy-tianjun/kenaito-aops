@@ -17,8 +17,8 @@ import com.google.gson.annotations.SerializedName;
 import io.kubernetes.client.custom.IntOrString;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Objects;
 import javax.annotation.Generated;
+import java.util.Objects;
 
 /**
  * RollingUpdate is used to communicate parameters when Type is RollingUpdateStatefulSetStrategyType.

@@ -16,8 +16,8 @@ package io.openkruise.client.models;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Objects;
 import javax.annotation.Generated;
+import java.util.Objects;
 
 /**
  * InjectionStrategy describe the strategy when sidecarset is injected into pods

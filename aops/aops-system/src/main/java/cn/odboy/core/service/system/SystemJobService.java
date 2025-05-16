@@ -2,8 +2,8 @@ package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.system.JobDO;
-import cn.odboy.core.service.system.dto.CreateJobArgs;
-import cn.odboy.core.service.system.dto.QueryJobArgs;
+import cn.odboy.core.service.system.dto.JobCreateArgs;
+import cn.odboy.core.service.system.dto.JobQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +20,7 @@ public interface SystemJobService extends IService<JobDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<JobDO> describeJobPage(QueryJobArgs args, Page<Object> page);
+    PageResult<JobDO> describeJobPage(JobQueryArgs args, Page<Object> page);
 
     /**
      * 查询全部数据
@@ -28,7 +28,7 @@ public interface SystemJobService extends IService<JobDO> {
      * @param args /
      * @return /
      */
-    List<JobDO> describeJobList(QueryJobArgs args);
+    List<JobDO> describeJobList(JobQueryArgs args);
 
 
     /**
@@ -51,7 +51,7 @@ public interface SystemJobService extends IService<JobDO> {
      *
      * @param args /
      */
-    void saveJob(CreateJobArgs args);
+    void saveJob(JobCreateArgs args);
 
     /**
      * 编辑

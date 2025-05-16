@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.system;
 
 import cn.odboy.core.dal.dataobject.system.MenuDO;
-import cn.odboy.core.service.system.dto.QueryMenuArgs;
+import cn.odboy.core.service.system.dto.MenuQueryArgs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,7 +12,7 @@ import java.util.Set;
 @Mapper
 public interface MenuMapper extends BaseMapper<MenuDO> {
 
-    List<MenuDO> queryMenuListByArgs(@Param("args") QueryMenuArgs args);
+    List<MenuDO> queryMenuListByArgs(@Param("args") MenuQueryArgs args);
 
     LinkedHashSet<MenuDO> queryMenuSetByRoleIdsAndType(@Param("roleIds") Set<Long> roleIds, @Param("type") Integer type);
 

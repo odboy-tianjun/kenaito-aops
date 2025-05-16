@@ -15,7 +15,20 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.odboy.app.controller.cmdb.vo.NetworkIngressCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.NetworkIngressUpdateArgs;
+import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
+import cn.odboy.app.dal.mysql.AopsKubernetesNetworkIngressMapper;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.core.framework.mybatisplus.mybatis.core.util.AnyQueryTool;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -26,6 +39,37 @@ import org.springframework.stereotype.Service;
  * @since 2025-05-07
  */
 @Service
+@RequiredArgsConstructor
 public class AopsKubernetesNetworkIngressServiceImpl implements AopsKubernetesNetworkIngressService {
+    private final AopsKubernetesNetworkIngressMapper currentMapper;
 
+    @Override
+    public PageResult<AopsKubernetesNetworkIngressDO> describeIngressPage(PageArgs<AopsKubernetesNetworkIngressDO> args) {
+        LambdaQueryWrapper<AopsKubernetesNetworkIngressDO> wrapper = new LambdaQueryWrapper<>();
+        AopsKubernetesNetworkIngressDO queryParams = args.getArgs();
+        if (queryParams != null) {
+            wrapper.like(StrUtil.isNotBlank(queryParams.getRemark()), AopsKubernetesNetworkIngressDO::getRemark, queryParams.getRemark());
+        }
+        return AnyQueryTool.selectPageResult(currentMapper, args, wrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createIngress(NetworkIngressCreateArgs args) {
+        AopsKubernetesNetworkIngressDO copied = BeanUtil.copyProperties(args, AopsKubernetesNetworkIngressDO.class);
+        currentMapper.insert(copied);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteIngress(DeleteByIdArgs args) {
+        currentMapper.deleteById(args.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateIngress(NetworkIngressUpdateArgs args) {
+        AopsKubernetesNetworkIngressDO copied = BeanUtil.copyProperties(args, AopsKubernetesNetworkIngressDO.class);
+        currentMapper.updateById(copied);
+    }
 }

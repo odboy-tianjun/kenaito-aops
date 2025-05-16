@@ -84,16 +84,23 @@ public class AopsKubernetesNetworkIngressDO extends MyLogicEntity {
     private String networkType;
 
     /**
-     * 绑定的ServiceId
+     * 绑定的ServiceName
      */
-    @TableField("service_id")
-    @ApiModelProperty("绑定的ServiceId")
-    private Long serviceId;
+    @TableField("service_name")
+    @ApiModelProperty("绑定的ServiceName")
+    private String serviceName;
 
     /**
      * 绑定的路径，默认为\"/\"
      */
-    @TableField("`path`")
+    @TableField("service_path")
     @ApiModelProperty("绑定的路径，默认为\"/\"")
-    private String path;
+    private String servicePath;
+
+    /**
+     * 备注
+     */
+    @TableField("remark")
+    @ApiModelProperty("备注")
+    private String remark;
 }

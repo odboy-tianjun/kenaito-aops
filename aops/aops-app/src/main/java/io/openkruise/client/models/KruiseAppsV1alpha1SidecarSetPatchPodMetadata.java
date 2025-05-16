@@ -15,10 +15,10 @@ package io.openkruise.client.models;
 
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
+import javax.annotation.Generated;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * KruiseAppsV1alpha1SidecarSetSpecPatchPodMetadata

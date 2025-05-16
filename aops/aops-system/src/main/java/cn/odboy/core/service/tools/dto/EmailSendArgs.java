@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendEmailArgs {
+public class EmailSendArgs {
 
     @NotEmpty
     @ApiModelProperty(value = "收件人")

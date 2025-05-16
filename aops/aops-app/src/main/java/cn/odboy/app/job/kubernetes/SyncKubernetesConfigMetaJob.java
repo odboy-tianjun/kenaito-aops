@@ -49,7 +49,7 @@ public class SyncKubernetesConfigMetaJob {
     private final AopsKubernetesClusterConfigService aopsKubernetesClusterConfigService;
 
     public void run() {
-        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeKubernetesClusterConfigList();
+        List<AopsKubernetesClusterConfigDO> list = aopsKubernetesClusterConfigService.describeClusterConfigList();
         if (CollUtil.isEmpty(list)) {
             log.info("没有找到配置信息");
             return;

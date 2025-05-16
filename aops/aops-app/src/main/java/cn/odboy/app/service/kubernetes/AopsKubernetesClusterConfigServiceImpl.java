@@ -17,16 +17,16 @@ package cn.odboy.app.service.kubernetes;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.odboy.app.controller.cmdb.vo.CreateClusterConfigArgs;
-import cn.odboy.app.controller.cmdb.vo.ModifyClusterDefaultAppYmlArgs;
-import cn.odboy.app.controller.cmdb.vo.UpdateClusterConfigArgs;
+import cn.odboy.app.controller.cmdb.vo.ClusterConfigCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.ClusterConfigModifyDefaultAppYmlArgs;
+import cn.odboy.app.controller.cmdb.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterConfigMapper;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.RemoveByIdArgs;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.core.framework.mybatisplus.mybatis.core.util.AnyQueryTool;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,68 +43,63 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AopsKubernetesClusterConfigServiceImpl implements AopsKubernetesClusterConfigService {
-    private final AopsKubernetesClusterConfigMapper aopsKubernetesClusterConfigMapper;
+    private final AopsKubernetesClusterConfigMapper currentMapper;
 
     @Override
-    public List<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigList() {
-        return aopsKubernetesClusterConfigMapper.selectList(null);
+    public List<AopsKubernetesClusterConfigDO> describeClusterConfigList() {
+        return currentMapper.selectList(null);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateById(AopsKubernetesClusterConfigDO clusterConfig) {
-        aopsKubernetesClusterConfigMapper.updateById(clusterConfig);
+        currentMapper.updateById(clusterConfig);
     }
 
     @Override
-    public PageResult<AopsKubernetesClusterConfigDO> describeKubernetesClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args) {
-        Page<AopsKubernetesClusterConfigDO> pageArgs = new Page<>(args.getPage(), args.getSize());
+    public PageResult<AopsKubernetesClusterConfigDO> describeClusterConfigPage(PageArgs<AopsKubernetesClusterConfigDO> args) {
         LambdaQueryWrapper<AopsKubernetesClusterConfigDO> wrapper = new LambdaQueryWrapper<>();
-        AopsKubernetesClusterConfigDO args1 = args.getArgs();
-        if (args1 != null) {
-            wrapper.like(StrUtil.isNotBlank(args1.getClusterName()), AopsKubernetesClusterConfigDO::getClusterName, args1.getClusterName());
-            wrapper.eq(StrUtil.isNotBlank(args1.getEnvCode()), AopsKubernetesClusterConfigDO::getEnvCode, args1.getEnvCode());
+        AopsKubernetesClusterConfigDO queryParams = args.getArgs();
+        if (queryParams != null) {
+            wrapper.like(StrUtil.isNotBlank(queryParams.getClusterName()), AopsKubernetesClusterConfigDO::getClusterName, queryParams.getClusterName());
+            wrapper.eq(StrUtil.isNotBlank(queryParams.getEnvCode()), AopsKubernetesClusterConfigDO::getEnvCode, queryParams.getEnvCode());
         }
-        Page<AopsKubernetesClusterConfigDO> pageResult = aopsKubernetesClusterConfigMapper.selectPage(pageArgs, wrapper);
+        PageResult<AopsKubernetesClusterConfigDO> result = AnyQueryTool.selectPageResult(currentMapper, args, wrapper);
         // 解决前端YamlEdit报错
-        pageResult.getRecords().forEach(c -> {
+        result.getContent().forEach(c -> {
             if (StrUtil.isBlank(c.getClusterDefaultAppYaml())) {
                 c.setClusterDefaultAppYaml("");
             }
         });
-
-        PageResult<AopsKubernetesClusterConfigDO> result = new PageResult<>();
-        result.setContent(pageResult.getRecords());
-        result.setTotalElements(pageResult.getTotal());
         return result;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyClusterDefaultAppYml(ModifyClusterDefaultAppYmlArgs args) {
+    public void modifyClusterDefaultAppYml(ClusterConfigModifyDefaultAppYmlArgs args) {
         AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO = new AopsKubernetesClusterConfigDO();
         aopsKubernetesClusterConfigDO.setId(args.getId());
         aopsKubernetesClusterConfigDO.setClusterDefaultAppYaml(args.getClusterDefaultAppYaml());
-        aopsKubernetesClusterConfigMapper.updateById(aopsKubernetesClusterConfigDO);
+        currentMapper.updateById(aopsKubernetesClusterConfigDO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateClusterConfig(UpdateClusterConfigArgs args) {
-        AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO = BeanUtil.copyProperties(args, AopsKubernetesClusterConfigDO.class);
-        aopsKubernetesClusterConfigMapper.updateById(aopsKubernetesClusterConfigDO);
+    public void updateClusterConfig(ClusterConfigUpdateArgs args) {
+        AopsKubernetesClusterConfigDO copied = BeanUtil.copyProperties(args, AopsKubernetesClusterConfigDO.class);
+        currentMapper.updateById(copied);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeClusterConfig(RemoveByIdArgs args) {
-        aopsKubernetesClusterConfigMapper.deleteById(args.getId());
+    public void deleteClusterConfig(DeleteByIdArgs args) {
+        currentMapper.deleteById(args.getId());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createClusterConfig(CreateClusterConfigArgs args) {
-        AopsKubernetesClusterConfigDO aopsKubernetesClusterConfigDO = BeanUtil.copyProperties(args, AopsKubernetesClusterConfigDO.class);
-        aopsKubernetesClusterConfigMapper.insert(aopsKubernetesClusterConfigDO);
+    public void createClusterConfig(ClusterConfigCreateArgs args) {
+        AopsKubernetesClusterConfigDO copied = BeanUtil.copyProperties(args, AopsKubernetesClusterConfigDO.class);
+        currentMapper.insert(copied);
     }
 }

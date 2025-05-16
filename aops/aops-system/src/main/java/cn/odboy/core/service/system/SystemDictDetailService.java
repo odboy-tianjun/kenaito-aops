@@ -1,9 +1,9 @@
 package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.PageResult;
-import cn.odboy.core.service.system.dto.CreateDictDetailArgs;
 import cn.odboy.core.dal.dataobject.system.DictDetailDO;
-import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
+import cn.odboy.core.service.system.dto.DictDetailCreateArgs;
+import cn.odboy.core.service.system.dto.DictDetailQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
@@ -17,7 +17,7 @@ public interface SystemDictDetailService extends IService<DictDetailDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<DictDetailDO> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page);
+    PageResult<DictDetailDO> describeDictDetailPage(DictDetailQueryArgs args, Page<Object> page);
 
     /**
      * 根据字典名称获取字典详情
@@ -32,7 +32,7 @@ public interface SystemDictDetailService extends IService<DictDetailDO> {
      *
      * @param args /
      */
-    void saveDictDetail(CreateDictDetailArgs args);
+    void saveDictDetail(DictDetailCreateArgs args);
 
     /**
      * 编辑

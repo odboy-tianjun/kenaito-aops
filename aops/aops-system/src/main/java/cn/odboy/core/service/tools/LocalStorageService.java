@@ -2,7 +2,7 @@ package cn.odboy.core.service.tools;
 
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.tools.LocalStorageDO;
-import cn.odboy.core.service.tools.dto.QueryLocalStorageArgs;
+import cn.odboy.core.service.tools.dto.LocalStorageQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +19,7 @@ public interface LocalStorageService extends IService<LocalStorageDO> {
      * @param page 分页参数
      * @return /
      */
-    PageResult<LocalStorageDO> describeLocalStoragePage(QueryLocalStorageArgs args, Page<Object> page);
+    PageResult<LocalStorageDO> describeLocalStoragePage(LocalStorageQueryArgs args, Page<Object> page);
 
     /**
      * 查询全部数据
@@ -27,7 +27,7 @@ public interface LocalStorageService extends IService<LocalStorageDO> {
      * @param args 条件
      * @return /
      */
-    List<LocalStorageDO> describeLocalStorageList(QueryLocalStorageArgs args);
+    List<LocalStorageDO> describeLocalStorageList(LocalStorageQueryArgs args);
 
     /**
      * 上传

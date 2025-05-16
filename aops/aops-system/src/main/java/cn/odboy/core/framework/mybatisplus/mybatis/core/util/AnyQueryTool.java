@@ -1,10 +1,12 @@
 package cn.odboy.core.framework.mybatisplus.mybatis.core.util;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +16,13 @@ import java.util.List;
  * @author odboy
  * @date 2025-05-15
  */
-@Component
 public class AnyQueryTool {
-    public <T> T selectOne(BaseMapper<T> baseMapper, Object queryParams) {
+    public static <T> T selectOne(BaseMapper<T> baseMapper, Object queryParams) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         return baseMapper.selectOne(queryWrapper);
     }
 
-    public <T, M> M selectOne(BaseMapper<T> baseMapper, Object queryParams, Class<M> mapperClazz) {
+    public static <T, M> M selectOne(BaseMapper<T> baseMapper, Object queryParams, Class<M> mapperClazz) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         T mapperTarget = baseMapper.selectOne(queryWrapper);
         if (mapperTarget == null) {
@@ -30,12 +31,12 @@ public class AnyQueryTool {
         return BeanUtil.copyProperties(mapperTarget, mapperClazz);
     }
 
-    public <T> List<T> selectList(BaseMapper<T> baseMapper, Object queryParams) {
+    public static <T> List<T> selectList(BaseMapper<T> baseMapper, Object queryParams) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         return baseMapper.selectList(queryWrapper);
     }
 
-    public <T, M> List<M> selectList(BaseMapper<T> baseMapper, Object queryParams, Class<M> mapperClazz) {
+    public static <T, M> List<M> selectList(BaseMapper<T> baseMapper, Object queryParams, Class<M> mapperClazz) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         List<T> mapperTarget = baseMapper.selectList(queryWrapper);
         if (mapperTarget == null) {
@@ -44,17 +45,17 @@ public class AnyQueryTool {
         return BeanUtil.copyToList(mapperTarget, mapperClazz);
     }
 
-    public <T> Long selectCount(BaseMapper<T> baseMapper, Object queryParams) {
+    public static <T> Long selectCount(BaseMapper<T> baseMapper, Object queryParams) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         return baseMapper.selectCount(queryWrapper);
     }
 
-    public <T> Page<T> selectPage(BaseMapper<T> baseMapper, Page<T> page, Object queryParams) {
+    public static <T> Page<T> selectPage(BaseMapper<T> baseMapper, Page<T> page, Object queryParams) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         return baseMapper.selectPage(page, queryWrapper);
     }
 
-    public <T, M> Page<M> selectPage(BaseMapper<T> baseMapper, Page<T> page, Object queryParams, Class<M> mapperClazz) {
+    public static <T, M> Page<M> selectPage(BaseMapper<T> baseMapper, Page<T> page, Object queryParams, Class<M> mapperClazz) {
         QueryWrapper<T> queryWrapper = MybatisHelper.build(queryParams);
         Page<T> tPage = baseMapper.selectPage(page, queryWrapper);
         Page<M> mapperTarget = new Page<>();
@@ -63,5 +64,14 @@ public class AnyQueryTool {
         mapperTarget.setSize(tPage.getSize());
         mapperTarget.setCurrent(tPage.getCurrent());
         return mapperTarget;
+    }
+
+    public static <T> PageResult<T> selectPageResult(BaseMapper<T> baseMapper, PageArgs<?> args, LambdaQueryWrapper<T> wrapper) {
+        Page<T> pageArgs = new Page<>(args.getPage(), args.getSize());
+        Page<T> pageResult = baseMapper.selectPage(pageArgs, wrapper);
+        PageResult<T> result = new PageResult<>();
+        result.setContent(pageResult.getRecords());
+        result.setTotalElements(pageResult.getTotal());
+        return result;
     }
 }

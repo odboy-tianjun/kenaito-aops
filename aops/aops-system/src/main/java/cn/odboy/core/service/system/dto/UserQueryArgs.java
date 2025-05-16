@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class QueryUserArgs extends MyObject {
+public class UserQueryArgs extends MyObject {
 
     @ApiModelProperty(value = "ID")
     private Long id;

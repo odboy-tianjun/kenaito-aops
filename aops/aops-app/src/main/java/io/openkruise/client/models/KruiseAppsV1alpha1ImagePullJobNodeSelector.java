@@ -17,12 +17,12 @@ import com.google.gson.annotations.SerializedName;
 import io.kubernetes.client.openapi.models.V1LabelSelectorRequirement;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * Selector is a query over nodes that should match the job. nil to match all nodes.

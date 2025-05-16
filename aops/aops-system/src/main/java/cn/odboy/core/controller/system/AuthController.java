@@ -3,22 +3,21 @@ package cn.odboy.core.controller.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.odboy.common.annotation.AnonymousPostMapping;
-import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
-import cn.odboy.core.framework.operalog.annotaions.OperationLog;
-import cn.odboy.core.framework.system.config.AppProperties;
-import cn.odboy.core.constant.LoginCodeEnum;
 import cn.odboy.common.constant.SystemConst;
-import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.framework.permission.core.util.SecurityHelper;
-import cn.odboy.core.controller.system.vo.UserJwtVo;
-import cn.odboy.core.service.system.dto.UserLoginArgs;
-import cn.odboy.core.controller.system.vo.UserInfoVo;
-import cn.odboy.core.framework.permission.core.filter.TokenProvider;
-import cn.odboy.core.framework.permission.core.filter.UserDetailsServiceImpl;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.RsaEncryptUtil;
 import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.constant.LoginCodeEnum;
+import cn.odboy.core.controller.system.vo.UserInfoVo;
+import cn.odboy.core.controller.system.vo.UserJwtVo;
+import cn.odboy.core.dal.redis.RedisKeyConst;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
+import cn.odboy.core.framework.permission.core.filter.TokenProvider;
+import cn.odboy.core.framework.permission.core.filter.UserDetailsServiceHelper;
+import cn.odboy.core.framework.permission.core.util.SecurityHelper;
+import cn.odboy.core.framework.system.config.AppProperties;
+import cn.odboy.core.service.system.dto.UserLoginArgs;
 import com.wf.captcha.base.Captcha;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,7 +53,7 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final AppProperties properties;
     private final PasswordEncoder passwordEncoder;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceHelper userDetailsService;
 
     @ApiOperation("登录授权")
     @AnonymousPostMapping(value = "/login")

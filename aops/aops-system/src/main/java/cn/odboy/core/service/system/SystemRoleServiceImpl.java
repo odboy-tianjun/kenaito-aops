@@ -4,24 +4,24 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import cn.odboy.core.dal.dataobject.system.MenuDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;
-import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.mysql.system.RoleDeptMapper;
 import cn.odboy.core.dal.mysql.system.RoleMapper;
 import cn.odboy.core.dal.mysql.system.RoleMenuMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
-import cn.odboy.core.service.system.dto.CreateRoleArgs;
-import cn.odboy.common.exception.EntityExistException;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.FileUtil;
-import cn.odboy.core.service.system.dto.QueryRoleArgs;
-import cn.odboy.core.controller.system.vo.RoleCodeVo;
+import cn.odboy.core.service.system.dto.RoleCreateArgs;
+import cn.odboy.core.service.system.dto.RoleQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -55,12 +55,12 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> imple
     }
 
     @Override
-    public List<RoleDO> describeRoleList(QueryRoleArgs args) {
+    public List<RoleDO> describeRoleList(RoleQueryArgs args) {
         return roleMapper.queryRoleListByArgs(args);
     }
 
     @Override
-    public PageResult<RoleDO> describeRolePage(QueryRoleArgs args, Page<Object> page) {
+    public PageResult<RoleDO> describeRolePage(RoleQueryArgs args, Page<Object> page) {
         args.setOffset(page.offset());
         List<RoleDO> roleDOS = roleMapper.queryRoleListByArgs(args);
         Long total = roleMapper.getRoleCountByArgs(args);
@@ -138,7 +138,7 @@ public class SystemRoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> imple
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveRole(CreateRoleArgs args) {
+    public void saveRole(RoleCreateArgs args) {
         if (roleMapper.getRoleByName(args.getName()) != null) {
             throw new EntityExistException(RoleDO.class, "name", args.getName());
         }

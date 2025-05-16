@@ -3,9 +3,9 @@ package cn.odboy.core.controller.tools;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
 import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
-import cn.odboy.core.service.tools.dto.QueryQiniuArgs;
 import cn.odboy.core.service.tools.QiniuConfigService;
 import cn.odboy.core.service.tools.QiniuContentService;
+import cn.odboy.core.service.tools.dto.QiniuQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -56,13 +56,13 @@ public class QiniuController {
 
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    public void exportQiNiu(HttpServletResponse response, QueryQiniuArgs args) throws IOException {
+    public void exportQiNiu(HttpServletResponse response, QiniuQueryArgs args) throws IOException {
         qiniuContentService.downloadExcel(qiniuContentService.describeQiniuContentList(args), response);
     }
 
     @ApiOperation("查询文件")
     @GetMapping
-    public ResponseEntity<PageResult<QiniuContentDO>> queryQiNiu(QueryQiniuArgs args) {
+    public ResponseEntity<PageResult<QiniuContentDO>> queryQiNiu(QiniuQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(qiniuContentService.describeQiniuContentPage(args, page), HttpStatus.OK);
     }

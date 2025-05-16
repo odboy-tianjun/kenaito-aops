@@ -1,8 +1,8 @@
 package cn.odboy.core.framework.permission.core.filter;
 
 import cn.odboy.common.constant.RequestMethodEnum;
-import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.common.util.AnonTagUtil;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

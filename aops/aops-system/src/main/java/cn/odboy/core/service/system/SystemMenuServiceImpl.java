@@ -3,23 +3,23 @@ package cn.odboy.core.service.system;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.exception.EntityExistException;
+import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.ClassUtil;
+import cn.odboy.common.util.FileUtil;
+import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.constant.TransferProtocolConst;
+import cn.odboy.core.controller.system.vo.MenuMetaVo;
 import cn.odboy.core.controller.system.vo.MenuVo;
 import cn.odboy.core.dal.dataobject.system.MenuDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
-import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.constant.TransferProtocolConst;
 import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.dal.mysql.system.MenuMapper;
 import cn.odboy.core.dal.mysql.system.RoleMenuMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
-import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.exception.EntityExistException;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.FileUtil;
-import cn.odboy.common.util.StringUtil;
-import cn.odboy.core.controller.system.vo.MenuMetaVo;
-import cn.odboy.core.service.system.dto.QueryMenuArgs;
+import cn.odboy.core.dal.redis.RedisKeyConst;
+import cn.odboy.core.service.system.dto.MenuQueryArgs;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class SystemMenuServiceImpl extends ServiceImpl<MenuMapper, MenuDO> imple
     private static final String NO_STR = "否";
 
     @Override
-    public List<MenuDO> describeMenuList(QueryMenuArgs args, Boolean isQuery) throws Exception {
+    public List<MenuDO> describeMenuList(MenuQueryArgs args, Boolean isQuery) throws Exception {
         if (Boolean.TRUE.equals(isQuery)) {
             args.setPidIsNull(true);
             List<Field> fields = ClassUtil.getAllFields(args.getClass(), new ArrayList<>());

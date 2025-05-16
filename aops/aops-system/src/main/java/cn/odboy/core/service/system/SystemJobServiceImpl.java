@@ -11,8 +11,8 @@ import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.dal.mysql.system.JobMapper;
 import cn.odboy.core.dal.mysql.system.UserMapper;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.service.system.dto.CreateJobArgs;
-import cn.odboy.core.service.system.dto.QueryJobArgs;
+import cn.odboy.core.service.system.dto.JobCreateArgs;
+import cn.odboy.core.service.system.dto.JobQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +35,12 @@ public class SystemJobServiceImpl extends ServiceImpl<JobMapper, JobDO> implemen
     private final UserMapper userMapper;
 
     @Override
-    public PageResult<JobDO> describeJobPage(QueryJobArgs args, Page<Object> page) {
+    public PageResult<JobDO> describeJobPage(JobQueryArgs args, Page<Object> page) {
         return PageUtil.toPage(jobMapper.queryJobPageByArgs(args, page));
     }
 
     @Override
-    public List<JobDO> describeJobList(QueryJobArgs args) {
+    public List<JobDO> describeJobList(JobQueryArgs args) {
         return jobMapper.queryJobPageByArgs(args, PageUtil.getCount(jobMapper)).getRecords();
     }
 
@@ -66,7 +66,7 @@ public class SystemJobServiceImpl extends ServiceImpl<JobMapper, JobDO> implemen
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveJob(CreateJobArgs args) {
+    public void saveJob(JobCreateArgs args) {
         JobDO jobDO = jobMapper.getJobByName(args.getName());
         if (jobDO != null) {
             throw new EntityExistException(JobDO.class, "name", args.getName());

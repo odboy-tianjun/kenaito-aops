@@ -7,7 +7,7 @@ import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
 import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
 import cn.odboy.core.dal.mysql.tools.QiniuContentMapper;
-import cn.odboy.core.service.tools.dto.QueryQiniuArgs;
+import cn.odboy.core.service.tools.dto.QiniuQueryArgs;
 import cn.odboy.core.service.tools.util.QiniuUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,12 +44,12 @@ public class QiniuContentServiceImpl extends ServiceImpl<QiniuContentMapper, Qin
     private Long maxSize;
 
     @Override
-    public PageResult<QiniuContentDO> describeQiniuContentPage(QueryQiniuArgs args, Page<Object> page) {
+    public PageResult<QiniuContentDO> describeQiniuContentPage(QiniuQueryArgs args, Page<Object> page) {
         return PageUtil.toPage(qiniuContentMapper.queryQiniuContentPageByArgs(args, page));
     }
 
     @Override
-    public List<QiniuContentDO> describeQiniuContentList(QueryQiniuArgs args) {
+    public List<QiniuContentDO> describeQiniuContentList(QiniuQueryArgs args) {
         return qiniuContentMapper.queryQiniuContentPageByArgs(args, PageUtil.getCount(qiniuContentMapper)).getRecords();
     }
 

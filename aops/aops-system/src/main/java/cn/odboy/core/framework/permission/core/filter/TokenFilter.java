@@ -2,8 +2,8 @@ package cn.odboy.core.framework.permission.core.filter;
 
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.common.constant.SystemConst;
-import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.controller.system.vo.UserOnlineVo;
+import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

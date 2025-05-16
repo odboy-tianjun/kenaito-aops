@@ -1,12 +1,12 @@
 package cn.odboy.core.controller.tools;
 
-import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.constant.FileTypeEnum;
-import cn.odboy.core.service.tools.dto.QueryLocalStorageArgs;
+import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.util.FileUtil;
 import cn.odboy.core.dal.dataobject.tools.LocalStorageDO;
 import cn.odboy.core.service.tools.LocalStorageService;
-import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.util.FileUtil;
+import cn.odboy.core.service.tools.dto.LocalStorageQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +35,7 @@ public class LocalStorageController {
     @ApiOperation("查询文件")
     @GetMapping
     @PreAuthorize("@el.check('storage:list')")
-    public ResponseEntity<PageResult<LocalStorageDO>> queryFile(QueryLocalStorageArgs args) {
+    public ResponseEntity<PageResult<LocalStorageDO>> queryFile(LocalStorageQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(localStorageService.describeLocalStoragePage(args, page), HttpStatus.OK);
     }
@@ -43,7 +43,7 @@ public class LocalStorageController {
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('storage:list')")
-    public void exportFile(HttpServletResponse response, QueryLocalStorageArgs args) throws IOException {
+    public void exportFile(HttpServletResponse response, LocalStorageQueryArgs args) throws IOException {
         localStorageService.downloadExcel(localStorageService.describeLocalStorageList(args), response);
     }
 

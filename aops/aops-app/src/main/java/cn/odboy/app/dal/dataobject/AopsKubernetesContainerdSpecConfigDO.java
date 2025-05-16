@@ -16,22 +16,15 @@
 package cn.odboy.app.dal.dataobject;
 
 import cn.odboy.common.pojo.MyLogicEntity;
-import cn.odboy.common.pojo.MyObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * <p>
@@ -82,33 +75,4 @@ public class AopsKubernetesContainerdSpecConfigDO extends MyLogicEntity {
     @TableField("disk_size")
     @ApiModelProperty("磁盘大小，单位Gi")
     private Integer diskSize;
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class QueryPage extends MyObject {
-        private Long id;
-        private String specName;
-        private Integer cpuNum;
-        private Integer memNum;
-        private Integer diskSize;
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = false)
-    public static class CreateArgs extends MyObject {
-        @NotBlank(message = "必填")
-        private String specName;
-        @NotNull(message = "CPU数量必填")
-        @Min(message = "最小值为1", value = 1)
-        @Max(message = "最大值为256", value = 256)
-        private Integer cpuNum;
-        @NotNull(message = "内存大小必填")
-        @Min(message = "最小值为1", value = 1)
-        @Max(message = "最大值为512", value = 512)
-        private Integer memNum;
-        @NotNull(message = "磁盘大小必填")
-        @Min(message = "最小值为60", value = 60)
-        @Max(message = "最大值为180", value = 180)
-        private Integer diskSize;
-    }
 }

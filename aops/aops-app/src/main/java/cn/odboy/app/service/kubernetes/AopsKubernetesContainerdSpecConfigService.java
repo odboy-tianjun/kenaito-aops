@@ -15,6 +15,13 @@
  */
 package cn.odboy.app.service.kubernetes;
 
+import cn.odboy.app.controller.cmdb.vo.ContainerdSpecConfigCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.ContainerdSpecConfigUpdateArgs;
+import cn.odboy.app.dal.dataobject.AopsKubernetesContainerdSpecConfigDO;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+
 /**
  * <p>
  * Kubernetes容器规格配置 服务类
@@ -24,5 +31,11 @@ package cn.odboy.app.service.kubernetes;
  * @since 2025-05-07
  */
 public interface AopsKubernetesContainerdSpecConfigService {
+    PageResult<AopsKubernetesContainerdSpecConfigDO> describeContainerdSpecConfigPage(PageArgs<AopsKubernetesContainerdSpecConfigDO> args);
 
+    void createContainerdSpecConfig(ContainerdSpecConfigCreateArgs args);
+
+    void deleteContainerdSpecConfig(DeleteByIdArgs args);
+
+    void updateContainerdSpecConfig(ContainerdSpecConfigUpdateArgs args);
 }

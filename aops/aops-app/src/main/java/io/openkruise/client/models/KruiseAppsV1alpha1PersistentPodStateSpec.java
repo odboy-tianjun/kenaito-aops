@@ -16,10 +16,10 @@ package io.openkruise.client.models;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * PersistentPodStateSpec defines the desired state of PersistentPodState

@@ -17,10 +17,10 @@ import com.google.gson.annotations.SerializedName;
 import io.kubernetes.client.openapi.models.V1ListMeta;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * PodUnavailableBudgetList is a list of PodUnavailableBudget

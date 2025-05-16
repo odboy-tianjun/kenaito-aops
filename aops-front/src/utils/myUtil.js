@@ -72,6 +72,15 @@ const LabelUtil = {
       }
       return '未知'
     }
+  },
+  getItem: function(options, value) {
+    if (options instanceof Array) {
+      const find = options.find(f => f.value === value)
+      if (find) {
+        return find
+      }
+      return null
+    }
   }
 }
 

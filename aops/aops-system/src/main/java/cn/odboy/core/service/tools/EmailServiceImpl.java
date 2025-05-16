@@ -6,7 +6,7 @@ import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.DesEncryptUtil;
 import cn.odboy.core.dal.dataobject.tools.EmailConfigDO;
 import cn.odboy.core.dal.mysql.tools.EmailConfigMapper;
-import cn.odboy.core.service.tools.dto.SendEmailArgs;
+import cn.odboy.core.service.tools.dto.EmailSendArgs;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -46,7 +46,7 @@ public class EmailServiceImpl extends ServiceImpl<EmailConfigMapper, EmailConfig
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void sendEmail(SendEmailArgs args) {
+    public void sendEmail(EmailSendArgs args) {
         EmailConfigDO emailConfigDO = emailService.describeEmailConfig();
         if (emailConfigDO.getId() == null) {
             throw new BadRequestException("请先配置，再操作");

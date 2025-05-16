@@ -13,28 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.app.controller.cmdb.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import java.util.Map;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-/**
- * 元数据选项
- *
- * @author odboy
- * @date 2025-01-13
- */
+
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class MyMetaOption extends MyObject {
-    private String label;
-    private String value;
-    private Map<String, Object> ext;
+public class NetworkServiceUpdateArgs extends MyObject {
+    @NotNull(message = "ID必填")
+    private Long id;
+    @NotBlank(message = "环境编码必填")
+    private String envCode;
+    @NotBlank(message = "应用名称必填")
+    private String appName;
+    @NotNull(message = "服务端口必填")
+    private Integer servicePort;
+    @NotNull(message = "容器端口")
+    private Integer serviceTargetPort;
 }

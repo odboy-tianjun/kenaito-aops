@@ -11,8 +11,8 @@ import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.dal.mysql.system.DictMapper;
 import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.service.system.dto.CreateDictArgs;
-import cn.odboy.core.service.system.dto.QueryDictArgs;
+import cn.odboy.core.service.system.dto.DictCreateArgs;
+import cn.odboy.core.service.system.dto.DictQueryArgs;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,19 +35,19 @@ public class SystemDictServiceImpl extends ServiceImpl<DictMapper, DictDO> imple
     private final RedisHelper redisHelper;
 
     @Override
-    public PageResult<DictDO> describeDictPage(QueryDictArgs args, Page<Object> page) {
+    public PageResult<DictDO> describeDictPage(DictQueryArgs args, Page<Object> page) {
         IPage<DictDO> dicts = dictMapper.queryDictPageByArgs(args, page);
         return PageUtil.toPage(dicts);
     }
 
     @Override
-    public List<DictDO> describeDictList(QueryDictArgs args) {
+    public List<DictDO> describeDictList(DictQueryArgs args) {
         return dictMapper.queryDictPageByArgs(args, PageUtil.getCount(dictMapper)).getRecords();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDict(CreateDictArgs args) {
+    public void saveDict(DictCreateArgs args) {
         save(BeanUtil.copyProperties(args, DictDO.class));
     }
 

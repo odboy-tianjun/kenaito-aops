@@ -6,7 +6,7 @@ import cn.odboy.core.controller.system.vo.MenuVo;
 import cn.odboy.core.dal.dataobject.system.MenuDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
-import cn.odboy.core.service.system.dto.QueryMenuArgs;
+import cn.odboy.core.service.system.dto.MenuQueryArgs;
 import cn.odboy.core.service.system.SystemMenuService;
 import cn.odboy.common.exception.BadRequestException;
 import cn.odboy.common.util.PageUtil;
@@ -44,7 +44,7 @@ public class MenuController {
     @ApiOperation("导出菜单数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('menu:list')")
-    public void exportMenu(HttpServletResponse response, QueryMenuArgs args) throws Exception {
+    public void exportMenu(HttpServletResponse response, MenuQueryArgs args) throws Exception {
         systemMenuService.downloadMenuExcel(systemMenuService.describeMenuList(args, false), response);
     }
 
@@ -78,7 +78,7 @@ public class MenuController {
     @GetMapping
     @ApiOperation("查询菜单")
     @PreAuthorize("@el.check('menu:list')")
-    public ResponseEntity<PageResult<MenuDO>> queryMenu(QueryMenuArgs args) throws Exception {
+    public ResponseEntity<PageResult<MenuDO>> queryMenu(MenuQueryArgs args) throws Exception {
         List<MenuDO> menuDOList = systemMenuService.describeMenuList(args, true);
         return new ResponseEntity<>(PageUtil.toPage(menuDOList), HttpStatus.OK);
     }

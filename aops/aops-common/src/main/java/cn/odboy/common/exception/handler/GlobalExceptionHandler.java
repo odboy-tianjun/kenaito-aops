@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+/**
+ * 全局异常处理
+ *
+ * @author odboy
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {

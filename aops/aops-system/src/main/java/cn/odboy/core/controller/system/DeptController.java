@@ -1,12 +1,12 @@
 package cn.odboy.core.controller.system;
 
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.service.system.SystemDeptService;
-import cn.odboy.core.service.system.dto.CreateDeptArgs;
-import cn.odboy.core.service.system.dto.QueryDeptArgs;
-import cn.odboy.common.util.PageUtil;
+import cn.odboy.core.service.system.dto.DeptCreateArgs;
+import cn.odboy.core.service.system.dto.DeptQueryArgs;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +39,14 @@ public class DeptController {
     @ApiOperation("导出部门数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('dept:list')")
-    public void exportDept(HttpServletResponse response, QueryDeptArgs args) throws Exception {
+    public void exportDept(HttpServletResponse response, DeptQueryArgs args) throws Exception {
         systemDeptService.downloadDeptExcel(systemDeptService.describeDeptList(args, false), response);
     }
 
     @ApiOperation("查询部门")
     @GetMapping
     @PreAuthorize("@el.check('user:list','dept:list')")
-    public ResponseEntity<PageResult<DeptDO>> describeDeptPage(QueryDeptArgs args) throws Exception {
+    public ResponseEntity<PageResult<DeptDO>> describeDeptPage(DeptQueryArgs args) throws Exception {
         List<DeptDO> deptDOS = systemDeptService.describeDeptList(args, true);
         return new ResponseEntity<>(PageUtil.toPage(deptDOS), HttpStatus.OK);
     }
@@ -77,7 +77,7 @@ public class DeptController {
     @ApiOperation("新增部门")
     @PostMapping(value = "/saveDept")
     @PreAuthorize("@el.check('dept:add')")
-    public ResponseEntity<Object> saveDept(@Validated @RequestBody CreateDeptArgs args) {
+    public ResponseEntity<Object> saveDept(@Validated @RequestBody DeptCreateArgs args) {
         systemDeptService.saveDept(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -17,8 +17,8 @@ import com.google.gson.annotations.SerializedName;
 import io.kubernetes.client.openapi.models.V1LabelSelector;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Objects;
 import javax.annotation.Generated;
+import java.util.Objects;
 
 /**
  * Targets defines the namespaces that users want to distribute to.

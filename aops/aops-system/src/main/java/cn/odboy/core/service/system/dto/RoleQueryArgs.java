@@ -7,13 +7,10 @@ import java.util.List;
 
 
 @Data
-public class QueryQuartzJobArgs {
+public class RoleQueryArgs {
 
-    @ApiModelProperty(value = "定时任务名称")
-    private String jobName;
-
-    @ApiModelProperty(value = "是否成功")
-    private Boolean isSuccess;
+    @ApiModelProperty(value = "模糊查询")
+    private String blurry;
 
     @ApiModelProperty(value = "创建时间")
     private List<Date> createTime;
@@ -23,4 +20,7 @@ public class QueryQuartzJobArgs {
 
     @ApiModelProperty(value = "每页数据量", example = "10")
     private Integer size = 10;
+
+    @ApiModelProperty(value = "偏移量", hidden = true)
+    private long offset;
 }

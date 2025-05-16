@@ -21,10 +21,10 @@ import io.kubernetes.client.openapi.models.V1Toleration;
 import io.kubernetes.client.proto.Runtime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * WorkloadSpreadSubset defines the details of a subset.

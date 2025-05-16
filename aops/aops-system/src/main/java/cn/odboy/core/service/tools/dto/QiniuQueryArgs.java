@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Data
-public class QueryQiniuArgs {
+public class QiniuQueryArgs {
 
     @ApiModelProperty(value = "名称查询")
     private String key;

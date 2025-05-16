@@ -7,7 +7,7 @@ import lombok.Data;
  * 修改密码
  */
 @Data
-public class UpdateUserPasswordVo {
+public class UserModifyPasswordVo {
 
     @ApiModelProperty(value = "旧密码")
     private String oldPass;

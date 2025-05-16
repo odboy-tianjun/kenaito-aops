@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class UpdateQuartzJobArgs extends MyObject {
+public class QuartzJobUpdateArgs extends MyObject {
     @NotNull
     private Long id;
     private String uuid;

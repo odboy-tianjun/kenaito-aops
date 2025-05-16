@@ -3,15 +3,15 @@ package cn.odboy.core.service.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.system.DictDO;
-import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.dataobject.system.DictDetailDO;
 import cn.odboy.core.dal.mysql.system.DictDetailMapper;
 import cn.odboy.core.dal.mysql.system.DictMapper;
-import cn.odboy.core.service.system.dto.CreateDictDetailArgs;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.core.service.system.dto.QueryDictDetailArgs;
+import cn.odboy.core.dal.redis.RedisKeyConst;
+import cn.odboy.core.service.system.dto.DictDetailCreateArgs;
+import cn.odboy.core.service.system.dto.DictDetailQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
     private final DictDetailMapper dictDetailMapper;
 
     @Override
-    public PageResult<DictDetailDO> describeDictDetailPage(QueryDictDetailArgs args, Page<Object> page) {
+    public PageResult<DictDetailDO> describeDictDetailPage(DictDetailQueryArgs args, Page<Object> page) {
         return PageUtil.toPage(dictDetailMapper.queryDictDetailPageByArgs(args, page));
     }
 
@@ -45,7 +45,7 @@ public class SystemDictDetailServiceImpl extends ServiceImpl<DictDetailMapper, D
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveDictDetail(CreateDictDetailArgs args) {
+    public void saveDictDetail(DictDetailCreateArgs args) {
         DictDetailDO dictDetailDO = BeanUtil.copyProperties(args, DictDetailDO.class);
         dictDetailDO.setDictId(args.getDict().getId());
         save(dictDetailDO);

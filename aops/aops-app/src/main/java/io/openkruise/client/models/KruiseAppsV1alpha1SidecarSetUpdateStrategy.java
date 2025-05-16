@@ -18,10 +18,10 @@ import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.models.V1LabelSelector;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Generated;
 
 /**
  * The sidecarset updateStrategy to use to replace existing pods with new ones.

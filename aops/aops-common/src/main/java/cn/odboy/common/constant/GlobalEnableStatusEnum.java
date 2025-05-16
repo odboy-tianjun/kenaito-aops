@@ -27,10 +27,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum GlobalEnableStatusEnum {
-    ENABLED("1", "启用"),
-    DISABLED("0", "禁用");
+    ENABLED("1", "启用", "success"),
+    DISABLED("0", "禁用", "danger");
     private final String code;
     private final String desc;
+    private final String tagType;
 
     public static GlobalEnableStatusEnum getByCode(Integer code) {
         for (GlobalEnableStatusEnum item : GlobalEnableStatusEnum.values()) {

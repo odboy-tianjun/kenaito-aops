@@ -2,8 +2,8 @@ package cn.odboy.core.service.system;
 
 import cn.odboy.common.pojo.BaseResult;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
-import cn.odboy.core.service.system.dto.CreateDeptArgs;
-import cn.odboy.core.service.system.dto.QueryDeptArgs;
+import cn.odboy.core.service.system.dto.DeptCreateArgs;
+import cn.odboy.core.service.system.dto.DeptQueryArgs;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,7 +19,7 @@ public interface SystemDeptService extends IService<DeptDO> {
      * @return /
      * @throws Exception /
      */
-    List<DeptDO> describeDeptList(QueryDeptArgs args, Boolean isQuery) throws Exception;
+    List<DeptDO> describeDeptList(DeptQueryArgs args, Boolean isQuery) throws Exception;
 
     /**
      * 根据ID查询
@@ -99,7 +99,7 @@ public interface SystemDeptService extends IService<DeptDO> {
      *
      * @param args /
      */
-    void saveDept(CreateDeptArgs args);
+    void saveDept(DeptCreateArgs args);
 
     /**
      * 编辑

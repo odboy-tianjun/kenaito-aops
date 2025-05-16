@@ -89,4 +89,11 @@ public class AopsKubernetesNetworkServiceDO extends MyLogicEntity {
     @ApiModelProperty("容器端口")
     @TableField("service_target_port")
     private Integer serviceTargetPort;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    @TableField("remark")
+    private String remark;
 }

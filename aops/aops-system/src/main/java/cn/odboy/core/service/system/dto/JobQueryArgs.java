@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class QueryJobArgs {
+public class JobQueryArgs {
 
     @ApiModelProperty(value = "岗位名称")
     private String name;

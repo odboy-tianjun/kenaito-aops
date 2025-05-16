@@ -1,24 +1,24 @@
 package cn.odboy.core.service.system;
 
+import cn.odboy.common.exception.BadRequestException;
+import cn.odboy.common.exception.EntityExistException;
 import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
+import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;
+import cn.odboy.core.dal.mysql.system.UserJobMapper;
+import cn.odboy.core.dal.mysql.system.UserMapper;
+import cn.odboy.core.dal.mysql.system.UserRoleMapper;
+import cn.odboy.core.dal.redis.RedisKeyConst;
 import cn.odboy.core.dal.redis.system.SystemUserJwtInfoDAO;
 import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.framework.system.config.AppProperties;
-import cn.odboy.core.dal.redis.RedisKeyConst;
-import cn.odboy.core.dal.dataobject.system.JobDO;
-import cn.odboy.core.dal.mysql.system.UserJobMapper;
-import cn.odboy.core.dal.mysql.system.UserMapper;
-import cn.odboy.core.dal.mysql.system.UserRoleMapper;
-import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.exception.EntityExistException;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.FileUtil;
-import cn.odboy.common.util.StringUtil;
-import cn.odboy.core.service.system.dto.QueryUserArgs;
+import cn.odboy.core.service.system.dto.UserQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
     private final SystemUserOnlineInfoDAO systemUserOnlineInfoDAO;
 
     @Override
-    public PageResult<UserDO> describeUserPage(QueryUserArgs args, Page<Object> page) {
+    public PageResult<UserDO> describeUserPage(UserQueryArgs args, Page<Object> page) {
         args.setOffset(page.offset());
         List<UserDO> userDOS = userMapper.queryUserPageByArgs(args, PageUtil.getCount(userMapper)).getRecords();
         Long total = userMapper.getUserCountByArgs(args);
@@ -60,7 +60,7 @@ public class SystemUserServiceImpl extends ServiceImpl<UserMapper, UserDO> imple
     }
 
     @Override
-    public List<UserDO> describeUserList(QueryUserArgs args) {
+    public List<UserDO> describeUserList(UserQueryArgs args) {
         return userMapper.queryUserPageByArgs(args, PageUtil.getCount(userMapper)).getRecords();
     }
 

@@ -1,7 +1,7 @@
 package cn.odboy.core.dal.mysql.system;
 
 import cn.odboy.core.dal.dataobject.system.UserDO;
-import cn.odboy.core.service.system.dto.QueryUserArgs;
+import cn.odboy.core.service.system.dto.UserQueryArgs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,9 +14,9 @@ import java.util.Set;
 @Mapper
 public interface UserMapper extends BaseMapper<UserDO> {
 
-    Long getUserCountByArgs(@Param("args") QueryUserArgs args);
+    Long getUserCountByArgs(@Param("args") UserQueryArgs args);
 
-    IPage<UserDO> queryUserPageByArgs(@Param("args") QueryUserArgs args, Page<Object> page);
+    IPage<UserDO> queryUserPageByArgs(@Param("args") UserQueryArgs args, Page<Object> page);
 
     UserDO getUserByUsername(@Param("username") String username);
 

@@ -15,17 +15,18 @@
  */
 package cn.odboy.app.controller.cmdb;
 
-import cn.odboy.app.controller.cmdb.vo.CreateClusterConfigArgs;
-import cn.odboy.app.controller.cmdb.vo.ModifyClusterDefaultAppYmlArgs;
-import cn.odboy.app.controller.cmdb.vo.UpdateClusterConfigArgs;
+import cn.odboy.app.controller.cmdb.vo.ClusterConfigCreateArgs;
+import cn.odboy.app.controller.cmdb.vo.ClusterConfigModifyDefaultAppYmlArgs;
+import cn.odboy.app.controller.cmdb.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterConfigService;
 import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.vo.RemoveByIdArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -34,60 +35,53 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * <p>
- * Kubernetes集群配置 前端控制器
- * </p>
- *
- * @author codegen
- * @since 2025-05-07
- */
+@Api(tags = "Kubernetes集群配置管理")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/aops/kubernetes/clusterConfig")
+@RequestMapping("/api/cmdb/kubernetes/clusterConfig")
 public class AopsKubernetesClusterConfigController {
-    private final AopsKubernetesClusterConfigService aopsKubernetesClusterConfigService;
+    private final AopsKubernetesClusterConfigService currentService;
 
-    @ApiOperation("分页查询Kubernetes集群配置")
-    @PostMapping("/describePage")
-    @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:list')")
-    public ResponseEntity<Object> describePage(@Validated @RequestBody PageArgs<AopsKubernetesClusterConfigDO> args) {
-        return new ResponseEntity<>(aopsKubernetesClusterConfigService.describeKubernetesClusterConfigPage(args), HttpStatus.OK);
+    @ApiOperation("分页查询集群配置列表")
+    @PostMapping("/describeClusterConfigPage")
+    @PreAuthorize("@el.check()")
+    public ResponseEntity<PageResult<AopsKubernetesClusterConfigDO>> describeClusterConfigPage(@Validated @RequestBody PageArgs<AopsKubernetesClusterConfigDO> args) {
+        return ResponseEntity.ok(currentService.describeClusterConfigPage(args));
     }
 
     @OperationLog
-    @ApiOperation("新增Kubernetes集群配置")
+    @ApiOperation("创建集群配置")
     @PostMapping("/createClusterConfig")
-    @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:update')")
-    public ResponseEntity<Object> createClusterConfig(@Validated @RequestBody CreateClusterConfigArgs args) {
-        aopsKubernetesClusterConfigService.createClusterConfig(args);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PreAuthorize("@el.check()")
+    public ResponseEntity<Void> createClusterConfig(@Validated @RequestBody ClusterConfigCreateArgs args) {
+        currentService.createClusterConfig(args);
+        return ResponseEntity.ok().build();
     }
 
     @OperationLog
     @ApiOperation("删除集群配置")
-    @PostMapping("/removeClusterConfig")
-    @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:remove')")
-    public ResponseEntity<Object> removeClusterConfig(@Validated @RequestBody RemoveByIdArgs args) {
-        aopsKubernetesClusterConfigService.removeClusterConfig(args);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping("/deleteClusterConfig")
+    @PreAuthorize("@el.check()")
+    public ResponseEntity<Void> deleteClusterConfig(@Validated @RequestBody DeleteByIdArgs args) {
+        currentService.deleteClusterConfig(args);
+        return ResponseEntity.ok().build();
     }
 
     @OperationLog
-    @ApiOperation("修改Kubernetes集群配置")
+    @ApiOperation("更新集群配置")
     @PostMapping("/updateClusterConfig")
-    @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:update')")
-    public ResponseEntity<Object> updateClusterConfig(@Validated @RequestBody UpdateClusterConfigArgs args) {
-        aopsKubernetesClusterConfigService.updateClusterConfig(args);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PreAuthorize("@el.check()")
+    public ResponseEntity<Void> updateClusterConfig(@Validated @RequestBody ClusterConfigUpdateArgs args) {
+        currentService.updateClusterConfig(args);
+        return ResponseEntity.ok().build();
     }
 
     @OperationLog
-    @ApiOperation("修改Kubernetes集群默认应用负载配置")
+    @ApiOperation("修改集群默认应用负载配置")
     @PostMapping("/modifyClusterDefaultAppYml")
-    @PreAuthorize("@el.check('aops:kubernetes:clusterConfig:update')")
-    public ResponseEntity<Object> modifyClusterDefaultAppYml(@Validated @RequestBody ModifyClusterDefaultAppYmlArgs args) {
-        aopsKubernetesClusterConfigService.modifyClusterDefaultAppYml(args);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PreAuthorize("@el.check()")
+    public ResponseEntity<Void> modifyClusterDefaultAppYml(@Validated @RequestBody ClusterConfigModifyDefaultAppYmlArgs args) {
+        currentService.modifyClusterDefaultAppYml(args);
+        return ResponseEntity.ok().build();
     }
 }

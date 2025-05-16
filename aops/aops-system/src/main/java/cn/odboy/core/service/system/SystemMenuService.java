@@ -2,7 +2,7 @@ package cn.odboy.core.service.system;
 
 import cn.odboy.core.controller.system.vo.MenuVo;
 import cn.odboy.core.dal.dataobject.system.MenuDO;
-import cn.odboy.core.service.system.dto.QueryMenuArgs;
+import cn.odboy.core.service.system.dto.MenuQueryArgs;
 import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public interface SystemMenuService extends IService<MenuDO> {
      * @return /
      * @throws Exception /
      */
-    List<MenuDO> describeMenuList(QueryMenuArgs args, Boolean isQuery) throws Exception;
+    List<MenuDO> describeMenuList(MenuQueryArgs args, Boolean isQuery) throws Exception;
 
     /**
      * 根据ID查询

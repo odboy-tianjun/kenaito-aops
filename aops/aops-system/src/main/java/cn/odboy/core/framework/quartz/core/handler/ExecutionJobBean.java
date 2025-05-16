@@ -6,14 +6,14 @@ import cn.hutool.extra.template.TemplateConfig;
 import cn.hutool.extra.template.TemplateEngine;
 import cn.hutool.extra.template.TemplateUtil;
 import cn.odboy.common.context.SpringBeanHolder;
-import cn.odboy.core.service.tools.dto.SendEmailArgs;
+import cn.odboy.common.redis.RedisHelper;
+import cn.odboy.common.util.StringUtil;
 import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
 import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
 import cn.odboy.core.dal.mysql.job.QuartzLogMapper;
 import cn.odboy.core.service.system.SystemQuartzJobService;
 import cn.odboy.core.service.tools.EmailService;
-import cn.odboy.common.redis.RedisHelper;
-import cn.odboy.common.util.StringUtil;
+import cn.odboy.core.service.tools.dto.EmailSendArgs;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -89,8 +89,8 @@ public class ExecutionJobBean extends QuartzJobBean {
                 EmailService emailService = SpringBeanHolder.getBean(EmailService.class);
                 // 邮箱报警
                 if (StringUtil.isNoneBlank(quartzJobDO.getEmail())) {
-                    SendEmailArgs sendEmailArgs = taskAlarm(quartzJobDO, ExceptionUtil.stacktraceToString(e));
-                    emailService.sendEmail(sendEmailArgs);
+                    EmailSendArgs emailSendArgs = taskAlarm(quartzJobDO, ExceptionUtil.stacktraceToString(e));
+                    emailService.sendEmail(emailSendArgs);
                 }
             }
         } finally {
@@ -98,17 +98,17 @@ public class ExecutionJobBean extends QuartzJobBean {
         }
     }
 
-    private SendEmailArgs taskAlarm(QuartzJobDO quartzJobDO, String msg) {
-        SendEmailArgs sendEmailArgs = new SendEmailArgs();
-        sendEmailArgs.setSubject("定时任务【" + quartzJobDO.getJobName() + "】执行失败，请尽快处理！");
+    private EmailSendArgs taskAlarm(QuartzJobDO quartzJobDO, String msg) {
+        EmailSendArgs emailSendArgs = new EmailSendArgs();
+        emailSendArgs.setSubject("定时任务【" + quartzJobDO.getJobName() + "】执行失败，请尽快处理！");
         Map<String, Object> data = new HashMap<>(16);
         data.put("task", quartzJobDO);
         data.put("msg", msg);
         TemplateEngine engine = TemplateUtil.createEngine(new TemplateConfig("template", TemplateConfig.ResourceMode.CLASSPATH));
         Template template = engine.getTemplate("taskAlarm.ftl");
-        sendEmailArgs.setContent(template.render(data));
+        emailSendArgs.setContent(template.render(data));
         List<String> emails = Arrays.asList(quartzJobDO.getEmail().split("[,，]"));
-        sendEmailArgs.setTos(emails);
-        return sendEmailArgs;
+        emailSendArgs.setTos(emails);
+        return emailSendArgs;
     }
 }

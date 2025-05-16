@@ -6,8 +6,8 @@ import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;
 import cn.odboy.core.service.system.SystemRoleService;
-import cn.odboy.core.service.system.dto.CreateRoleArgs;
-import cn.odboy.core.service.system.dto.QueryRoleArgs;
+import cn.odboy.core.service.system.dto.RoleCreateArgs;
+import cn.odboy.core.service.system.dto.RoleQueryArgs;
 import cn.odboy.common.exception.BadRequestException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -48,7 +48,7 @@ public class RoleController {
     @ApiOperation("导出角色数据")
     @GetMapping(value = "/download")
     @PreAuthorize("@el.check('role:list')")
-    public void exportRole(HttpServletResponse response, QueryRoleArgs args) throws IOException {
+    public void exportRole(HttpServletResponse response, RoleQueryArgs args) throws IOException {
         systemRoleService.downloadRoleExcel(systemRoleService.describeRoleList(args), response);
     }
 
@@ -62,7 +62,7 @@ public class RoleController {
     @ApiOperation("查询角色")
     @GetMapping
     @PreAuthorize("@el.check('roles:list')")
-    public ResponseEntity<PageResult<RoleDO>> describeRolePage(QueryRoleArgs args) {
+    public ResponseEntity<PageResult<RoleDO>> describeRolePage(RoleQueryArgs args) {
         Page<Object> page = new Page<>(args.getPage(), args.getSize());
         return new ResponseEntity<>(systemRoleService.describeRolePage(args, page), HttpStatus.OK);
     }
@@ -77,7 +77,7 @@ public class RoleController {
     @ApiOperation("新增角色")
     @PostMapping(value = "/saveRole")
     @PreAuthorize("@el.check('roles:add')")
-    public ResponseEntity<Object> saveRole(@Validated @RequestBody CreateRoleArgs args) {
+    public ResponseEntity<Object> saveRole(@Validated @RequestBody RoleCreateArgs args) {
         checkRoleLevels(args.getLevel());
         systemRoleService.saveRole(args);
         return new ResponseEntity<>(HttpStatus.CREATED);
