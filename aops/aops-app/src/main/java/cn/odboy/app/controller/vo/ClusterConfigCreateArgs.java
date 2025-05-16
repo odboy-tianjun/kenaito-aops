@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;

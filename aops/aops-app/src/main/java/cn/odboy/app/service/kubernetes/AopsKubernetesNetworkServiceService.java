@@ -15,8 +15,8 @@
  */
 package cn.odboy.app.service.kubernetes;
 
-import cn.odboy.app.controller.cmdb.vo.NetworkServiceCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.NetworkServiceUpdateArgs;
+import cn.odboy.app.controller.vo.NetworkServiceCreateArgs;
+import cn.odboy.app.controller.vo.NetworkServiceUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkServiceDO;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;

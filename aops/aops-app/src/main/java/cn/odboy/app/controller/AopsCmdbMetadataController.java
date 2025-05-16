@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb;
+package cn.odboy.app.controller;
 
 import cn.hutool.core.lang.Dict;
 import cn.odboy.app.constant.AppLanguageEnum;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @Api(tags = "CMDB元数据管理")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/aops/cmdb/metadata")
+@RequestMapping("/api/cmdb/metadata")
 public class AopsCmdbMetadataController {
     /**
      * 查询启用状态

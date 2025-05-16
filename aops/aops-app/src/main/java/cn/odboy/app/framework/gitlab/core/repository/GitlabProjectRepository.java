@@ -41,7 +41,6 @@ import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.Visibility;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,7 +68,6 @@ public class GitlabProjectRepository {
     @GitlabApiExceptionCatch(description = "根据groupId分页查询分组项目 -> ok", throwException = false)
     public List<Project> describeProjectListByGroupId(Long groupId, int page) {
         int newPage = page <= 0 ? 1 : page;
-        List<Project> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             return groupApi.getProjects(groupId, newPage, 10000);
@@ -110,7 +108,6 @@ public class GitlabProjectRepository {
     @GitlabApiExceptionCatch(description = "分页查询项目列表 -> ok", throwException = false)
     public List<Project> describeProjectListByCurrentPage(int currentPage) {
         int newPage = currentPage <= 0 ? 1 : currentPage;
-        List<Project> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             return projectApi.getProjects(newPage, 100);
@@ -124,7 +121,6 @@ public class GitlabProjectRepository {
     @SneakyThrows
     @GitlabApiExceptionCatch(description = "根据appName查询项目列表 -> ok", throwException = false)
     public List<Project> describeProjectListByAppName(String appName) {
-        List<Project> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             ProjectApi projectApi = client.getProjectApi();
             return projectApi.getProjectsStream(appName).collect(Collectors.toList());
@@ -324,7 +320,7 @@ public class GitlabProjectRepository {
 
     @GitlabApiExceptionCatch(description = "初始化GitCI文件 -> ok")
     public void initGitCiFile(Long projectId, String defaultBranch, String language, String appName) throws Exception {
-        if (cn.hutool.core.util.StrUtil.isBlank(language)) {
+        if (StrUtil.isBlank(language)) {
             log.error("不支持的语言, 跳过 .gitlab-ci.yml 文件初始化");
             return;
         }

@@ -17,8 +17,8 @@ package cn.odboy.app.service.kubernetes;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.odboy.app.controller.cmdb.vo.NetworkIngressCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.NetworkIngressUpdateArgs;
+import cn.odboy.app.controller.vo.NetworkIngressCreateArgs;
+import cn.odboy.app.controller.vo.NetworkIngressUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesNetworkIngressMapper;
 import cn.odboy.common.pojo.PageArgs;

@@ -13,10 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb;
+package cn.odboy.app.controller;
 
-import cn.odboy.app.controller.cmdb.vo.NetworkServiceCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.NetworkServiceUpdateArgs;
+import cn.odboy.app.controller.vo.NetworkServiceCreateArgs;
+import cn.odboy.app.controller.vo.NetworkServiceUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkServiceDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesNetworkServiceService;
 import cn.odboy.common.pojo.PageArgs;

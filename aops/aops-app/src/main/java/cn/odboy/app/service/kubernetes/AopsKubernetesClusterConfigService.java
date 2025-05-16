@@ -15,9 +15,9 @@
  */
 package cn.odboy.app.service.kubernetes;
 
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigModifyDefaultAppYmlArgs;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigUpdateArgs;
+import cn.odboy.app.controller.vo.ClusterConfigCreateArgs;
+import cn.odboy.app.controller.vo.ClusterConfigModifyDefaultAppYmlArgs;
+import cn.odboy.app.controller.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;

@@ -13,31 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ContainerdSpecConfigCreateArgs extends MyObject {
-    @NotBlank(message = "规格名称必填")
-    private String specName;
-    @NotNull(message = "CPU数量必填")
-    @Min(message = "最小值为1", value = 1)
-    @Max(message = "最大值为256", value = 256)
-    private Integer cpuNum;
-    @NotNull(message = "内存大小必填")
-    @Min(message = "最小值为1", value = 1)
-    @Max(message = "最大值为512", value = 512)
-    private Integer memNum;
-    @NotNull(message = "磁盘大小必填")
-    @Min(message = "最小值为60", value = 60)
-    @Max(message = "最大值为180", value = 180)
-    private Integer diskSize;
+public class NetworkServiceCreateArgs extends MyObject {
+    @NotBlank(message = "环境编码必填")
+    private String envCode;
+    @NotBlank(message = "应用名称必填")
+    private String appName;
+    @NotNull(message = "服务端口必填")
+    private Integer servicePort;
+    @NotNull(message = "容器端口")
+    private Integer serviceTargetPort;
+    private String remark;
 }

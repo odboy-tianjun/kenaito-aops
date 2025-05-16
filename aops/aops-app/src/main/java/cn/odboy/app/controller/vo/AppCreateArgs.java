@@ -13,18 +13,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class NetworkIngressUpdateArgs extends MyObject {
-    @NotNull(message = "ID必填")
-    private Long id;
-    private String remark;
+public class AppCreateArgs extends MyObject {
+    @NotBlank(message = "应用名称必填")
+    private String appName;
+    @NotNull(message = "所属产品线必填")
+    private Long productLineId;
+    @NotBlank(message = "开发语言必填")
+    private String language;
+    @NotBlank(message = "应用描述必填")
+    private String description;
+    @NotBlank(message = "应用等级必填")
+    private String appLevel;
+    @NotBlank(message = "模式必填: new为新增项目, join为已有项目")
+    private String mode;
+    private Long gitProjectId;
 }

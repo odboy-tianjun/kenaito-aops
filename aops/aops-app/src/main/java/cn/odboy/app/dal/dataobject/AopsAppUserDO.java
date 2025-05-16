@@ -39,23 +39,15 @@ import lombok.ToString;
 @ApiModel(value = "AopsAppUser对象", description = "应用、成员关联")
 public class AopsAppUserDO extends MyObject {
 
-    /**
-     * 应用id
-     */
     @ApiModelProperty("应用id")
     @TableField(value = "app_id")
     private Long appId;
 
-    /**
-     * 用户Id
-     */
+
     @ApiModelProperty("用户Id")
     @TableField(value = "user_id")
     private Long userId;
 
-    /**
-     * 角色编码
-     */
     @ApiModelProperty("角色编码")
     @TableField(value = "role_code")
     private String roleCode;

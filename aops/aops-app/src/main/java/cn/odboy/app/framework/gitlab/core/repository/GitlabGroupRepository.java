@@ -78,7 +78,6 @@ public class GitlabGroupRepository {
     @GitlabApiExceptionCatch(description = "分页获取Git分组 -> ok", throwException = false)
     public List<Group> describeGroupList(int page) {
         int newPage = page <= 0 ? 1 : page;
-        List<Group> list = new ArrayList<>();
         try (GitLabApi client = gitlabApiClientManager.getClient()) {
             GroupApi groupApi = client.getGroupApi();
             return groupApi.getGroups(newPage, 10000);

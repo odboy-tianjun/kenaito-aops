@@ -38,17 +38,9 @@ import lombok.ToString;
 @TableName("aops_app_user_collect")
 @ApiModel(value = "AopsAppUserCollect对象", description = "用户收藏的应用")
 public class AopsAppUserCollectDO extends MyObject {
-
-    /**
-     * 应用id
-     */
     @ApiModelProperty("应用id")
     @TableField(value = "app_id")
     private Long appId;
-
-    /**
-     * 用户Id
-     */
     @ApiModelProperty("用户Id")
     @TableField(value = "user_id")
     private Long userId;

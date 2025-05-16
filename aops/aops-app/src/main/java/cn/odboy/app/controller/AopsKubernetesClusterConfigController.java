@@ -13,11 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb;
+package cn.odboy.app.controller;
 
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigModifyDefaultAppYmlArgs;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigUpdateArgs;
+import cn.odboy.app.controller.vo.ClusterConfigCreateArgs;
+import cn.odboy.app.controller.vo.ClusterConfigModifyDefaultAppYmlArgs;
+import cn.odboy.app.controller.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterConfigService;
 import cn.odboy.common.pojo.PageArgs;

@@ -13,12 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb;
+package cn.odboy.app.controller;
 
-import cn.odboy.app.controller.cmdb.vo.NetworkIngressCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.NetworkIngressUpdateArgs;
-import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
-import cn.odboy.app.service.kubernetes.AopsKubernetesNetworkIngressService;
+import cn.odboy.app.controller.vo.AppCreateArgs;
+import cn.odboy.app.controller.vo.AppModifyMetaArgs;
+import cn.odboy.app.dal.dataobject.AopsAppDO;
+import cn.odboy.app.framework.gitlab.core.repository.GitlabGroupRepository;
+import cn.odboy.app.framework.gitlab.core.repository.GitlabProjectRepository;
+import cn.odboy.app.service.app.AopsAppService;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;
 import cn.odboy.common.pojo.vo.DeleteByIdArgs;
@@ -34,44 +36,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "Kubernetes集群Ingress")
+@Api(tags = "应用管理")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/cmdb/kubernetes/network")
-public class AopsKubernetesNetworkIngressController {
-    private final AopsKubernetesNetworkIngressService currentService;
+@RequestMapping("/api/cmdb/appManage")
+public class AopsCmdbAppManageController {
+    private final AopsAppService currentService;
 
-    @ApiOperation("分页查询Ingress列表")
-    @PostMapping("/describeIngressPage")
+    @ApiOperation("分页查询应用列表")
+    @PostMapping("/describeAppPage")
     @PreAuthorize("@el.check()")
-    public ResponseEntity<PageResult<AopsKubernetesNetworkIngressDO>> describeIngressPage(@Validated @RequestBody PageArgs<AopsKubernetesNetworkIngressDO> args) {
-        return ResponseEntity.ok(currentService.describeIngressPage(args));
+    public ResponseEntity<PageResult<AopsAppDO>> describeAppPage(@Validated @RequestBody PageArgs<AopsAppDO> args) {
+        return ResponseEntity.ok(currentService.describeAppPage(args));
     }
 
     @OperationLog
-    @ApiOperation("创建Ingress")
-    @PostMapping("/createIngress")
+    @ApiOperation("创建应用")
+    @PostMapping("/createApp")
     @PreAuthorize("@el.check()")
-    public ResponseEntity<Void> createIngress(@Validated @RequestBody NetworkIngressCreateArgs args) {
-        currentService.createIngress(args);
+    public ResponseEntity<Void> createApp(@Validated @RequestBody AppCreateArgs args) throws Exception {
+        currentService.createApp(args);
         return ResponseEntity.ok().build();
     }
 
     @OperationLog
-    @ApiOperation("删除Ingress")
-    @PostMapping("/deleteIngress")
+    @ApiOperation("删除应用")
+    @PostMapping("/deleteApp")
     @PreAuthorize("@el.check()")
-    public ResponseEntity<Void> deleteIngress(@Validated @RequestBody DeleteByIdArgs args) {
-        currentService.deleteIngress(args);
+    public ResponseEntity<Void> deleteApp(@Validated @RequestBody DeleteByIdArgs args) {
+        currentService.deleteApp(args);
         return ResponseEntity.ok().build();
     }
 
     @OperationLog
-    @ApiOperation("更新Ingress")
-    @PostMapping("/updateIngress")
+    @ApiOperation("更新应用")
+    @PostMapping("/updateApp")
     @PreAuthorize("@el.check()")
-    public ResponseEntity<Void> updateIngress(@Validated @RequestBody NetworkIngressUpdateArgs args) {
-        currentService.updateIngress(args);
+    public ResponseEntity<Void> updateApp(@Validated @RequestBody AppModifyMetaArgs args) {
+        currentService.updateApp(args);
         return ResponseEntity.ok().build();
     }
 }

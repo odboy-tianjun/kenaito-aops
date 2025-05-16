@@ -13,28 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class NetworkIngressCreateArgs extends MyObject {
+public class NetworkServiceUpdateArgs extends MyObject {
+    @NotNull(message = "ID必填")
+    private Long id;
     @NotBlank(message = "环境编码必填")
     private String envCode;
     @NotBlank(message = "应用名称必填")
     private String appName;
-    @NotBlank(message = "绑定域名必填")
-    private String hostname;
-    @NotBlank(message = "网络类型必填")
-    private String networkType;
-    @NotBlank(message = "绑定的ServiceName必填")
-    private String serviceName;
-    @NotBlank(message = "绑定的路径必填")
-    private String servicePath;
-    private String remark;
+    @NotNull(message = "服务端口必填")
+    private Integer servicePort;
+    @NotNull(message = "容器端口")
+    private Integer serviceTargetPort;
 }

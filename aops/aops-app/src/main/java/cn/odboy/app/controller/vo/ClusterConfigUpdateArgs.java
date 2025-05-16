@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
@@ -24,14 +24,17 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class NetworkServiceCreateArgs extends MyObject {
+public class ClusterConfigUpdateArgs extends MyObject {
+    @NotNull(message = "id必填")
+    private Long id;
     @NotBlank(message = "环境编码必填")
     private String envCode;
-    @NotBlank(message = "应用名称必填")
-    private String appName;
-    @NotNull(message = "服务端口必填")
-    private Integer servicePort;
-    @NotNull(message = "容器端口")
-    private Integer serviceTargetPort;
-    private String remark;
+    @NotBlank(message = "集群编码必填")
+    private String clusterCode;
+    @NotBlank(message = "集群名称必填")
+    private String clusterName;
+    @NotBlank(message = "集群配置必填")
+    private String clusterConfigContent;
+    @NotBlank(message = "初始镜像地址必填")
+    private String clusterDefaultAppImage;
 }

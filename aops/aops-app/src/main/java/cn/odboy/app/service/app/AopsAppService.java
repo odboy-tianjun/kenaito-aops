@@ -16,6 +16,13 @@
 package cn.odboy.app.service.app;
 
 
+import cn.odboy.app.controller.vo.AppCreateArgs;
+import cn.odboy.app.controller.vo.AppModifyMetaArgs;
+import cn.odboy.app.dal.dataobject.AopsAppDO;
+import cn.odboy.common.pojo.PageArgs;
+import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+
 /**
  * <p>
  * 应用 服务类
@@ -25,5 +32,11 @@ package cn.odboy.app.service.app;
  * @since 2025-05-07
  */
 public interface AopsAppService {
+    PageResult<AopsAppDO> describeAppPage(PageArgs<AopsAppDO> args);
 
+    void createApp(AppCreateArgs args) throws Exception;
+
+    void deleteApp(DeleteByIdArgs args);
+
+    void updateApp(AppModifyMetaArgs args);
 }

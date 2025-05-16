@@ -15,8 +15,8 @@
  */
 package cn.odboy.app.service.kubernetes;
 
-import cn.odboy.app.controller.cmdb.vo.ContainerdSpecConfigCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.ContainerdSpecConfigUpdateArgs;
+import cn.odboy.app.controller.vo.ContainerdSpecConfigCreateArgs;
+import cn.odboy.app.controller.vo.ContainerdSpecConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesContainerdSpecConfigDO;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;

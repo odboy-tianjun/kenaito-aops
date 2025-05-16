@@ -41,58 +41,37 @@ import lombok.ToString;
 @ApiModel(value = "AopsKubernetesNetworkService对象", description = "Kubernetes网络service")
 public class AopsKubernetesNetworkServiceDO extends MyLogicEntity {
 
-    /**
-     * 自增ID
-     */
+
     @ApiModelProperty("自增ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 环境编码
-     */
     @TableField("env_code")
     @ApiModelProperty("环境编码")
     private String envCode;
 
-    /**
-     * 应用、资源名称
-     */
+
     @TableField("app_name")
     @ApiModelProperty("应用、资源名称")
     private String appName;
 
-    /**
-     * 服务类型(应用 app 资源 resource)
-     */
     @TableField("service_type")
     @ApiModelProperty("服务类型(应用 app 资源 resource)")
     private String serviceType;
 
-    /**
-     * 服务名称
-     */
     @ApiModelProperty("服务名称")
     @TableField("service_name")
     private String serviceName;
 
-    /**
-     * 服务端口
-     */
+
     @ApiModelProperty("服务端口")
     @TableField("service_port")
     private Integer servicePort;
 
-    /**
-     * 容器端口
-     */
     @ApiModelProperty("容器端口")
     @TableField("service_target_port")
     private Integer serviceTargetPort;
 
-    /**
-     * 备注
-     */
     @ApiModelProperty("备注")
     @TableField("remark")
     private String remark;

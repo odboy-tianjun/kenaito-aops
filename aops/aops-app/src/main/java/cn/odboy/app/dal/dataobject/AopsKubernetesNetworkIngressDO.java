@@ -41,65 +41,45 @@ import lombok.ToString;
 @ApiModel(value = "AopsKubernetesNetworkIngress对象", description = "Kubernetes网络ingress-nginx")
 public class AopsKubernetesNetworkIngressDO extends MyLogicEntity {
 
-    /**
-     * 自增ID
-     */
+
     @ApiModelProperty("自增ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 环境编码
-     */
     @TableField("env_code")
     @ApiModelProperty("环境编码")
     private String envCode;
 
-    /**
-     * 应用名称
-     */
+
     @TableField("app_name")
     @ApiModelProperty("应用名称")
     private String appName;
 
-    /**
-     * ingress名称
-     */
+
     @TableField("ingress_name")
     @ApiModelProperty("ingress名称")
     private String ingressName;
 
-    /**
-     * 绑定域名
-     */
+
     @TableField("hostname")
     @ApiModelProperty("绑定域名")
     private String hostname;
 
-    /**
-     * 绑定域名的类型，内网或者外网
-     */
     @TableField("network_type")
     @ApiModelProperty("绑定域名的类型，内网或者外网")
     private String networkType;
 
-    /**
-     * 绑定的ServiceName
-     */
+
     @TableField("service_name")
     @ApiModelProperty("绑定的ServiceName")
     private String serviceName;
 
-    /**
-     * 绑定的路径，默认为\"/\"
-     */
+
     @TableField("service_path")
     @ApiModelProperty("绑定的路径，默认为\"/\"")
     private String servicePath;
 
-    /**
-     * 备注
-     */
+
     @TableField("remark")
     @ApiModelProperty("备注")
     private String remark;

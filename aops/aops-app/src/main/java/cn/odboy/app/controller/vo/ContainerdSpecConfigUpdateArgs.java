@@ -13,25 +13,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * 仅修改集群默认应用负载配置
- *
- * @author odboy
- * @date 2025-05-15
- */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ClusterConfigModifyDefaultAppYmlArgs extends MyObject {
+public class ContainerdSpecConfigUpdateArgs extends MyObject {
     @NotNull(message = "ID必填")
     private Long id;
-    @NotBlank(message = "应用负载Yml必填")
-    private String clusterDefaultAppYaml;
+    @NotBlank(message = "规格名称必填")
+    private String specName;
+    @NotNull(message = "CPU数量必填")
+    @Min(message = "最小值为1", value = 1)
+    @Max(message = "最大值为256", value = 256)
+    private Integer cpuNum;
+    @NotNull(message = "内存大小必填")
+    @Min(message = "最小值为1", value = 1)
+    @Max(message = "最大值为512", value = 512)
+    private Integer memNum;
+    @NotNull(message = "磁盘大小必填")
+    @Min(message = "最小值为60", value = 60)
+    @Max(message = "最大值为180", value = 180)
+    private Integer diskSize;
 }

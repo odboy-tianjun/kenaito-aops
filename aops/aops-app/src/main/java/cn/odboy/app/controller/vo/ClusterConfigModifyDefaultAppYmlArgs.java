@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.app.controller.cmdb.vo;
+package cn.odboy.app.controller.vo;
 
 import cn.odboy.common.pojo.MyObject;
 import lombok.Data;
@@ -21,20 +21,17 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-
+/**
+ * 仅修改集群默认应用负载配置
+ *
+ * @author odboy
+ * @date 2025-05-15
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ClusterConfigUpdateArgs extends MyObject {
-    @NotNull(message = "id必填")
+public class ClusterConfigModifyDefaultAppYmlArgs extends MyObject {
+    @NotNull(message = "ID必填")
     private Long id;
-    @NotBlank(message = "环境编码必填")
-    private String envCode;
-    @NotBlank(message = "集群编码必填")
-    private String clusterCode;
-    @NotBlank(message = "集群名称必填")
-    private String clusterName;
-    @NotBlank(message = "集群配置必填")
-    private String clusterConfigContent;
-    @NotBlank(message = "初始镜像地址必填")
-    private String clusterDefaultAppImage;
+    @NotBlank(message = "应用负载Yml必填")
+    private String clusterDefaultAppYaml;
 }

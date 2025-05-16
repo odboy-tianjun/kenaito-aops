@@ -41,79 +41,33 @@ import java.util.Date;
 @TableName("aops_app")
 @ApiModel(value = "AopsApp对象", description = "应用")
 public class AopsAppDO extends MyLogicEntity {
-    /**
-     * 自增ID
-     */
     @ApiModelProperty("自增ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 应用名称
-     */
     @TableField("app_name")
     @ApiModelProperty("应用名称")
     private String appName;
-
-    /**
-     * 所属产品线
-     */
     @ApiModelProperty("所属产品线")
     @TableField("product_line_id")
     private Long productLineId;
-
-    /**
-     * 开发语言
-     */
     @ApiModelProperty("开发语言")
     @TableField("`language`")
     private String language;
-
-    /**
-     * 应用描述
-     */
     @ApiModelProperty("应用描述")
     @TableField("`description`")
     private String description;
-
-    /**
-     * 应用等级
-     */
     @TableField("app_level")
     @ApiModelProperty("应用等级")
     private String appLevel;
-
-    /**
-     * git仓库地址
-     */
     @TableField("git_repo_url")
     @ApiModelProperty("git仓库地址")
     private String gitRepoUrl;
-
-    /**
-     * git项目id
-     */
     @ApiModelProperty("git项目id")
     @TableField("git_project_id")
     private Long gitProjectId;
-
-    /**
-     * git项目中文名称
-     */
-    @ApiModelProperty("git项目中文名称")
-    @TableField("git_project_name")
-    private String gitProjectName;
-
-    /**
-     * git项目默认分支
-     */
     @ApiModelProperty("git项目默认分支")
     @TableField("git_default_branch")
     private String gitDefaultBranch;
-
-    /**
-     * git项目创建时间
-     */
     @TableField("git_create_at")
     @ApiModelProperty("git项目创建时间")
     private Date gitCreateAt;

@@ -17,8 +17,8 @@ package cn.odboy.app.service.kubernetes;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.odboy.app.controller.cmdb.vo.ContainerdSpecConfigCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.ContainerdSpecConfigUpdateArgs;
+import cn.odboy.app.controller.vo.ContainerdSpecConfigCreateArgs;
+import cn.odboy.app.controller.vo.ContainerdSpecConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesContainerdSpecConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesContainerdSpecConfigMapper;
 import cn.odboy.common.exception.BadRequestException;

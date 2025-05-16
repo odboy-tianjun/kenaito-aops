@@ -15,8 +15,8 @@
  */
 package cn.odboy.app.service.kubernetes;
 
-import cn.odboy.app.controller.cmdb.vo.NetworkIngressCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.NetworkIngressUpdateArgs;
+import cn.odboy.app.controller.vo.NetworkIngressCreateArgs;
+import cn.odboy.app.controller.vo.NetworkIngressUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
 import cn.odboy.common.pojo.PageArgs;
 import cn.odboy.common.pojo.PageResult;

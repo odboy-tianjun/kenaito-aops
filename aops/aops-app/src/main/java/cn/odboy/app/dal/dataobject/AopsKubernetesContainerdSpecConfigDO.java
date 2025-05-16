@@ -41,37 +41,24 @@ import lombok.ToString;
 @ApiModel(value = "AopsKubernetesContainerdSpecConfig对象", description = "Kubernetes容器规格配置")
 public class AopsKubernetesContainerdSpecConfigDO extends MyLogicEntity {
 
-    /**
-     * 自增ID
-     */
+
     @ApiModelProperty("自增ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 规格名称
-     */
     @TableField("spec_name")
     @ApiModelProperty("规格名称")
     private String specName;
 
-    /**
-     * cpu核数
-     */
+
     @TableField("cpu_num")
     @ApiModelProperty("cpu核数")
     private Integer cpuNum;
 
-    /**
-     * 内存大小，单位Gi
-     */
     @TableField("mem_num")
     @ApiModelProperty("内存大小，单位Gi")
     private Integer memNum;
 
-    /**
-     * 磁盘大小，单位Gi
-     */
     @TableField("disk_size")
     @ApiModelProperty("磁盘大小，单位Gi")
     private Integer diskSize;

@@ -17,9 +17,9 @@ package cn.odboy.app.service.kubernetes;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigCreateArgs;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigModifyDefaultAppYmlArgs;
-import cn.odboy.app.controller.cmdb.vo.ClusterConfigUpdateArgs;
+import cn.odboy.app.controller.vo.ClusterConfigCreateArgs;
+import cn.odboy.app.controller.vo.ClusterConfigModifyDefaultAppYmlArgs;
+import cn.odboy.app.controller.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.dal.mysql.AopsKubernetesClusterConfigMapper;
 import cn.odboy.common.pojo.PageArgs;
