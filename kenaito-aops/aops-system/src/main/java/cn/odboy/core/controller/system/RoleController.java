@@ -1,7 +1,7 @@
 package cn.odboy.core.controller.system;
 
 import cn.hutool.core.lang.Dict;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import cn.odboy.core.framework.permission.core.util.SecurityHelper;

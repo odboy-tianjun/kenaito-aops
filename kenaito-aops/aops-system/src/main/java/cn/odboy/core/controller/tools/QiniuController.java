@@ -1,6 +1,6 @@
 package cn.odboy.core.controller.tools;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;
 import cn.odboy.core.dal.dataobject.tools.QiniuContentDO;
 import cn.odboy.core.service.tools.QiniuConfigService;

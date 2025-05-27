@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.dal.dataobject;
 
-import cn.odboy.common.pojo.MyLogicEntity;
+import cn.odboy.common.model.MyLogicEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -26,14 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * <p>
- * Kubernetes网络service
- * </p>
- *
- * @author codegen
- * @since 2025-05-07
- */
+
 @Getter
 @Setter
 @ToString

@@ -19,9 +19,9 @@ import cn.odboy.app.controller.vo.NetworkIngressCreateArgs;
 import cn.odboy.app.controller.vo.NetworkIngressUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesNetworkIngressService;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +43,6 @@ public class AopsKubernetesNetworkIngressController {
 
     @ApiOperation("分页查询Ingress列表")
     @PostMapping("/describeIngressPage")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<PageResult<AopsKubernetesNetworkIngressDO>> describeIngressPage(@Validated @RequestBody PageArgs<AopsKubernetesNetworkIngressDO> args) {
         return ResponseEntity.ok(currentService.describeIngressPage(args));
     }
@@ -51,7 +50,6 @@ public class AopsKubernetesNetworkIngressController {
     @OperationLog
     @ApiOperation("创建Ingress")
     @PostMapping("/createIngress")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> createIngress(@Validated @RequestBody NetworkIngressCreateArgs args) {
         currentService.createIngress(args);
         return ResponseEntity.ok().build();
@@ -60,7 +58,6 @@ public class AopsKubernetesNetworkIngressController {
     @OperationLog
     @ApiOperation("删除Ingress")
     @PostMapping("/deleteIngress")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> deleteIngress(@Validated @RequestBody DeleteByIdArgs args) {
         currentService.deleteIngress(args);
         return ResponseEntity.ok().build();
@@ -69,7 +66,6 @@ public class AopsKubernetesNetworkIngressController {
     @OperationLog
     @ApiOperation("更新Ingress")
     @PostMapping("/updateIngress")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> updateIngress(@Validated @RequestBody NetworkIngressUpdateArgs args) {
         currentService.updateIngress(args);
         return ResponseEntity.ok().build();

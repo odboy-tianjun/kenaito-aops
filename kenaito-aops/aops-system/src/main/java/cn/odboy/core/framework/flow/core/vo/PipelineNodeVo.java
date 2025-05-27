@@ -1,6 +1,6 @@
 package cn.odboy.core.framework.flow.core.vo;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.util.List;

@@ -13,16 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.app.dal.mysql;
 
-import java.io.Serializable;
+import cn.odboy.app.dal.dataobject.AopsProductLineDO;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 基础对象
+ * <p>
+ * 产品 Mapper 接口
+ * </p>
  *
- * @author odboy
- * @date 2022-01-12
+ * @author codegen
+ * @since 2025-05-07
  */
-public class MyObject implements Serializable {
-    private static final long serialVersionUID = 1L;
+@Mapper
+public interface AopsProductLineMapper extends BaseMapper<AopsProductLineDO> {
+
 }

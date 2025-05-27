@@ -1,6 +1,6 @@
 package cn.odboy.core.service.tools;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.dal.dataobject.tools.LocalStorageDO;
 import cn.odboy.core.service.tools.dto.LocalStorageQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

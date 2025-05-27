@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.framework.gitlab.core.vo;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

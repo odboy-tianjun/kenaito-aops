@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Gitlab流水线
@@ -233,7 +234,7 @@ public class GitlabPipelineRepository {
                         PipelineStatus.CANCELED.equals(f.getStatus()) ||
                         // MANUAL 手动停止的
                         PipelineStatus.MANUAL.equals(f.getStatus())
-        ).toList();
+        ).collect(Collectors.toList());
         if (!waitStopPipelines.isEmpty()) {
             // 停止符合条件的流水线
             for (Pipeline waitStopPipeline : waitStopPipelines) {

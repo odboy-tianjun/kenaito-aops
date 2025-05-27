@@ -13,16 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo.vo;
+package cn.odboy.app.controller.vo;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class DeleteByIdArgs extends MyObject {
+public class ProductLineUpdateArgs extends MyObject {
     @NotNull(message = "ID必填")
     private Long id;
+    @NotBlank(message = "产品名称必填")
+    private String lineName;
+    @NotBlank(message = "产品负责人必填")
+    private String owner;
+    @NotBlank(message = "产品运维必填")
+    private String pe;
+    @NotBlank(message = "描述必填")
+    private String remark;
 }

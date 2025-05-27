@@ -62,12 +62,16 @@ public class GitlabCiFileAdmin implements InitializingBean {
     }
 
     public String getDockerfileContent(String language, GlobalEnvEnum envEnum) {
-        return switch (envEnum) {
-            case Daily -> innerDockerDailyFileMap.getOrDefault(language, "");
-            case Stage -> innerDockerStageFileMap.getOrDefault(language, "");
-            case Online -> innerDockerOnlineFileMap.getOrDefault(language, "");
-            default -> innerDockerDailyFileMap.getOrDefault(language, "");
-        };
+        switch (envEnum) {
+            case Daily:
+                return innerDockerDailyFileMap.getOrDefault(language, "");
+            case Stage:
+                return innerDockerStageFileMap.getOrDefault(language, "");
+            case Online:
+                return innerDockerOnlineFileMap.getOrDefault(language, "");
+            default:
+                return null;
+        }
     }
 
     public String getReleaseFileContent(String language) {

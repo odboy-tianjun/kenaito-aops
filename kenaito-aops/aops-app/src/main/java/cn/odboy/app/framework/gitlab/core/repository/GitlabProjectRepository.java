@@ -207,7 +207,7 @@ public class GitlabProjectRepository {
     @GitlabApiExceptionCatch(description = "批量新增项目成员 -> ok")
     public void addProjectMembers(Long projectId, List<Long> userIds, AccessLevel accessLevel) throws Exception {
         if (CollUtil.isNotEmpty(userIds)) {
-            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().toList()) {
+            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList())) {
                 try {
                     this.addProjectMember(projectId, userId, accessLevel);
                 } catch (Exception e) {
@@ -236,7 +236,7 @@ public class GitlabProjectRepository {
     @GitlabApiExceptionCatch(description = "批量移除项目成员 -> ok")
     public void deleteProjectMembers(Long projectId, List<Long> userIds) throws Exception {
         if (CollUtil.isNotEmpty(userIds)) {
-            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().toList()) {
+            for (Long userId : userIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList())) {
                 try {
                     deleteProjectMember(projectId, userId);
                 } catch (Exception e) {

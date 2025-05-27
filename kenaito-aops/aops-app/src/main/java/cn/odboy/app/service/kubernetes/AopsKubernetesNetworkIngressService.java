@@ -18,9 +18,9 @@ package cn.odboy.app.service.kubernetes;
 import cn.odboy.app.controller.vo.NetworkIngressCreateArgs;
 import cn.odboy.app.controller.vo.NetworkIngressUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkIngressDO;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 
 /**
  * <p>

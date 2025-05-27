@@ -36,7 +36,7 @@ public class KubernetesResourceLabelMetaUtil {
             for (Map.Entry<String, String> kvEntry : labelSelector.entrySet()) {
                 tempBuilder.append(kvEntry.getKey()).append("=").append(kvEntry.getValue()).append(",");
             }
-            if (!tempBuilder.isEmpty()) {
+            if (tempBuilder.length() > 0) {
                 tempBuilder.deleteCharAt(tempBuilder.length() - 1);
             }
             if (StrUtil.isNotBlank(tempBuilder)) {

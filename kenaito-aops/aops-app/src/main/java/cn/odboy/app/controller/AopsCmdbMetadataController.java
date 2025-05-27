@@ -20,17 +20,24 @@ import cn.odboy.app.constant.AppLanguageEnum;
 import cn.odboy.app.constant.AppLevelEnum;
 import cn.odboy.app.constant.AppProductLineUserRoleEnum;
 import cn.odboy.app.constant.AppUserRoleEnum;
+import cn.odboy.app.controller.vo.AopsProductLineVo;
+import cn.odboy.app.dal.dataobject.AopsProductLineDO;
 import cn.odboy.app.framework.kubernetes.core.constant.KubernetesNetworkTypeEnum;
 import cn.odboy.app.framework.kubernetes.core.constant.KubernetesPodStatusEnum;
+import cn.odboy.app.service.app.AopsProductLineService;
 import cn.odboy.common.constant.GlobalEnableStatusEnum;
 import cn.odboy.common.constant.GlobalEnvEnum;
-import cn.odboy.common.pojo.MyMetaOptionItem;
+import cn.odboy.common.model.LongMetaOptionItem;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.StringMetaOptionItem;
+import cn.odboy.core.service.system.SystemUserService;
+import cn.odboy.core.service.system.dto.UserQueryArgs;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,12 +52,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/cmdb/metadata")
 public class AopsCmdbMetadataController {
+    private final AopsProductLineService aopsProductLineService;
+    private final SystemUserService systemUserService;
+
     /**
      * 查询启用状态
      */
-    private List<MyMetaOptionItem> getEnableStatusData() {
+    private List<LongMetaOptionItem> getEnableStatusData() {
         return Arrays.stream(GlobalEnableStatusEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> LongMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .ext(Dict.create().set("tagType", m.getTagType()))
@@ -58,24 +68,26 @@ public class AopsCmdbMetadataController {
                 )
                 .collect(Collectors.toList());
     }
+
     /**
      * 查询环境编码
      */
-    private List<MyMetaOptionItem> getEnvData() {
+    private List<StringMetaOptionItem> getEnvData() {
         return Arrays.stream(GlobalEnvEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .build()
                 )
                 .collect(Collectors.toList());
     }
+
     /**
      * 查询应用等级
      */
-    private List<MyMetaOptionItem> getAppLevelData() {
+    private List<StringMetaOptionItem> getAppLevelData() {
         return Arrays.stream(AppLevelEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .build()
@@ -86,9 +98,9 @@ public class AopsCmdbMetadataController {
     /**
      * 查询应用语言
      */
-    private List<MyMetaOptionItem> getAppLanguageData() {
+    private List<StringMetaOptionItem> getAppLanguageData() {
         return Arrays.stream(AppLanguageEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .build()
@@ -99,9 +111,9 @@ public class AopsCmdbMetadataController {
     /**
      * 查询应用产品线角色
      */
-    private List<MyMetaOptionItem> getAppProductLineRoleData() {
+    private List<StringMetaOptionItem> getAppProductLineRoleData() {
         return Arrays.stream(AppProductLineUserRoleEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .build()
@@ -112,9 +124,9 @@ public class AopsCmdbMetadataController {
     /**
      * 查询应用角色
      */
-    private List<MyMetaOptionItem> getAppRoleData() {
+    private List<StringMetaOptionItem> getAppRoleData() {
         return Arrays.stream(AppUserRoleEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .build()
@@ -125,9 +137,9 @@ public class AopsCmdbMetadataController {
     /**
      * 查询Kubernetes网络类型
      */
-    private List<MyMetaOptionItem> getKubernetesNetworkTypeData() {
+    private List<StringMetaOptionItem> getKubernetesNetworkTypeData() {
         return Arrays.stream(KubernetesNetworkTypeEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .ext(Dict.create().set("suffix", m.getSuffix()))
@@ -139,9 +151,9 @@ public class AopsCmdbMetadataController {
     /**
      * 查询KubernetesPod状态
      */
-    private List<MyMetaOptionItem> getKubernetesPodStatusData() {
+    private List<StringMetaOptionItem> getKubernetesPodStatusData() {
         return Arrays.stream(KubernetesPodStatusEnum.values())
-                .map(m -> MyMetaOptionItem.builder()
+                .map(m -> StringMetaOptionItem.builder()
                         .label(m.getDesc())
                         .value(m.getCode())
                         .build()
@@ -149,12 +161,44 @@ public class AopsCmdbMetadataController {
                 .collect(Collectors.toList());
     }
 
+    private List<LongMetaOptionItem> getProductLineData() {
+        PageArgs<AopsProductLineDO> args = new PageArgs<>();
+        args.setPage(1);
+        args.setSize(Integer.MAX_VALUE);
+        PageResult<AopsProductLineVo> pageResult = aopsProductLineService.describeProductLinePage(args);
+        List<LongMetaOptionItem> collect = pageResult.getContent().stream()
+                .map(m -> LongMetaOptionItem.builder()
+                        .label(m.getLineName())
+                        .value(m.getId())
+                        .build()
+                )
+                .collect(Collectors.toList());
+        collect.add(0, LongMetaOptionItem.builder()
+                .label("全部产品线")
+                .value(0L)
+                .build());
+        return collect;
+    }
+
+    private List<LongMetaOptionItem> getUserInfoData() {
+        return systemUserService.describeUserList(new UserQueryArgs())
+                .stream()
+                .map(m -> LongMetaOptionItem.builder()
+                        .label(m.getNickName())
+                        .value(m.getId())
+                        .ext(Dict.create()
+                                .set("phone", m.getPhone())
+                                .set("email", m.getEmail())
+                                .set("isAdmin", m.getIsAdmin())
+                        )
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     @ApiOperation("查询所有元数据")
     @PostMapping("/getAll")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Object> getAll() {
-        Map<String, List<MyMetaOptionItem>> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>();
         result.put("EnableStatus", getEnableStatusData());
         result.put("Env", getEnvData());
         result.put("AppLevel", getAppLevelData());
@@ -163,6 +207,8 @@ public class AopsCmdbMetadataController {
         result.put("AppRole", getAppRoleData());
         result.put("KubernetesNetworkType", getKubernetesNetworkTypeData());
         result.put("KubernetesPodStatus", getKubernetesPodStatusData());
+        result.put("ProductLine", getProductLineData());
+        result.put("UserInfo", getUserInfoData());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

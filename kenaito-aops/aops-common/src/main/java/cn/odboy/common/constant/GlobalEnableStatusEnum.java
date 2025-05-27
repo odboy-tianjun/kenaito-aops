@@ -27,9 +27,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum GlobalEnableStatusEnum {
-    ENABLED("1", "启用", "success"),
-    DISABLED("0", "禁用", "danger");
-    private final String code;
+    ENABLED(1L, "启用", "success"),
+    DISABLED(0L, "禁用", "danger");
+    private final Long code;
     private final String desc;
     private final String tagType;
 

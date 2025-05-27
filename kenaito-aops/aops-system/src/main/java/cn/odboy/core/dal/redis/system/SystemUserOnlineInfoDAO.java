@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.redis.system;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.BrowserUtil;
 import cn.odboy.common.util.DesEncryptUtil;

@@ -17,6 +17,7 @@ package cn.odboy.app.framework.dingtalk.core.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.odboy.app.framework.dingtalk.config.DingtalkProperties;
+import cn.odboy.common.constant.SystemConst;
 import com.dingtalk.open.app.api.GenericEventListener;
 import com.dingtalk.open.app.api.OpenDingTalkStreamClientBuilder;
 import com.dingtalk.open.app.api.security.AuthClientCredential;
@@ -43,7 +44,7 @@ public class DingtalkWorkflowListener {
             return;
         }
         String propertyValue = environment.getProperty("spring.profiles.active");
-        if (!"prod".equals(propertyValue)) {
+        if (!SystemConst.ENV_PROD.equals(propertyValue)) {
             log.info("非生产环境，不连接DingtalkStream服务");
             return;
         }

@@ -13,12 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.common.model;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,29 +27,33 @@ import org.springframework.data.annotation.LastModifiedBy;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-
+/**
+ * 逻辑删除通用模型
+ *
+ * @author odboy
+ * @date 2025-01-12
+ */
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = false)
-public class MyEntity extends MyObject {
-
+public class MyLogicEntity extends MyObject {
     @CreatedBy
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建人", hidden = true)
     private String createBy;
-
     @LastModifiedBy
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "更新人", hidden = true)
     private String updateBy;
-
-    @TableField(fill = FieldFill.INSERT)
-    @ApiModelProperty(value = "创建时间: yyyy-MM-dd HH:mm:ss", hidden = true)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "创建时间", hidden = true)
     private Date createTime;
-
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    @ApiModelProperty(value = "更新时间: yyyy-MM-dd HH:mm:ss", hidden = true)
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    @ApiModelProperty(value = "更新时间", hidden = true)
     private Date updateTime;
+    @ApiModelProperty(value = "数据有效性", hidden = true)
+    @TableLogic
+    @TableField("available")
+    private Integer available;
 
     /* 分组校验 */
     public @interface Create {

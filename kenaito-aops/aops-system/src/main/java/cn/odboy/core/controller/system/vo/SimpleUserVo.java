@@ -1,6 +1,6 @@
 package cn.odboy.core.controller.system.vo;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.dal.dataobject.system.JobDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;

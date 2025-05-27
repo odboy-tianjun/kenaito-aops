@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.controller.vo;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 public class AppCreateArgs extends MyObject {
     @NotBlank(message = "应用名称必填")
     private String appName;
-    @NotNull(message = "所属产品线必填")
+    @NotNull(message = "产品线必填")
     private Long productLineId;
     @NotBlank(message = "开发语言必填")
     private String language;

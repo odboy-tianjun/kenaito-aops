@@ -15,7 +15,8 @@
  */
 package cn.odboy.common.util;
 
-import cn.odboy.common.pojo.MyMetaOptionItem;
+import cn.odboy.common.model.StringMetaOptionItem;
+import cn.odboy.common.model.StringMetaOptionItem;
 import com.alibaba.fastjson2.JSON;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -199,22 +200,22 @@ public final class CollUtil extends cn.hutool.core.collection.CollUtil {
     }
 
     public static void main(String[] args) {
-        List<MyMetaOptionItem> testData = new ArrayList<>();
-        MyMetaOptionItem selectOption1 = MyMetaOptionItem.builder().label("苹果").value("apple").build();
-        MyMetaOptionItem selectOption2 = MyMetaOptionItem.builder().label("苹果").value("apple").build();
-        MyMetaOptionItem selectOption3 = MyMetaOptionItem.builder().label("香蕉").value("banana").build();
-        MyMetaOptionItem selectOption4 = MyMetaOptionItem.builder().label("猫").value("cat").build();
+        List<StringMetaOptionItem> testData = new ArrayList<>();
+        StringMetaOptionItem selectOption1 = StringMetaOptionItem.builder().label("苹果").value("apple").build();
+        StringMetaOptionItem selectOption2 = StringMetaOptionItem.builder().label("苹果").value("apple").build();
+        StringMetaOptionItem selectOption3 = StringMetaOptionItem.builder().label("香蕉").value("banana").build();
+        StringMetaOptionItem selectOption4 = StringMetaOptionItem.builder().label("猫").value("cat").build();
         testData.add(selectOption1);
         testData.add(selectOption2);
         testData.add(selectOption3);
         testData.add(selectOption4);
-        List<MyMetaOptionItem> selectOptions1 = CollUtil.streamAscSort(testData, MyMetaOptionItem::getValue);
+        List<StringMetaOptionItem> selectOptions1 = CollUtil.streamAscSort(testData, StringMetaOptionItem::getValue);
         System.out.println(JSON.toJSONString(selectOptions1));
-        List<MyMetaOptionItem> selectOptions2 = CollUtil.streamDescSort(testData, MyMetaOptionItem::getValue);
+        List<StringMetaOptionItem> selectOptions2 = CollUtil.streamDescSort(testData, StringMetaOptionItem::getValue);
         System.out.println(JSON.toJSONString(selectOptions2));
-        List<MyMetaOptionItem> selectOptions3 = CollUtil.streamDistinct(testData, MyMetaOptionItem::getValue);
+        List<StringMetaOptionItem> selectOptions3 = CollUtil.streamDistinct(testData, StringMetaOptionItem::getValue);
         System.out.println(JSON.toJSONString(selectOptions3));
-        Map<String, String> selectMap1 = CollUtil.streamToMap(testData, MyMetaOptionItem::getValue, MyMetaOptionItem::getLabel);
+        Map<String, String> selectMap1 = CollUtil.streamToMap(testData, StringMetaOptionItem::getValue, StringMetaOptionItem::getLabel);
         System.out.println(JSON.toJSONString(selectMap1));
         // 这只是一个示范
         BigDecimal total1 = CollUtil.streamBigDecimalAdd(testData, "value");

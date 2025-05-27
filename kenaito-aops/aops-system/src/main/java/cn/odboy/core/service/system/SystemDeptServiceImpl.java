@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.BaseResult;
+import cn.odboy.common.model.BaseResult;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.ClassUtil;
 import cn.odboy.common.util.FileUtil;

@@ -19,9 +19,9 @@ import cn.odboy.app.controller.vo.NetworkServiceCreateArgs;
 import cn.odboy.app.controller.vo.NetworkServiceUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesNetworkServiceDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesNetworkServiceService;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +43,6 @@ public class AopsKubernetesNetworkServiceController {
 
     @ApiOperation("分页查询Service列表")
     @PostMapping("/describeServicePage")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<PageResult<AopsKubernetesNetworkServiceDO>> describeServicePage(@Validated @RequestBody PageArgs<AopsKubernetesNetworkServiceDO> args) {
         return ResponseEntity.ok(currentService.describeServicePage(args));
     }
@@ -51,7 +50,6 @@ public class AopsKubernetesNetworkServiceController {
     @OperationLog
     @ApiOperation("创建Service")
     @PostMapping("/createService")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> createService(@Validated @RequestBody NetworkServiceCreateArgs args) {
         currentService.createService(args);
         return ResponseEntity.ok().build();
@@ -60,7 +58,6 @@ public class AopsKubernetesNetworkServiceController {
     @OperationLog
     @ApiOperation("删除Service")
     @PostMapping("/deleteService")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> deleteService(@Validated @RequestBody DeleteByIdArgs args) {
         currentService.deleteService(args);
         return ResponseEntity.ok().build();
@@ -69,7 +66,6 @@ public class AopsKubernetesNetworkServiceController {
     @OperationLog
     @ApiOperation("更新Service")
     @PostMapping("/updateService")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> updateService(@Validated @RequestBody NetworkServiceUpdateArgs args) {
         currentService.updateService(args);
         return ResponseEntity.ok().build();

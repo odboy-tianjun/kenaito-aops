@@ -18,12 +18,10 @@ package cn.odboy.app.controller;
 import cn.odboy.app.controller.vo.AppCreateArgs;
 import cn.odboy.app.controller.vo.AppModifyMetaArgs;
 import cn.odboy.app.dal.dataobject.AopsAppDO;
-import cn.odboy.app.framework.gitlab.core.repository.GitlabGroupRepository;
-import cn.odboy.app.framework.gitlab.core.repository.GitlabProjectRepository;
 import cn.odboy.app.service.app.AopsAppService;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +43,6 @@ public class AopsCmdbAppManageController {
 
     @ApiOperation("分页查询应用列表")
     @PostMapping("/describeAppPage")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<PageResult<AopsAppDO>> describeAppPage(@Validated @RequestBody PageArgs<AopsAppDO> args) {
         return ResponseEntity.ok(currentService.describeAppPage(args));
     }
@@ -53,7 +50,6 @@ public class AopsCmdbAppManageController {
     @OperationLog
     @ApiOperation("创建应用")
     @PostMapping("/createApp")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> createApp(@Validated @RequestBody AppCreateArgs args) throws Exception {
         currentService.createApp(args);
         return ResponseEntity.ok().build();
@@ -62,7 +58,6 @@ public class AopsCmdbAppManageController {
     @OperationLog
     @ApiOperation("删除应用")
     @PostMapping("/deleteApp")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> deleteApp(@Validated @RequestBody DeleteByIdArgs args) {
         currentService.deleteApp(args);
         return ResponseEntity.ok().build();
@@ -71,7 +66,6 @@ public class AopsCmdbAppManageController {
     @OperationLog
     @ApiOperation("更新应用")
     @PostMapping("/updateApp")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> updateApp(@Validated @RequestBody AppModifyMetaArgs args) {
         currentService.updateApp(args);
         return ResponseEntity.ok().build();

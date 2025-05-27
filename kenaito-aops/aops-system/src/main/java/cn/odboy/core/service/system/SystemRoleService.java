@@ -1,6 +1,6 @@
 package cn.odboy.core.service.system;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.controller.system.vo.RoleCodeVo;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;

@@ -2,7 +2,7 @@ package cn.odboy.core.dal.dataobject.tools;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import cn.odboy.common.pojo.MyEntity;
+import cn.odboy.common.model.MyEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

@@ -2,7 +2,7 @@ package cn.odboy.core.controller.job;
 
 import cn.odboy.common.context.SpringBeanHolder;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.dal.dataobject.job.QuartzJobDO;
 import cn.odboy.core.dal.dataobject.job.QuartzLogDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;

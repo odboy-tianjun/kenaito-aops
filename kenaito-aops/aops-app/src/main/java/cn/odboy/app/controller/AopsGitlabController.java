@@ -18,14 +18,13 @@ package cn.odboy.app.controller;
 import cn.odboy.app.controller.vo.GitlabQueryRepositoryByGroupIdArgs;
 import cn.odboy.app.framework.gitlab.core.repository.GitlabGroupRepository;
 import cn.odboy.app.framework.gitlab.core.repository.GitlabProjectRepository;
-import cn.odboy.common.pojo.MyMetaOptionItem;
+import cn.odboy.common.model.LongMetaOptionItem;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.Project;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,24 +43,22 @@ public class AopsGitlabController {
 
     @ApiOperation("查询Gitlab分组元数据")
     @PostMapping("/describeGroupMetadata")
-    @PreAuthorize("@el.check()")
-    public ResponseEntity<List<MyMetaOptionItem>> describeGroupMetadata() {
+    public ResponseEntity<List<LongMetaOptionItem>> describeGroupMetadata() {
         List<Group> groups = gitlabGroupRepository.describeGroupList(1);
-        List<MyMetaOptionItem> metaOptionItems = groups.stream().map(m -> MyMetaOptionItem.builder()
+        List<LongMetaOptionItem> metaOptionItems = groups.stream().map(m -> LongMetaOptionItem.builder()
                 .label(m.getName())
-                .value(String.valueOf(m.getId()))
+                .value(m.getId())
                 .build()).collect(Collectors.toList());
         return ResponseEntity.ok(metaOptionItems);
     }
 
     @ApiOperation("根据Gitlab分组查询Gitlab仓库元数据")
     @PostMapping("/describeRepositoryMetadata")
-    @PreAuthorize("@el.check()")
-    public ResponseEntity<List<MyMetaOptionItem>> describeRepositoryMetadata(@Validated @RequestBody GitlabQueryRepositoryByGroupIdArgs args) {
+    public ResponseEntity<List<LongMetaOptionItem>> describeRepositoryMetadata(@Validated @RequestBody GitlabQueryRepositoryByGroupIdArgs args) {
         List<Project> projects = gitlabProjectRepository.describeProjectListByGroupId(args.getGroupId(), 1);
-        List<MyMetaOptionItem> metaOptionItems = projects.stream().map(m -> MyMetaOptionItem.builder()
+        List<LongMetaOptionItem> metaOptionItems = projects.stream().map(m -> LongMetaOptionItem.builder()
                 .label(m.getHttpUrlToRepo())
-                .value(String.valueOf(m.getId()))
+                .value(m.getId())
                 .build()).collect(Collectors.toList());
         return ResponseEntity.ok(metaOptionItems);
     }

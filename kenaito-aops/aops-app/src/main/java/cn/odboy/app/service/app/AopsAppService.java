@@ -19,9 +19,9 @@ package cn.odboy.app.service.app;
 import cn.odboy.app.controller.vo.AppCreateArgs;
 import cn.odboy.app.controller.vo.AppModifyMetaArgs;
 import cn.odboy.app.dal.dataobject.AopsAppDO;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 
 /**
  * <p>
@@ -39,4 +39,6 @@ public interface AopsAppService {
     void deleteApp(DeleteByIdArgs args);
 
     void updateApp(AppModifyMetaArgs args);
+
+    long getAppCountByProductLineId(Long id);
 }

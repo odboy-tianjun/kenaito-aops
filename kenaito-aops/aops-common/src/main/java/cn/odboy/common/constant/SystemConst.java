@@ -34,4 +34,12 @@ public class SystemConst {
     public static final String SYMBOL_AT = "@";
     public static final String PROPERTY_OS_NAME = "os.name";
     public static final String OS_NAME_WINDOWS = "Windows";
+
+    /**
+     * 环境编码
+     */
+    public static final String ENV_PROD = "prod";
+    public static final String ENV_GRAY = "gray";
+    public static final String ENV_STAGE = "stage";
+    public static final String ENV_DAILY = "daily";
 }

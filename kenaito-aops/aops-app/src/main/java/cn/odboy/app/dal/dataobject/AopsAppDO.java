@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.dal.dataobject;
 
-import cn.odboy.common.pojo.MyLogicEntity;
+import cn.odboy.common.model.MyLogicEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -27,14 +27,6 @@ import lombok.Setter;
 import lombok.ToString;
 import java.util.Date;
 
-/**
- * <p>
- * 应用
- * </p>
- *
- * @author codegen
- * @since 2025-05-07
- */
 @Getter
 @Setter
 @ToString
@@ -47,7 +39,7 @@ public class AopsAppDO extends MyLogicEntity {
     @TableField("app_name")
     @ApiModelProperty("应用名称")
     private String appName;
-    @ApiModelProperty("所属产品线")
+    @ApiModelProperty("产品线")
     @TableField("product_line_id")
     private Long productLineId;
     @ApiModelProperty("开发语言")

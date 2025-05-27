@@ -2,7 +2,7 @@ package cn.odboy.core.service.tools;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.common.util.StringUtil;

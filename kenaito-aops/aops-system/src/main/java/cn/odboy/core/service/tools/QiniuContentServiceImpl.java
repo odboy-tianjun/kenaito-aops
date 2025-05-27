@@ -1,7 +1,7 @@
 package cn.odboy.core.service.tools;
 
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.tools.QiniuConfigDO;

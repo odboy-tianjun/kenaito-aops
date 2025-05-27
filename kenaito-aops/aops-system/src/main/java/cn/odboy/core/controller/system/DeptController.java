@@ -1,6 +1,6 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.common.util.PageUtil;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;

@@ -19,9 +19,9 @@ import cn.odboy.app.controller.vo.ContainerdSpecConfigCreateArgs;
 import cn.odboy.app.controller.vo.ContainerdSpecConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesContainerdSpecConfigDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesContainerdSpecConfigService;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +43,6 @@ public class AopsKubernetesContainerdSpecConfigController {
 
     @ApiOperation("分页查询集群容器规格配置列表")
     @PostMapping("/describeContainerdSpecConfigPage")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<PageResult<AopsKubernetesContainerdSpecConfigDO>> describeContainerdSpecConfigPage(@Validated @RequestBody PageArgs<AopsKubernetesContainerdSpecConfigDO> args) {
         return ResponseEntity.ok(currentService.describeContainerdSpecConfigPage(args));
     }
@@ -51,7 +50,6 @@ public class AopsKubernetesContainerdSpecConfigController {
     @OperationLog
     @ApiOperation("创建集群容器规格配置")
     @PostMapping("/createContainerdSpecConfig")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> createContainerdSpecConfig(@Validated @RequestBody ContainerdSpecConfigCreateArgs args) {
         currentService.createContainerdSpecConfig(args);
         return ResponseEntity.ok().build();
@@ -60,7 +58,6 @@ public class AopsKubernetesContainerdSpecConfigController {
     @OperationLog
     @ApiOperation("删除集群容器规格配置")
     @PostMapping("/deleteContainerdSpecConfig")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> deleteContainerdSpecConfig(@Validated @RequestBody DeleteByIdArgs args) {
         currentService.deleteContainerdSpecConfig(args);
         return ResponseEntity.ok().build();
@@ -69,7 +66,6 @@ public class AopsKubernetesContainerdSpecConfigController {
     @OperationLog
     @ApiOperation("更新集群容器规格配置")
     @PostMapping("/updateContainerdSpecConfig")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> updateContainerdSpecConfig(@Validated @RequestBody ContainerdSpecConfigUpdateArgs args) {
         currentService.updateContainerdSpecConfig(args);
         return ResponseEntity.ok().build();

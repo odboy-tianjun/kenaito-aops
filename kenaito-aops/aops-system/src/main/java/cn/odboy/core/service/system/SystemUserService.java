@@ -1,6 +1,6 @@
 package cn.odboy.core.service.system;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.dal.dataobject.system.UserDO;
 import cn.odboy.core.service.system.dto.UserQueryArgs;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

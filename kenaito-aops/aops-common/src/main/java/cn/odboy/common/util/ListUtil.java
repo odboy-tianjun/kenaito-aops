@@ -16,7 +16,7 @@
 package cn.odboy.common.util;
 
 import cn.hutool.core.date.DateTime;
-import cn.odboy.common.pojo.MyEntity;
+import cn.odboy.common.model.MyEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

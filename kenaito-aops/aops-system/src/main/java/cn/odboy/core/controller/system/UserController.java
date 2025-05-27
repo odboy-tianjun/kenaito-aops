@@ -1,8 +1,8 @@
 package cn.odboy.core.controller.system;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.odboy.common.pojo.MyMetaOptionItem;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.StringMetaOptionItem;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.dal.dataobject.system.RoleDO;
 import cn.odboy.core.dal.dataobject.system.UserDO;
@@ -210,7 +210,7 @@ public class UserController {
     @ApiOperation("查询用户基础数据")
     @PostMapping(value = "/describeUserMetadataOptions")
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<List<MyMetaOptionItem>> queryUserMetadataOptions(@Validated @RequestBody UserQueryArgs args) {
+    public ResponseEntity<List<StringMetaOptionItem>> queryUserMetadataOptions(@Validated @RequestBody UserQueryArgs args) {
         int maxPageSize = 50;
         return new ResponseEntity<>(systemUserService.page(new Page<>(args.getPage(), maxPageSize), new LambdaQueryWrapper<UserDO>()
                 .and(c -> {
@@ -228,7 +228,7 @@ public class UserController {
             ext.put("deptId", m.getDeptId());
             ext.put("email", m.getEmail());
             ext.put("phone", m.getPhone());
-            return MyMetaOptionItem.builder()
+            return StringMetaOptionItem.builder()
                     .label(m.getNickName())
                     .value(m.getUsername())
                     .ext(ext)

@@ -20,9 +20,9 @@ import cn.odboy.app.controller.vo.ClusterConfigModifyDefaultAppYmlArgs;
 import cn.odboy.app.controller.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
 import cn.odboy.app.service.kubernetes.AopsKubernetesClusterConfigService;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,7 +44,6 @@ public class AopsKubernetesClusterConfigController {
 
     @ApiOperation("分页查询集群配置列表")
     @PostMapping("/describeClusterConfigPage")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<PageResult<AopsKubernetesClusterConfigDO>> describeClusterConfigPage(@Validated @RequestBody PageArgs<AopsKubernetesClusterConfigDO> args) {
         return ResponseEntity.ok(currentService.describeClusterConfigPage(args));
     }
@@ -52,7 +51,6 @@ public class AopsKubernetesClusterConfigController {
     @OperationLog
     @ApiOperation("创建集群配置")
     @PostMapping("/createClusterConfig")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> createClusterConfig(@Validated @RequestBody ClusterConfigCreateArgs args) {
         currentService.createClusterConfig(args);
         return ResponseEntity.ok().build();
@@ -61,7 +59,6 @@ public class AopsKubernetesClusterConfigController {
     @OperationLog
     @ApiOperation("删除集群配置")
     @PostMapping("/deleteClusterConfig")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> deleteClusterConfig(@Validated @RequestBody DeleteByIdArgs args) {
         currentService.deleteClusterConfig(args);
         return ResponseEntity.ok().build();
@@ -70,7 +67,6 @@ public class AopsKubernetesClusterConfigController {
     @OperationLog
     @ApiOperation("更新集群配置")
     @PostMapping("/updateClusterConfig")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> updateClusterConfig(@Validated @RequestBody ClusterConfigUpdateArgs args) {
         currentService.updateClusterConfig(args);
         return ResponseEntity.ok().build();
@@ -79,7 +75,6 @@ public class AopsKubernetesClusterConfigController {
     @OperationLog
     @ApiOperation("修改集群默认应用负载配置")
     @PostMapping("/modifyClusterDefaultAppYml")
-    @PreAuthorize("@el.check()")
     public ResponseEntity<Void> modifyClusterDefaultAppYml(@Validated @RequestBody ClusterConfigModifyDefaultAppYmlArgs args) {
         currentService.modifyClusterDefaultAppYml(args);
         return ResponseEntity.ok().build();

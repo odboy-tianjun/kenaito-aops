@@ -18,7 +18,7 @@ package cn.odboy.core.framework.mybatisplus.mybatis.core.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.framework.mybatisplus.mybatis.core.mapper.EasyMapper;
 import cn.odboy.core.framework.mybatisplus.mybatis.core.util.MybatisHelper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

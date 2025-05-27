@@ -1,6 +1,6 @@
 package cn.odboy.core.dal.dataobject.system;
 
-import cn.odboy.common.pojo.MyEntity;
+import cn.odboy.common.model.MyEntity;
 import cn.odboy.core.constant.DataScopeEnum;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;

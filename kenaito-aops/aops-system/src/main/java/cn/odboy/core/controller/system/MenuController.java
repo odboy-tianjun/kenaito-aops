@@ -1,7 +1,7 @@
 package cn.odboy.core.controller.system;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.controller.system.vo.MenuVo;
 import cn.odboy.core.dal.dataobject.system.MenuDO;
 import cn.odboy.core.framework.operalog.annotaions.OperationLog;

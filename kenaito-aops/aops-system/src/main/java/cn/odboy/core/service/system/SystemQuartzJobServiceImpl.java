@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.common.redis.RedisHelper;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.common.util.PageUtil;

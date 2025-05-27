@@ -172,10 +172,12 @@ public final class DistributedIdUtil {
      * @param args 命令行参数
      */
     public static void main(String[] args) {
-        for (int i = 0; i < 10; i++) {
+        int threadCnt = 10;
+        int idCnt = 20;
+        for (int i = 0; i < threadCnt; i++) {
             new Thread(() -> {
                 long id = Thread.currentThread().getId();
-                for (int j = 0; j < 20; j++) {
+                for (int j = 0; j < idCnt; j++) {
                     System.out.println(id + " - " + DistributedIdUtil.fastNextId());
                 }
             }).start();

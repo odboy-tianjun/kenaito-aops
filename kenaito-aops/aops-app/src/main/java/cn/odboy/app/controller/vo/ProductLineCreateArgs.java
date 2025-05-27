@@ -13,21 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.app.controller.vo;
 
-import lombok.AllArgsConstructor;
+import cn.odboy.common.model.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.List;
 
-/**
- * 结果封装类
- */
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class BaseResult<T> extends MyObject {
-    private T content;
-    private long totalElements;
+public class ProductLineCreateArgs extends MyObject {
+    @NotBlank(message = "产品名称必填")
+    private String lineName;
+    @NotNull(message = "产品负责人必填")
+    @Size(min = 1, message = "产品负责人至少一人")
+    private List<Long> owner;
+    @NotNull(message = "运维负责人必填")
+    @Size(min = 1, message = "运维负责人至少一人")
+    private List<Long> pe;
+    @NotBlank(message = "描述必填")
+    private String remark;
 }

@@ -28,9 +28,9 @@ import cn.odboy.app.framework.gitlab.core.vo.GitlabProjectCreateArgs;
 import cn.odboy.app.framework.gitlab.core.vo.GitlabProjectCreateVo;
 import cn.odboy.app.framework.kubernetes.core.vo.CustomArgsAppNameVo;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import cn.odboy.core.framework.mybatisplus.mybatis.core.util.AnyQueryTool;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -103,5 +103,12 @@ public class AopsAppServiceImpl implements AopsAppService {
     public void updateApp(AppModifyMetaArgs args) {
         AopsAppDO copied = BeanUtil.copyProperties(args, AopsAppDO.class);
         currentMapper.updateById(copied);
+    }
+
+    @Override
+    public long getAppCountByProductLineId(Long id) {
+        return currentMapper.selectCount(new LambdaQueryWrapper<AopsAppDO>()
+                .eq(AopsAppDO::getProductLineId, id)
+        );
     }
 }

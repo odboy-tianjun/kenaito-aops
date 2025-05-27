@@ -13,33 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.common.model;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import java.util.Map;
 
 /**
- * 数据分页参数
+ * 元数据选项
  *
  * @author odboy
- * @date 2025-01-20
+ * @date 2025-01-13
  */
 @Data
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-public class PageArgs<T> implements Serializable {
-    @NotNull(message = "page必填")
-    @Min(value = 1, message = "参数page最小值为1")
-    @ApiModelProperty(value = "页码", example = "1")
-    private Integer page;
-    @NotNull(message = "size必填")
-    @Min(value = 1, message = "参数size最小值为1")
-    @ApiModelProperty(value = "每页数据量", example = "10")
-    private Integer size;
-    private T args;
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+public class StringMetaOptionItem extends MyObject {
+    private String label;
+    private String value;
+    private Map<String, Object> ext;
 }

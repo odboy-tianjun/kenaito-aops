@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.controller.vo;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 public class AppModifyMetaArgs extends MyObject {
     @NotNull(message = "ID必填")
     private Long id;
-    @NotNull(message = "所属产品线必填")
+    @NotNull(message = "产品线必填")
     private Long productLineId;
     @NotBlank(message = "开发语言必填")
     private String language;

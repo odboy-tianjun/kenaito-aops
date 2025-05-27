@@ -15,7 +15,7 @@
  */
 package cn.odboy.app.dal.dataobject;
 
-import cn.odboy.common.pojo.MyObject;
+import cn.odboy.common.model.MyObject;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -24,14 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * <p>
- * 用户收藏的应用
- * </p>
- *
- * @author codegen
- * @since 2025-05-07
- */
+
 @Getter
 @Setter
 @ToString

@@ -1,8 +1,8 @@
 package cn.odboy.core.framework.mybatisplus.mybatis.core.util;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -71,6 +71,15 @@ public class AnyQueryTool {
         Page<T> pageResult = baseMapper.selectPage(pageArgs, wrapper);
         PageResult<T> result = new PageResult<>();
         result.setContent(pageResult.getRecords());
+        result.setTotalElements(pageResult.getTotal());
+        return result;
+    }
+
+    public static <T, M> PageResult<M> selectPageResult(BaseMapper<T> baseMapper, PageArgs<?> args, LambdaQueryWrapper<T> wrapper, Class<M> targetClazz) {
+        Page<T> pageArgs = new Page<>(args.getPage(), args.getSize());
+        Page<T> pageResult = baseMapper.selectPage(pageArgs, wrapper);
+        PageResult<M> result = new PageResult<>();
+        result.setContent(BeanUtil.copyToList(pageResult.getRecords(), targetClazz));
         result.setTotalElements(pageResult.getTotal());
         return result;
     }

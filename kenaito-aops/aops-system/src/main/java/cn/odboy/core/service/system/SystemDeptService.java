@@ -1,6 +1,6 @@
 package cn.odboy.core.service.system;
 
-import cn.odboy.common.pojo.BaseResult;
+import cn.odboy.common.model.BaseResult;
 import cn.odboy.core.dal.dataobject.system.DeptDO;
 import cn.odboy.core.service.system.dto.DeptCreateArgs;
 import cn.odboy.core.service.system.dto.DeptQueryArgs;

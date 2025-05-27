@@ -1,6 +1,6 @@
 package cn.odboy.core.controller.system;
 
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.core.dal.redis.system.SystemUserOnlineInfoDAO;
 import cn.odboy.core.controller.system.vo.UserOnlineVo;
 import cn.odboy.common.util.DesEncryptUtil;

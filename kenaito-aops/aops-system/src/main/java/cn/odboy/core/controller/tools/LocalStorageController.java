@@ -2,7 +2,7 @@ package cn.odboy.core.controller.tools;
 
 import cn.odboy.common.constant.FileTypeEnum;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.PageResult;
+import cn.odboy.common.model.PageResult;
 import cn.odboy.common.util.FileUtil;
 import cn.odboy.core.dal.dataobject.tools.LocalStorageDO;
 import cn.odboy.core.service.tools.LocalStorageService;

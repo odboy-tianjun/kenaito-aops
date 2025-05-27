@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.odboy.common.exception.BadRequestException;
-import cn.odboy.common.pojo.MyEntity;
+import cn.odboy.common.model.MyEntity;
 import cn.odboy.core.framework.mybatisplus.mybatis.core.annotations.MpQuery;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

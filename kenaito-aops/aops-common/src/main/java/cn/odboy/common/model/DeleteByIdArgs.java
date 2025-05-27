@@ -13,22 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package cn.odboy.common.pojo;
+package cn.odboy.common.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
-/**
- * 分页结果封装类
- */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class PageResult<T> extends MyObject {
-    private List<T> content;
-    private long totalElements;
+public class DeleteByIdArgs extends MyObject {
+    @NotNull(message = "ID必填")
+    private Long id;
 }

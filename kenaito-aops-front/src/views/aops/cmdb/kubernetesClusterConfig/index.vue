@@ -5,8 +5,8 @@
         <el-form-item label="集群名称" prop="clusterName">
           <el-input v-model="searchParams.clusterName" placeholder="请输入集群名称" />
         </el-form-item>
-        <el-form-item label="所属环境" prop="envCode">
-          <el-select v-model="searchParams.envCode" placeholder="请选择所属环境" clearable>
+        <el-form-item label="环境" prop="envCode">
+          <el-select v-model="searchParams.envCode" placeholder="请选择环境" clearable>
             <el-option
               v-for="item in metadata.Env"
               :key="item.value"
@@ -32,7 +32,7 @@
     >
       <el-table-column prop="clusterName" label="集群名称" />
       <el-table-column prop="clusterCode" label="集群编码" />
-      <el-table-column prop="envCode" label="所属环境" :formatter="formatterEnvCode" />
+      <el-table-column prop="envCode" label="环境" :formatter="formatterEnvCode" />
       <el-table-column prop="clusterConfigContent" label="集群Yaml">
         <template slot-scope="scope">
           <el-button
@@ -62,13 +62,13 @@
       <el-table-column fixed="right" label="操作" width="240">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click.native.prevent="handleUpdateClusterConfig(scope.row)">
-            编辑集群
+            修改集群
           </el-button>
           <el-button
             type="text"
             size="small"
             @click.native.prevent="handleModifyClusterDefaultAppYaml(scope.row)"
-          >编辑应用负载Yml
+          >修改应用负载Yml
           </el-button>
           <el-button type="text" size="small" @click.native.prevent="handleRemoveClusterConfig(scope.row)">
             删除
@@ -96,8 +96,8 @@
         <el-form-item prop="clusterCode" label="集群编码" :label-width="drawers.clusterConfig.labelWith">
           <el-input v-model="drawers.clusterConfig.form.clusterCode" autocomplete="off" />
         </el-form-item>
-        <el-form-item prop="envCode" label="所属环境" :label-width="drawers.clusterConfig.labelWith">
-          <el-select v-model="drawers.clusterConfig.form.envCode" placeholder="请选择所属环境">
+        <el-form-item prop="envCode" label="环境" :label-width="drawers.clusterConfig.labelWith">
+          <el-select v-model="drawers.clusterConfig.form.envCode" placeholder="请选择环境">
             <el-option
               v-for="item in metadata.Env"
               :key="item.value"
@@ -160,7 +160,7 @@ import { LabelUtil } from '@/utils/myUtil'
 import { MessageBoxUtil, MessageUtil } from '@/utils/myElement'
 
 export default {
-  name: 'AopsCmdbClusterConfig',
+  name: 'AopsCmdbKubernetesClusterConfig',
   components: { YamlEdit },
   data() {
     return {
@@ -172,7 +172,9 @@ export default {
         AppProductLineRole: [],
         AppRole: [],
         KubernetesNetworkType: [],
-        KubernetesPodStatus: []
+        KubernetesPodStatus: [],
+        ProductLine: [],
+        UserInfo: []
       },
       searchParams: {
         clusterName: '',
@@ -219,7 +221,7 @@ export default {
               { required: true, message: '请输入集群编码', trigger: 'blur' }
             ],
             envCode: [
-              { required: true, message: '请选择所属环境', trigger: 'change' }
+              { required: true, message: '请选择环境', trigger: 'change' }
             ],
             clusterConfigContent: [
               { required: true, message: '请输入集群配置', trigger: 'blur' }

@@ -19,9 +19,9 @@ import cn.odboy.app.controller.vo.ClusterConfigCreateArgs;
 import cn.odboy.app.controller.vo.ClusterConfigModifyDefaultAppYmlArgs;
 import cn.odboy.app.controller.vo.ClusterConfigUpdateArgs;
 import cn.odboy.app.dal.dataobject.AopsKubernetesClusterConfigDO;
-import cn.odboy.common.pojo.PageArgs;
-import cn.odboy.common.pojo.PageResult;
-import cn.odboy.common.pojo.vo.DeleteByIdArgs;
+import cn.odboy.common.model.PageArgs;
+import cn.odboy.common.model.PageResult;
+import cn.odboy.common.model.DeleteByIdArgs;
 import java.util.List;
 
 /**
